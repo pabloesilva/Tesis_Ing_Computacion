@@ -1,0 +1,139 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Plantilla para la Elaboración de Tesis
+% Universidad Nacional de Misiones - Argentina
+% Realizado por: Carlos Brys
+% Contacto: carlos.brys@fce.unam.edu.ar /       Telegram:@CarlosBrys
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\input{Preambulo} % Carga la configuración general del documento
+
+\begin{document}
+
+\input{0-0_Portada}
+\input{0-1_AvalJurado}
+\input{0-2_Licencia}
+\input{0-3_Redefiniciones}
+
+% Paginas numeradas en numeros romanos. 
+% Capitulos sin numero
+\cleardoublepage
+\frontmatter 
+
+\setcounter{secnumdepth}{4}
+\setcounter{tocdepth}{4}
+
+%\cleardoublepage
+
+
+\include{0-3_Redefiniciones}
+\include{0-4_Prologo}
+\include{0-5_Prefacio}
+\include{0-6_Agradecimientos}
+% \include{Acronimos} % Nomenclature en cada capitulo
+\clearpage
+
+%\addtocontents{toc}{~\hfill\textbf{Página}\par} % Que aparezca la palabra en el índice
+\tableofcontents % Indice General
+\clearpage
+\listoffigures  % Índice de Imágenes
+\clearpage
+\listoftables  % Si tiene tablas o matrices
+\clearpage
+
+% Encabezados y pies de pagina
+%There are special commands containing details on the running page of the document.
+%thepage 	number of the current page
+%\leftmark 	current chapter name printed 
+%\rightmark 	current section name printed 
+%\chaptername 	the name chapter in the current language. If this is English, it will display %"Chapter"
+%\thechapter 	current chapter number
+%\thesection 	current section number
+
+\pagestyle{fancy}
+\fancyhf{}
+\setlength{\headheight}{15pt} 
+%\fancyhead[LO]{\rightmark} % Print the nearest section name on the left side of odd pages
+%\fancyhead[RE]{\leftmark} % Print the current chapter name on the right side of even pages
+
+%\fancyhead[LE]{\nouppercase{\leftmark}} % Capítulo a la izquierda encabezado
+\fancyhead[RO]{\nouppercase{\rightmark}} % Sección a la derecha encabezado
+%\fancyfoot[LE,RO]{\thepage} % Numero de página al margen del pie
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%                             %%%%%
+%%% Aquí agregas tus documentos %%%%%
+%%%                             %%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Paginas numeradas en numeros arábigos 
+% Capitulos con número
+\mainmatter
+
+\include{1-1_IndiceComentado} % Antes del Indice General, va el Comentado
+
+\part{Contextualización}
+\include{1-2_PalabrasClave}  
+\include{1-3_Introduccion}
+\include{1-4_Antecedentes}
+\include{1-5_PlanteamientoProblema}
+
+\part{Investigación}
+\include{2-1_MarcoTeorico}
+\include{2-2_ArquitecturaPropuesta}
+\include{2-3_AnalisisMercado}
+
+
+\part{Desarrollo}
+\include{3-1_Hardware}
+\include{3-2_Firmware}
+\include{3-3_PlataformaIoT}
+\include{3-4_Resultados} 
+\include{3-5_Conclusiones}
+
+
+% Se mantiene la numeracion de las paginas
+% Pero los capitulos no se enumeran más
+\backmatter 
+
+% Anexos
+%%%%%%%%%%%%%%%%%%%%%%
+\appendix
+\part{Anexos}
+\cleardoublepage
+\addappheadtotoc
+\chapter{Circuito Esquemático del Nodo de Consumo (NC)}
+\label{anx:esquematico-nc}
+
+\includepdf[
+    pages=-,
+    scale=1,        % escalar basado en el tamaño de la página LaTeX
+    fitpaper=false,  % ajusta el PDF al tamaño de la hoja
+    landscape=true,
+]{imagenes/esquematico-nc.pdf}
+
+
+
+%\appendixpage
+%\addappheadtotoc 
+%\include{Censo2010} %% Esto es solo un ejemplo
+
+% Abreviaturas
+%%%%%%%%%%%%%%%%%%%%%%
+\clearpage
+\printglossary[type=\acronymtype,title={Acrónimos}]
+
+% Glosario de términos
+%%%%%%%%%%%%%%%%%%%%%%
+\glsaddall
+\printglossary[type=main,title={Glosario de Términos}]
+%\printnoidxglossary[type=main,sort=word,title={Glosario de Términos}]
+
+\part{Referencias}
+% Bibiografia por tipo
+%%%%%%%%%%%%%%%%%%%%%%%%%
+%\cleardoublepage
+\chapter{Bibliografía}
+\printbibliography
+
+\end{document}
+

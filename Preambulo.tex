@@ -1,0 +1,279 @@
+\RequirePackage{etex}
+
+\documentclass[
+titlepage,
+oneside,
+openright,
+onecolumn,
+a4paper,
+12pt]{book}
+
+% Text encoding to take for data input stream. I.e. the text we write in.
+% How to encode fonts.
+%\usepackage[T1]{fontenc}
+%usepackage{ucs}              %% Unicode support
+%\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{epigraph}
+
+% Para mostrar el icono ORCID
+\usepackage{academicons}
+\usepackage{fontawesome5}
+\usepackage{etoolbox}
+
+% Leave the smallest margins on A4 paper.
+\usepackage{a4wide}
+
+% Configuracion de los margenes de la pagina
+% Ver: https://es.sharelatex.com/learn/Page_size_and_margins
+\usepackage{geometry}
+\geometry{
+ a4paper,
+ left=3.5cm, right=2.0cm,
+ top=2.5cm, bottom=2.5cm}
+
+% Separacion entre párrafos
+%\setlength\parskip{\medskipamount}
+\setlength\parskip{\bigskipamount}
+
+% Separacion en las listas
+\usepackage{enumitem}
+\setlist{noitemsep} % Uncomment this if you want it as a global setting
+
+% Sangría en la primera línea
+\setlength\parindent{50pt}
+
+% Para importar archivos pdf (la portada)
+\usepackage{pdfpages} 
+\usepackage{pdflscape}
+
+% Para comentar parrafos
+\usepackage{comment}
+
+% Tamaño de la fuente del pie de imagen
+\usepackage{caption}
+\captionsetup{font=footnotesize}
+% Fancy LaTeX chapter styles
+% Options: Sonny, Lenny, Glenn, Conny, Rejne, Bjarne, Bjornstrup
+\usepackage[Sonny]{fncychap}
+
+\ChNumVar{\fontsize{76}{80}\usefont{OT1}{pzc}{m}{n}\selectfont}
+\ChTitleVar{\raggedleft\huge\sffamily\bfseries}  
+\ChNameVar{\bfseries\Large\sf}
+%\ChNumVar{\Huge}
+%\ChTitleVar{\bfseries\Large\rm}
+\ChRuleWidth{1pt}
+%\ChNameUpperCase
+%\ChTitleUpperCase
+
+
+% Para insertar hipervinculos  %% SI se actvia, no muestra los indices
+\usepackage[pageanchor]{hyperref}
+%\usepackage{url} Reduntante su see usa hyperref
+%\usepackage[anythingbreaks]{breakurl} % Para cortar las URL largas
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+    citecolor=blue,
+    pdfpagemode=FullScreen,
+    %backref=page,
+}
+\urlstyle{same}
+
+
+\usepackage{cleveref}
+\usepackage{chngcntr}
+
+% Ver tipografias en: The LaTeX Font Catalogue http://www.tug.dk/FontCatalogue/ 
+%% \usepackage{palatino} 
+% %\usepackage{tgbonum}
+%\usepackage{antpolt}
+% %\usepackage{librebaskerville}
+% \usepackage{inconsolata}
+\usepackage{antpolt}
+
+\usepackage[tight,spanish]{minitoc}
+
+\usepackage[spanish, es-tabla, activeacute]{babel}
+
+\usepackage{fvextra}
+\usepackage{csquotes}
+
+\usepackage[
+    backend=biber,
+    style=ieee,
+    sorting=none
+]{biblatex}
+\addbibresource{Bibliografia.bib} 
+
+% We need double spacing for the draft, at least. Also required by Univ. PTA.
+\usepackage{setspace}
+\onehalfspacing
+%\doublespacing
+
+
+% Glosario de términos
+%\usepackage{acronym}
+%\usepackage[acronym,nopostdot,nogroupskip]{glossaries}
+%\usepackage{glossaries}
+\usepackage[automake,acronym,nopostdot,nogroupskip]{glossaries-extra}
+%\usepackage[version=3]{acro} %list of abbreviations
+%\usepackage{acro}[=v3]
+\input{Glosario}
+\makeglossaries
+%\makeglossaries[main,acronym]
+%\makenoidxglossaries
+
+
+
+% Nomenclarura (para las variables)
+\usepackage[refpage,noprefix]{nomencl}
+\makenomenclature
+\usepackage{morewrites}
+% see https://texfaq.org/FAQ-noroom
+%\usepackage{etex} 
+%\reserveinserts{28}
+
+% Apendices
+\usepackage[toc,page]{appendix}
+
+
+\usepackage{multicol}         
+\usepackage{ccicons} % Iconos Creative Commons
+
+% Para listar código
+\usepackage{color}
+\definecolor{bluekeywords}{rgb}{0.13,0.13,1}
+\definecolor{greencomments}{rgb}{0,0.5,0}
+\definecolor{redstrings}{rgb}{0.9,0,0}
+
+\usepackage{listings}
+\lstset{
+%language=XML,
+showspaces=false,
+showtabs=false,
+breaklines=true,
+showstringspaces=false,
+breakatwhitespace=true,
+escapeinside={(*@}{@*)},
+commentstyle=\color{greencomments},
+keywordstyle=\color{bluekeywords}\bfseries,
+stringstyle=\color{redstrings},
+basicstyle=\scriptsize\ttfamily,
+columns=fullflexible
+}
+
+\lstdefinelanguage{OSM}
+{
+	morekeywords={node, id, lat, lon, user, uid, visible, version, changeset, timestamp, tag},
+    sensitive=false,
+}
+
+% para las tablas
+\usepackage{xcolor}
+\definecolor{LightGray}{gray}{0.9}
+\usepackage{lscape}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{longtable}
+\usepackage{colortbl} % Paquete para agregar color a las celdas
+
+\usepackage{graphicx,amsfonts,psfrag,fancyhdr,layout,appendix}
+\usepackage{subfigure}
+
+\usepackage[nottoc,notlot,notlof]{tocbibind}   
+\usepackage{xpatch}
+
+
+\usepackage[subfigure]{tocloft}
+% Para agregar puntos en los niveles de la tabla de contenidos
+\renewcommand{\cftpartleader}{\cftdotfill{\cftdotsep}} % for parts
+\renewcommand{\cftchapleader}{\cftdotfill{\cftdotsep}} % for chapters
+\renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}} % for sections
+
+% Añadir las ecuaciones al índice
+%\usepackage{etoolbox}
+%\AtBeginDocument{\listofequations}
+
+% para poner titulos a las ecuaciones
+%\usepackage{capt-of} % Para usar \captionof
+
+\usepackage{makeidx} 
+\usepackage{float}
+\usepackage{textcomp}
+
+% Para listar los algoritmos
+%\usepackage{algorithm2e}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{listings}
+\usepackage{minted}
+\usemintedstyle{colorful}
+
+\usepackage{lettrine}
+\usepackage{xstring}
+
+\widowpenalty=100000
+\clubpenalty=100000
+\raggedbottom
+%%%% \hyphenpenalty=10000 (almost) prevents hyphenation
+\hyphenpenalty=9000
+\tolerance=100
+
+% Para queue aparezcan hasta las subsubsecciones en el índice
+%\usepackage{etoc}
+%\setcounter{secnumdepth}{4}
+%\setcounter{tocdepth}{4}
+
+\usepackage{eqparbox}
+
+\usepackage{tocloft} 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%Cajas para las ecuaciones
+\usepackage{varwidth}
+%\usepackage{etoolbox}
+\usepackage[most,many,skins,breakable]{tcolorbox}
+\usepackage{tikz,lipsum,lmodern}
+
+\newtcolorbox{caja2}[2][]{enhanced, interior hidden, 
+coltitle=black, fonttitle=\bfseries\headingfont\large,
+attach boxed title to top left={yshift=-2.5mm},
+boxed title style={empty, size=small, top=1mm, bottom=2pt},
+%boxed title=0.5\linewidth,
+frame code={
+\path (title.east|-frame.north) coordinate (aux);
+\path[draw=blue, fill=blue!5, line width=0.5mm, rounded corners]
+(frame.west) |- ([xshift=-2.5mm]title.north east) to[out=0, in=180] ([xshift=7.5mm]aux)-|(frame.east)|-(frame.south)-|cycle;  
+},
+title={#2},#1}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newtcolorbox{caja}[2][]{empty, 
+coltitle=black,
+fonttitle=\bfseries\sffamily,
+attach boxed title to top left={yshift=-2.5mm},
+boxed title style={empty, size=small, top=1mm, bottom=0pt},
+varwidth boxed title=0.5\linewidth,
+frame code={
+\path (title.east|-frame.north) coordinate (aux);
+\path[draw=black, line width=0.5mm, rounded corners]
+(frame.west) |- ([xshift=-2.5mm]title.north east) to[out=0, in=180] ([xshift=7.5mm]aux)-|(frame.east)|-(frame.south)-|cycle;  
+},
+title={#2},#1}
+
+
+%%% Definiciones:
+\usepackage{tcolorbox}
+\tcbuselibrary{theorems}
+\newtcbtheorem[number within=section]{definicion}{Definición}%
+{colback=black!5!white,colframe=black!75!black,fonttitle=\bfseries}{th}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\usepackage{xspace}
+\usepackage{morewrites}
