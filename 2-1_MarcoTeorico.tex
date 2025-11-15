@@ -13,15 +13,50 @@ a
 
 \section{Tencnologías de comunicación}
 \subsection{bus CAN}
-a
+
+El protocolo CAN (Controller Area Network) es un sistema de comunicación serial robusto y altamente confiable, desarrollado originalmente por Bosch para permitir el intercambio eficiente de información entre múltiples dispositivos en entornos embebidos. De acuerdo con la descripción técnica recopilada por National Instruments, todos los nodos conectados al bus comparten el mismo medio físico y reciben cada mensaje transmitido, decidiendo de manera autónoma si la información es relevante para ellos. Esta característica elimina la necesidad de una unidad central de control y favorece arquitecturas distribuidas.
+Una de las propiedades más destacadas de CAN es su método de arbitraje no destructivo. Cuando dos nodos intentan transmitir simultáneamente, el bus no sufre colisiones que invaliden los datos, sino que el protocolo determina de inmediato qué mensaje posee mayor prioridad. Esto se logra mediante la comparación bit a bit del identificador del mensaje, donde el ID con mayor precedencia conserva el acceso mientras el resto de los nodos interrumpe su transmisión.
+En lo referido a integridad, CAN incorpora mecanismos avanzados de detección de errores, incluidos códigos CRC, supervisión continua de bit y campos especiales que anuncian la presencia de fallos. Cuando se detecta un error, la trama afectada se descarta y el transmisor envía una señal que obliga a repetir el envío. Además, el protocolo incluye un sistema de confinamiento que evita que nodos con fallas reiteradas degraden el funcionamiento del bus, pudiendo incluso desconectarlos temporalmente si alcanzan ciertos umbrales de error.
+Finalmente, la topología del bus CAN permite reducir significativamente el cableado respecto de los sistemas punto a punto tradicionales, ya que todos los dispositivos comparten un único par de líneas diferenciales. Este enfoque simplifica el diseño físico, reduce costos y mantiene la inmunidad al ruido, lo que explica su amplia adopción en la industria automotriz y en sistemas embebidos de alta exigencia.\cite{niCANoverview}
+
+
 \subsection{ESP-NOW}
-a
+
+ESP-NOW es un protocolo inalámbrico definido por Espressif que posibilita la comunicación directa entre dispositivos sin necesidad de utilizar un punto de acceso. Su diseño se basa en el uso de tramas específicas de acción en la capa de enlace, lo que reduce la complejidad del intercambio de datos y disminuye la latencia respecto de otros protocolos que requieren capas adicionales del modelo OSI.
+Este enfoque favorece arquitecturas de comunicación altamente eficientes, especialmente en aplicaciones que deben operar con recursos limitados. El protocolo puede coexistir con Wi-Fi y Bluetooth Low Energy en un mismo chip, lo cual permite combinar conectividad local de baja latencia con acceso remoto mediante redes tradicionales.
+En materia de seguridad, ESP-NOW emplea cifrado basado en CCMP, un esquema incluido en los estándares IEEE 802.11. Para ello utiliza tanto una clave maestra como claves locales asignadas a cada par de dispositivos. Cuando existe una clave definida entre dos nodos, las tramas se cifran automáticamente, mientras que la comunicación sin clave permanece sin protección.
+Otra característica importante es la posibilidad de registrar múltiples dispositivos como pares aceptados, permitiendo que un nodo mantenga comunicación directa con varios receptores dentro del alcance. El protocolo es además muy eficiente en términos de consumo energético, debido a que reduce la cantidad de funciones involucradas en la transmisión y recepción, lo que lo convierte en una opción ideal para sistemas alimentados por baterías o para arquitecturas distribuidas donde cada nodo debe operar con una carga computacional mínima.\cite{espnowEspressif}
+
+
+
 \subsection{UART}
-a
+
+UART es un método tradicional de comunicación serial asíncrona que continúa siendo fundamental en sistemas embebidos debido a su simplicidad y confiabilidad. La documentación técnica de Espressif describe que los dispositivos ESP32 disponen de varios controladores UART independientes, cada uno configurable en aspectos como la velocidad de transmisión, el número de bits de datos, el uso de paridad y la cantidad de bits de parada.
+La comunicación no requiere una señal de reloj compartida, ya que cada extremo acuerda previamente la velocidad de transmisión. Esta característica facilita el uso de UART en sistemas donde solo se necesita un intercambio punto a punto, evitando la complejidad de buses más estructurados.
+El controlador UART del ESP32 permite manejar interrupciones asociadas a la recepción y transmisión de datos mediante colas de eventos en FreeRTOS, lo que reduce la carga del procesador y mejora la capacidad del sistema para reaccionar de manera oportuna. También incorpora soporte para control de flujo tanto por hardware como por software, lo que resulta útil cuando es necesario evitar desbordamientos del buffer en transmisiones de alta velocidad.
+El periférico ofrece funciones avanzadas como la detección de patrones específicos dentro del flujo de datos, lo que permite generar interrupciones cuando se reconocen secuencias particulares, y la operación en modos especiales como RS-485, que añade la capacidad de usar líneas diferenciales y trabajar en topologías half-duplex. Estas características amplían significativamente el rango de aplicaciones posibles, desde comunicaciones simples entre microcontroladores hasta sistemas industriales donde se requiere robustez y adaptación a diferentes entornos eléctricos.\cite{uartEspressif}
+
 \subsection{I$^{2}$C}
-a
+
+El bus I²C (Inter-Integrated Circuit) , especificado por NXP, constituye un método de comunicación serial síncrona ampliamente adoptado en sistemas embebidos para interconectar sensores, memorias y periféricos de baja y media velocidad. Su funcionamiento se basa en solo dos líneas compartidas: una para datos (SDA) y otra para la señal de reloj (SCL). Esta característica simplifica el diseño del hardware y permite conectar múltiples dispositivos en el mismo bus.
+Cada componente conectado a I²C posee una dirección única y puede actuar como transmisor o receptor según el contexto. La especificación oficial contempla la existencia de múltiples maestros, lo que implica que distintos dispositivos pueden iniciar una transmisión. Para resolver posibles conflictos, el bus incorpora un mecanismo de arbitraje que garantiza que solo un maestro controle la comunicación en cada momento sin generar colisiones destructivas.
+I²C dispone de diversos modos de operación que varían en velocidad, desde el modo estándar de 100 kbit/s hasta configuraciones de alta velocidad que alcanzan 3,4 Mbit/s. Esta flexibilidad permite emplearlo tanto en aplicaciones de bajo consumo como en sistemas que necesitan tasas de transferencia superiores. Además, están definidos con precisión los parámetros eléctricos, los tiempos de conmutación y las condiciones que deben respetarse para garantizar la integridad de la señal, lo que facilita el diseño de redes estables y confiables con múltiples dispositivos conectados simultáneamente.\cite{i2cNXP}
+
 \subsection{MQTT}
-a
+
+MQTT (Message Queuing Telemetry Transport) es un protocolo de mensajería ligero basado en el patrón publish/subscribe, diseñado para entornos con recursos limitados y redes que pueden tener baja velocidad, alta latencia o conexiones poco fiables. 
+Este protocolo opera sobre TCP/IP, lo que le permite garantizar conexiones ordenadas y bidireccionales. 
+El hecho de mantener la conexión abierta entre cliente y broker minimiza el sobrecosto de establecer nuevas conexiones, algo clave cuando se trabaja con dispositivos de bajo consumo. 
+La arquitectura de MQTT se articula entre clientes (que pueden publicar mensajes o suscribirse a temas) y un broker, encargado de recibir, filtrar y reenviar los mensajes según los temas (“topics”) suscritos. 
+Gracias a este modelo, los emisores y receptores quedan desacoplados, lo que permite escalabilidad eficiente y flexibilidad en la comunicación. MQTT define tres niveles de “Quality of Service” (QoS) para la entrega de mensajes:
+\begin{enumerate}
+    \item QoS 0: entrega a lo sumo una vez (“fire-and-forget”).
+    \item QoS 1: entrega al menos una vez.
+    \item QoS 2: entrega exactamente una vez. 
+\end{enumerate}
+
+
+Además, el protocolo incluye mecanismos como el “Last Will and Testament” (LWT), que permite a un cliente informar a otros sobre su desconexión inesperada, y sesiones persistentes, que facilitan la reconexión después de una caída de red.\cite{mqtt311}\cite{mqtt50}
 
 \section{Medición de Variables Fisicas}
 \subsection{Conversor Análogico-Digital(ADC)}
