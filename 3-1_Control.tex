@@ -1,0 +1,25 @@
+\cleardoublepage                                 
+\chapter{Control prioritario de la demanda de energía de las cargas}
+
+\begin{table*}[ht!]
+\centering
+\caption{Niveles de prioridad de carga}
+\label{tab:niveles_prioridad}
+\begin{tabular}{|p{0.10\linewidth}|p{0.22\linewidth}|p{0.50\linewidth}|}
+\hline
+\textbf{Valor} & \textbf{Prioridad} & \textbf{Descripción} \\ \hline
+
+0 & Carga Crítica 
+  & Permanece siempre conectada; solo se desconecta ante una pérdida total de potencia disponible. \\ \hline
+
+1 & Carga No crítica (Prioridad Alta) 
+  & Se desconecta únicamente cuando la disponibilidad de energía es muy baja. \\ \hline
+
+2 & Carga No crítica (Prioridad Media) 
+  & Se desconecta cuando se produce una reducción moderada de la potencia disponible. \\ \hline
+
+3 & Carga No crítica (Prioridad Baja) 
+  & Es la primera en desconectarse cuando aparece un déficit de potencia. \\ \hline
+
+\end{tabular}
+\end{table*}
