@@ -1,7 +1,7 @@
 \cleardoublepage                                  % 
 \chapter{Arquitectura del sistema}
 
-El sistema propuesto plantea un esquema distribuido para la gestión de las cargas en una la microrred, enfocado en
+El Sistema de Gestión Consumos (SGC) propuesto plantea un esquema distribuido para la gestión de las cargas en una la microrred, enfocado en
 equilibrar la demanda de consumo con la potencia disponible en tiempo real. El SGC pretende garantizar un uso eficiente
 de la energía, priorizando el abastecimiento de las cargas críticas de la microrred.
 La Figura~\ref{img:arquitectura} muestra los elementos que componen al SGC propuesto. El Agente de Carga (AC) es un
@@ -42,7 +42,7 @@ Esta estrategia facilita el balanceo de la demanda frente a la oferta y prioriza
 
 \begin{figure}[hbt!]
     \centering
-    \includegraphics[width=0.7\textwidth]{imagenes/esq_ac.png}
+    \includegraphics[width=0.5\textwidth]{imagenes/esq_ac.png}
     \caption{Diagrama esquemático del Agente de Carga (AC)}
     \label{img:esq_ac}
 \end{figure}
@@ -50,11 +50,27 @@ Esta estrategia facilita el balanceo de la demanda frente a la oferta y prioriza
 \section{Nodo de Consumo (NC)}
 Los Nodos de Consumo son las unidades responsables de decidir, de manera autónoma, si una carga eléctrica debe permanecer conectada o desconectada. Para ello, cada NC participa en un esquema de control distribuido donde intercambia información con los demás nodos y con el Agente de Carga (AC). Esta comunicación le permite conocer dos valores esenciales: la disponibilidad total de corriente para la microrred, que es informada periódicamente por el AC, y el consumo agregado de las cargas, estimado mediante el intercambio de mensajes entre los propios nodos.
 A partir de estos datos, cada NC evalúa su situación considerando la prioridad que tiene asignada. Las cargas críticas se mantienen siempre conectadas, mientras que las cargas no críticas pueden ser desconectadas si la demanda total supera la disponibilidad. Esta decisión no depende de un controlador central, sino que surge del propio nodo aplicando un algoritmo de consenso y priorización que asegura que la demanda global se mantenga por debajo del límite informado por el AC.
-Cada NC cuenta con una estructura, mostrada en la Figura~\ref{img:esq_nc}, para llevar a cabo la logica de control distribuido y realizar la actuación sobre la carga asociada.:
+Cada NC cuenta con una estructura, mostrada en la Figura~\ref{img:esq_nc}, para llevar a cabo la logica de control distribuido y realizar la actuación sobre la carga asociada.
 
 \begin{figure}[hbt!]
     \centering
-    \includegraphics[width=0.7\textwidth]{imagenes/esq_nc.png}
+    \includegraphics[width=0.5\textwidth]{imagenes/esq_nc.png}
     \caption{Diagrama esquemático del Nodo de Consumo (NC)}
     \label{img:esq_nc}
+\end{figure}
+
+\subsection{Lógica del Algoritmo de priorización de las Cargas}
+\begin{figure}[hbt!]
+    \centering
+    \includegraphics[width=0.6\textwidth]{imagenes/Diagrama-Flujo.png}
+    \caption{Diagrama de Flujo del algoritmo de priorización de las cargas en el NC}
+    \label{img:Diagrama-Flujo}
+\end{figure}
+
+\section{Visualización de datos de manera remota}
+\begin{figure}[hbt!]
+    \centering
+    \includegraphics[width=0.7\textwidth]{imagenes/Plataforma-IoT.png}
+    \caption{Plataforma-IoT Propuesta}
+    \label{img:plataforma-iot-prop}
 \end{figure}
