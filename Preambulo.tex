@@ -56,6 +56,7 @@ a4paper,
 % Tamaño de la fuente del pie de imagen
 \usepackage{caption}
 \captionsetup{font=footnotesize}
+\captionsetup[figure]{name=Figura} % se agrega para cambiar "Ímagen" por "Figura"
 % Fancy LaTeX chapter styles
 % Options: Sonny, Lenny, Glenn, Conny, Rejne, Bjarne, Bjornstrup
 \usepackage[Sonny]{fncychap}
@@ -101,6 +102,9 @@ a4paper,
 \usepackage[tight,spanish]{minitoc}
 
 \usepackage[spanish, es-tabla, activeacute]{babel}
+\addto\captionsspanish{% se agrega para cambiar "Índice de Imágenes" por "Índice de Figuras"
+  \renewcommand{\listfigurename}{Índice de Figuras}%
+}
 
 \usepackage{fvextra}
 \usepackage{csquotes}
@@ -234,7 +238,10 @@ columns=fullflexible
 \usepackage{eqparbox}
 
 \usepackage{tocloft} 
-
+\cftsetindents{figure}{1.5em}{3.2em} % Indentación del índice de figuras (se puede variar)
+\cftsetindents{chapter}{0em}{3.2em}
+\cftsetindents{section}{1.5em}{3.2em}
+\cftsetindents{subsection}{3.0em}{3.2em}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%Cajas para las ecuaciones
 \usepackage{varwidth}
