@@ -30,11 +30,11 @@ Cuando la carga se encuentra activa, el nodo monitorea si la corriente total con
 
 \begin{enumerate}
     \item \textbf{Verificación de Criticidad:} Si el nodo tiene configurada una prioridad de nivel 0 (Crítica), ignora la condición de sobrecarga y mantiene el suministro, trasladando la responsabilidad de desconexión a los nodos no críticos.
-    \item \textbf{Evaluación de Prioridad Global:} El nodo verifica si posee la prioridad más baja (valor numérico más alto) entre todos los dispositivos que están actualmente conectados a la red. Si existen nodos con una prioridad menor (ej. prioridad 3) y el nodo actual tiene prioridad alta (ej. 1), este último se mantiene conectado.
-    \item \textbf{Desempate por Consumo:} En el caso de que existan múltiples nodos compartiendo la misma prioridad más baja (por ejemplo, dos estufas con prioridad 3), el sistema debe decidir cuál de ellas desconectar para estabilizar la red con el menor impacto posible. Para ello, el algoritmo implementa una regla de desempate basada en el consumo: se desconecta aquel nodo que presente el menor consumo de corriente medido.
+    \item \textbf{Evaluación de Prioridad Global:} El nodo verifica si posee la prioridad más baja (valor numérico más alto) entre todos los dispositivos que están actualmente conectados a la red. En caso de que el nodo sea el único que poseea la menor prioridad, el mismo se desconecta. Si existen nodos con una prioridad menor (ej. prioridad 3) y el nodo actual tiene prioridad alta (ej. 1), este último se mantiene conectado.
+    \item \textbf{Desempate por Consumo:} En el caso de que existan múltiples nodos compartiendo la prioridad más baja (por ejemplo, dos estufas con prioridad 3), el sistema debe decidir cuál de ellas desconectar para estabilizar la red con el menor impacto posible. Para ello, el algoritmo implementa una regla de desempate basada en el consumo: se desconecta aquel nodo que presente el menor consumo de corriente medido.
 \end{enumerate}
 
-Esta lógica asegura que la reducción de carga sea gradual y justa, comenzando siempre por los dispositivos menos esenciales.
+Esta lógica asegura que la reducción de carga sea gradual, comenzando siempre por los dispositivos menos esenciales.
 
 \subsection{Criterio de Reconexión}
 Si la carga se encuentra desconectada debido a una acción previa de control, el nodo evalúa constantemente la posibilidad de reconexión. Para evitar oscilaciones en el sistema (efecto de encendido y apagado constante), se implementa un margen de seguridad o histéresis.

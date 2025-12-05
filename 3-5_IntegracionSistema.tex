@@ -91,9 +91,9 @@ Las cargas útiles (payloads) de los mensajes están estructuradas como objetos 
 \begin{tabular}{|l|l|l|}
 \hline
 \textbf{Campo} & \textbf{Tipo} & \textbf{Descripción} \\ \hline
-\texttt{nodo} & string & Identificador único del nodo (ej: "nodo\_1") \\ \hline
+\texttt{nodo} & string & Identificador único del nodo (ej: ``nodo\_1'') \\ \hline
 \texttt{consumo} & float & Consumo medido en Amperes o Watts \\ \hline
-\texttt{fecha} & string (ISO) & Marca de tiempo (ej: "2025-02-18T14:55:10") \\ \hline
+\texttt{fecha} & string (ISO) & Marca de tiempo (ej: ``2025-02-18T14:55:10'') \\ \hline
 \end{tabular}
 \end{table}
 
@@ -129,7 +129,7 @@ Para evaluar la respuesta del algoritmo de priorización ante escenarios de gene
     \item \textbf{NC4 (Prioridad Baja - Prioridad 3):} Se empleó un banco de lámparas incandescentes, simulando iluminación o cargas prescindibles que pueden ser desconectadas en primer lugar.
 \end{itemize}
 
-La condición de entrada para el ensayo fue un perfil de irradiancia solar simulado.=, en la placa TI que actúa como Agente de Generación, se programó una curva de generación que emula el comportamiento de un día solar completo (amanecer, mediodía, atardecer), pero comprimido temporalmente en un ciclo acelerado de 5 minutos. Esto permitió someter al sistema a rampas pronunciadas de subida y bajada de disponibilidad energética, forzando la actuación de los NC y validando la respuesta del algoritmo.
+La condición de entrada para el ensayo fue un perfil de irradiancia solar simulado. En la placa TI que actúa como Agente de Generación, se programó una curva de generación que emula el comportamiento de un día solar completo (amanecer, mediodía, atardecer), pero comprimido temporalmente en un ciclo acelerado de 5 minutos. Esto permitió someter al sistema a rampas pronunciadas de subida y bajada de disponibilidad energética, forzando la actuación de los NC y validando la respuesta del algoritmo.
 
 \subsection{Análisis de Resultados}
 

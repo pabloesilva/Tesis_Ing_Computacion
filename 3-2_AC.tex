@@ -48,7 +48,7 @@ Las funciones de alta prioridad, específicamente la lectura del conversor anal�
 
 \subsection{Adquisición y Procesamiento de Señales}
 
-La medición de la tensión de red proveniente de la microrred se realiza mediante un muestreo síncrono de alta frecuencia. Se configuró un temporizador por hardware para generar interrupciones a una frecuencia de 50 kHz. En cada interrupción, se dispara la conversión del ADC, asegurando que la frecuencia de muestreo sea un múltiplo exacto de la frecuencia fundamental de la red (50 Hz). Esto permite capturar un número entero de periodos de la señal, minimizando el error por efecto de "ventaneo" en el cálculo del valor eficaz (RMS).
+La medición de la tensión de línea proveniente de la microrred se realiza mediante un muestreo síncrono de alta frecuencia. Se configuró un temporizador por hardware para generar interrupciones a una frecuencia de 50 kHz. En cada interrupción, se dispara la conversión del ADC, asegurando que la frecuencia de muestreo sea un múltiplo exacto de la frecuencia fundamental de la red (50 Hz). Esto permite capturar un número entero de periodos de la señal, minimizando el error por efecto de ``ventaneo'' en el cálculo del valor eficaz (RMS).
 
 El firmware implementa un procedimiento de calibración al inicio para determinar el nivel de continua (offset) introducido por el sensor ZMPT101B. Posteriormente, en tiempo de ejecución, cada muestra es corregida restando este offset. El valor RMS se calcula procesando la suma de los cuadrados de las muestras adquiridas en una ventana de tiempo definida, aplicando luego la raíz cuadrada según la Ecuación~\ref{eq:rms}:
 
@@ -64,7 +64,7 @@ Donde $N$ es el número total de muestras en la ventana de medición, $v[n]$ es 
 El AC actúa como un puente de información, gestionando dos dominios de comunicación simultáneos: el enlace cableado con la supervisión de la microrred y la red inalámbrica con los NC.
 
 \subsubsection{Bus CAN (Integración con la Microrred)}
-La comunicación con los demás agentes se realiza a través del bus CAN. La lógica de transmisión implementada es no bloqueante: el AC intenta enviar sus reportes de estado y, en caso de fallo, realiza un número limitado de reintentos. El sistema cuenta con un mecanismo de recuperación de fallos que monitorea los errores de transmisión; si estos superan un umbral predefinido, el firmware reinicia automáticamente el controlador MCP2515 para restablecer el servicio sin intervención del usuario.
+La comunicación con los demás agentes de supervisión de la microrred se realiza a través del bus CAN. La lógica de transmisión implementada es no bloqueante: el AC intenta enviar sus reportes de estado y, en caso de fallo, realiza un número limitado de reintentos. El sistema cuenta con un mecanismo de recuperación de fallos que monitorea los errores de transmisión; si estos superan un umbral predefinido, el firmware reinicia automáticamente el controlador MCP2515 para restablecer el servicio sin intervención del usuario.
 
 Para verificar el correcto funcionamiento de la capa física y la lógica de transmisión, se realizaron pruebas conectando el AC a un módulo analizador de bus CAN vinculado a una computadora. Como se observa en la Figura~\ref{img:prueba-can}, esto permitió visualizar en tiempo real los paquetes inyectados en el bus por el AC, confirmando la correcta estructura de los identificadores y los datos enviados antes de la integración final con los demás agentes.
 
