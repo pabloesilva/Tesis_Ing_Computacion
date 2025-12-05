@@ -21,7 +21,7 @@ consumo y prioridad frente a otros nodos. Con esa información, cada nodo toma l
 
 \begin{figure}[hbt!]
     \centering
-    \includegraphics[width=0.7\textwidth]{imagenes/arquitectura.png}
+    \includegraphics[width=1\textwidth]{imagenes/arquitectura.png}
     \caption{Arquitectura para el sistema propuesto}
     \label{img:arquitectura}
 \end{figure}
@@ -42,7 +42,7 @@ Esta estrategia facilita el balanceo de la demanda frente a la oferta y prioriza
 
 \begin{figure}[hbt!]
     \centering
-    \includegraphics[width=0.5\textwidth]{imagenes/esq_ac.png}
+    \includegraphics[width=0.7\textwidth]{imagenes/esq_ac.png}
     \caption{Diagrama esquemático del Agente de Carga (AC)}
     \label{img:esq_ac}
 \end{figure}
@@ -54,23 +54,73 @@ Cada NC cuenta con una estructura, mostrada en la Figura~\ref{img:esq_nc}, para 
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.5\textwidth]{imagenes/esq_nc.png}
+    \includegraphics[width=0.7\textwidth]{imagenes/esq_nc.png}
     \caption{Diagrama esquemático del Nodo de Consumo (NC)}
     \label{img:esq_nc}
 \end{figure}
 
 \subsection{Lógica del Algoritmo de priorización de las Cargas}
+
+La autonomía del Nodo de Consumo se sustenta en una rutina de control cíclica que se ejecuta localmente en el microcontrolador. La Figura~\ref{img:Diagrama-Flujo} esquematiza el flujo de operaciones que realiza el firmware para gestionar el estado de la carga.
+
 \begin{figure}[hbt!]
     \centering
-    \includegraphics[width=0.6\textwidth]{imagenes/Diagrama-Flujo.png}
+    \includegraphics[width=1\textwidth]{imagenes/Diagrama-Flujo.png}
     \caption{Diagrama de Flujo del algoritmo de priorización de las cargas en el NC}
     \label{img:Diagrama-Flujo}
 \end{figure}
 
+A nivel arquitectónico, este diagrama representa un bucle de control cerrado que integra tres procesos fundamentales:
+\begin{enumerate}
+    \item \textbf{Adquisición de Estado:} El nodo determina si la carga está físicamente conectada o desconectada y verifica la validez de los datos de corriente medidos.
+    \item \textbf{Sincronización de Información:} Antes de tomar cualquier decisión, el sistema asegura la recepción de los parámetros globales (disponibilidad) y la difusión de sus propios datos (consumo y prioridad) al resto de la red.
+    \item \textbf{Evaluación y Actuación:} Basándose en la comparación entre la oferta energética y la demanda agregada, el algoritmo resuelve el estado final del relé, priorizando la estabilidad del sistema sobre la continuidad de suministro de las cargas no críticas.
+\end{enumerate}
+
+Este ciclo de ejecución continuo permite que el nodo adapte su comportamiento en tiempo real ante las perturbaciones de la microrred, operando como una entidad independiente pero coordinada dentro del esquema distribuido.
+
+
 \section{Visualización de datos de manera remota}
+
+Para complementar la gestión local realizada por el Agente de Carga y los Nodos de Consumo, se diseñó una arquitectura de supervisión remota basada en el paradigma de Internet de las Cosas (IoT). Esta capa superior del sistema tiene como objetivo desacoplar la adquisición de datos de su visualización, permitiendo el monitoreo histórico y en tiempo real desde cualquier ubicación con acceso a internet.
+
+La arquitectura propuesta, ilustrada en la Figura~\ref{img:plataforma-iot-prop}, se fundamenta en un esquema de microservicios contenerizados. A diferencia de las aplicaciones monolíticas tradicionales, este enfoque divide las funcionalidades del servidor (recepción de datos, almacenamiento, procesamiento e interfaz) en unidades independientes o "contenedores" que se comunican entre sí a través de una red virtual interna.
+
 \begin{figure}[hbt!]
     \centering
-    \includegraphics[width=0.7\textwidth]{imagenes/Plataforma-IoT.png}
+    \includegraphics[width=0.8\textwidth]{imagenes/Plataforma-IoT.png}
     \caption{Plataforma-IoT Propuesta}
     \label{img:plataforma-iot-prop}
 \end{figure}
+
+\subsection{Infraestructura de Hardware}
+
+El diseño del sistema es agnóstico al hardware, lo que significa que puede desplegarse tanto en servidores en la nube (VPS) como en computadoras de placa reducida (SBC) ubicadas en el mismo sitio de la microrred.
+
+Para garantizar el funcionamiento fluido de todos los servicios simultáneos descritos a continuación, se establecen los siguientes requisitos de hardware mínimos para el servidor host:
+\begin{itemize}
+    \item \textbf{Procesador:} Arquitectura compatible con contenedores (x86-64 o ARM64), con al menos 2 núcleos para manejar la concurrencia de peticiones web y el procesamiento de mensajes MQTT.
+    \item \textbf{Memoria RAM:} Mínimo 1 GB (recomendado 2 GB) para soportar la ejecución simultánea del motor de base de datos, el servidor web y el broker de mensajería sin recurrir excesivamente a la memoria de intercambio (swap).
+    \item \textbf{Almacenamiento:} Espacio suficiente para el sistema operativo anfitrión y la persistencia de la base de datos histórica.
+    \item \textbf{Conectividad:} Interfaz de red permanente con acceso a internet y capacidad para gestionar puertos de entrada (HTTP/HTTPS y MQTT).
+\end{itemize}
+
+En la implementación de referencia para este trabajo, se optó por un Servidor Privado Virtual (VPS), lo que garantiza alta disponibilidad y una IP pública estática para el acceso remoto.
+
+\subsection{Arquitectura de Software y Flujo de Datos}
+
+La lógica de interconexión se basa en el flujo de datos ascendente desde el hardware de campo hacia la interfaz de usuario. Cada contenedor Docker desempeña un rol específico en esta cadena de procesamiento:
+
+\begin{enumerate}
+    \item \textbf{Ingreso de Datos (Broker MQTT):} Es el punto de entrada de la información. Este contenedor actúa como un concentrador de mensajes que recibe las tramas de telemetría enviadas por el módulo de comunicación del Agente de Carga (ESP32-S3). Su función es puramente de transporte y enrutamiento; no procesa ni almacena los datos, simplemente los distribuye a los servicios que estén suscritos a los tópicos correspondientes (como consumo, tensión o disponibilidad).
+
+    \item \textbf{Procesamiento Lógico (Worker):} Este contenedor ejecuta un servicio en segundo plano (script Python) que actúa como el "pegamento" lógico del sistema. Se suscribe al Broker para interceptar todos los mensajes entrantes. Su responsabilidad es decodificar las cargas útiles (payloads) en formato JSON, validar que los datos se encuentren dentro de rangos coherentes y estructurarlos adecuadamente para su inserción en la base de datos.
+
+    \item \textbf{Almacenamiento Persistente (Base de Datos):} Recibe los datos ya procesados por el Worker y los organiza en tablas relacionales. Este contenedor es el único que mantiene estado persistente, almacenando el historial operativo de cada nodo y de la microrred en general para permitir la generación de gráficas de evolución temporal.
+
+    \item \textbf{Interfaz de Usuario (Servidor Web):} Contiene la lógica de la aplicación web (Backend y Frontend). Este servicio consulta la base de datos para recuperar el historial y se suscribe directamente al Broker (o utiliza una API interna) para reflejar los cambios en tiempo real en el navegador del usuario. Es el encargado de renderizar el panel de control (Dashboard).
+
+    \item \textbf{Seguridad y Acceso (Proxy Reverso):} Es la cara visible del servidor hacia internet. Este contenedor intercepta todas las peticiones externas (HTTP/HTTPS), gestiona los certificados de seguridad SSL para encriptar la conexión y enruta el tráfico hacia el contenedor del servidor web. Esto protege a la base de datos y a los servicios internos de una exposición directa a la red pública.
+\end{enumerate}
+
+Esta arquitectura modular facilita la escalabilidad del sistema: si se requiere procesar más datos o añadir nuevas funcionalidades (como alertas por Telegram), basta con añadir un nuevo contenedor suscrito al Broker sin necesidad de detener o modificar los servicios que ya están en funcionamiento.

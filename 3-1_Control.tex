@@ -1,5 +1,11 @@
-\cleardoublepage                                 
+\cleardoublepage
 \chapter{Control prioritario de la demanda de energía de las cargas}
+
+La estrategia de gestión de demanda implementada en el SGC se fundamenta en un esquema de priorización estática definido por el usuario. Este enfoque permite que el sistema tome decisiones autónomas de desconexión y reconexión de cargas sin depender de un controlador central que dicte las acciones individuales de cada nodo.
+
+El objetivo principal del algoritmo es asegurar que la demanda total de corriente de la microrred ($I_{total}$) se mantenga siempre por debajo de la corriente máxima disponible ($I_{disponible}$) informada por el AC, garantizando en todo momento el suministro a los dispositivos esenciales.
+
+Para lograr esto, a cada NC se le asigna un nivel de prioridad que determina su jerarquía en el orden de desconexión ante un déficit energético. La Tabla \ref{tab:niveles_prioridad} detalla los cuatro niveles definidos para la operación del sistema.
 
 \begin{table*}[ht!]
 \centering
@@ -8,18 +14,34 @@
 \begin{tabular}{|p{0.10\linewidth}|p{0.22\linewidth}|p{0.50\linewidth}|}
 \hline
 \textbf{Valor} & \textbf{Prioridad} & \textbf{Descripción} \\ \hline
-
-0 & Carga Crítica 
-  & Permanece siempre conectada; solo se desconecta ante una pérdida total de potencia disponible. \\ \hline
-
-1 & Carga No crítica (Prioridad Alta) 
-  & Se desconecta únicamente cuando la disponibilidad de energía es muy baja. \\ \hline
-
-2 & Carga No crítica (Prioridad Media) 
-  & Se desconecta cuando se produce una reducción moderada de la potencia disponible. \\ \hline
-
-3 & Carga No crítica (Prioridad Baja) 
-  & Es la primera en desconectarse cuando aparece un déficit de potencia. \\ \hline
-
+0 & Carga Crítica & Permanece siempre conectada; el sistema la excluye de la lógica de desconexión automática, salvo ante un colapso total de la red. \\ \hline
+1 & Carga No crítica (Prioridad Alta) & Es la última categoría en ser desconectada. Se sacrifica únicamente cuando la disponibilidad de energía es crítica y ya se han desconectado las cargas de menor jerarquía. \\ \hline
+2 & Carga No crítica (Prioridad Media) & Se desconecta cuando se produce una reducción moderada de la potencia disponible, actuando como un amortiguador intermedio. \\ \hline
+3 & Carga No crítica (Prioridad Baja) & Es la primera en desconectarse ante cualquier déficit de potencia, permitiendo liberar recursos rápidamente para las cargas más importantes. \\ \hline
 \end{tabular}
 \end{table*}
+
+\section{Lógica de Desconexión y Reconexión}
+
+El algoritmo de control se ejecuta localmente en cada NC y evalúa periódicamente el estado de la microrred. La toma de decisiones se basa en la comparación entre el consumo total agregado y la disponibilidad informada por el AC. A continuación se describe la lógica implementada para los dos estados posibles de la carga: conectada y desconectada.
+
+\subsection{Criterio de Desconexión}
+Cuando la carga se encuentra activa, el nodo monitorea si la corriente total consumida ($I_{total}$) supera a la corriente disponible ($I_{disponible}$). Si se detecta esta condición de sobrecarga ($I_{total} > I_{disponible}$), se activa el procedimiento de desconexión selectiva, el cual sigue los siguientes pasos lógicos para determinar qué nodo debe actuar:
+
+\begin{enumerate}
+    \item \textbf{Verificación de Criticidad:} Si el nodo tiene configurada una prioridad de nivel 0 (Crítica), ignora la condición de sobrecarga y mantiene el suministro, trasladando la responsabilidad de desconexión a los nodos no críticos.
+    \item \textbf{Evaluación de Prioridad Global:} El nodo verifica si posee la prioridad más baja (valor numérico más alto) entre todos los dispositivos que están actualmente conectados a la red. Si existen nodos con una prioridad menor (ej. prioridad 3) y el nodo actual tiene prioridad alta (ej. 1), este último se mantiene conectado.
+    \item \textbf{Desempate por Consumo:} En el caso de que existan múltiples nodos compartiendo la misma prioridad más baja (por ejemplo, dos estufas con prioridad 3), el sistema debe decidir cuál de ellas desconectar para estabilizar la red con el menor impacto posible. Para ello, el algoritmo implementa una regla de desempate basada en el consumo: se desconecta aquel nodo que presente el menor consumo de corriente medido.
+\end{enumerate}
+
+Esta lógica asegura que la reducción de carga sea gradual y justa, comenzando siempre por los dispositivos menos esenciales.
+
+\subsection{Criterio de Reconexión}
+Si la carga se encuentra desconectada debido a una acción previa de control, el nodo evalúa constantemente la posibilidad de reconexión. Para evitar oscilaciones en el sistema (efecto de encendido y apagado constante), se implementa un margen de seguridad o histéresis.
+
+La condición para reconectar una carga es:
+\begin{equation}
+    I_{total} + I_{carga\_propia} + I_{margen} < I_{disponible}
+\end{equation}
+
+Donde $I_{carga\_propia}$ es el último valor de corriente registrado por el nodo antes de desconectarse e $I_{margen}$ es un valor de seguridad adicional. Solo si la capacidad disponible en la red es suficiente para soportar la carga del nodo más este margen de seguridad, el NC decide su reconexión automática.

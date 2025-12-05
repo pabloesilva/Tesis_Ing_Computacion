@@ -1,60 +1,101 @@
 %%% Acrónimos %%%
 %%%%%%%%%%%%%%%%%%%%
 
-\newacronym{URL}{URL}
-{Localizador Uniforme de Recursos (Uniform Resource Locator), una dirección web que especifica la ubicación de un recurso en Internet y el mecanismo para acceder a él}
+\newacronym{SGC}{SGC}
+{Sistema de Gestión de Consumos}
 
-\newacronym{HTTP}{HTTP}
-{Protocolo de Transferencia de Hipertexto (Hypertext Transfer Protocol), utilizado para la comunicación y transferencia de datos en la World Wide Web}
+\newacronym{AC}{AC}
+{Agente de Carga}
 
-\newacronym{WWW}{WWW}
-{World Wide Web, sistema global de información basado en hipertexto que permite acceder y navegar por múltiples recursos en Internet}
+\newacronym{NC}{NC}
+{Nodo de Consumo}
 
-\newacronym{P2P}{P2P}
-{Red “peer-to-peer” (par a par), un modelo de intercambio directo de recursos entre usuarios sin necesidad de un servidor central}
+\newacronym{MR}{MR}
+{Microrred Eléctrica}
 
+\newacronym{GD}{GD}
+{Generación Distribuida}
+
+\newacronym{GIDE}{GIDE}
+{Grupo de Investigación y Desarrollo en Electrónica}
+
+\newacronym{CAN}{CAN}
+{Controller Area Network (Red de Área de Controlador), protocolo de comunicación serial robusto utilizado para la interconexión de agentes}
+
+\newacronym{MQTT}{MQTT}
+{Message Queuing Telemetry Transport, protocolo de mensajería ligero basado en el modelo publicación/suscripción}
+
+\newacronym{PCB}{PCB}
+{Printed Circuit Board (Placa de Circuito Impreso)}
+
+\newacronym{RMS}{RMS}
+{Root Mean Square (Valor Eficaz), medida estadística de la magnitud de una cantidad variable}
+
+\newacronym{ADC}{ADC}
+{Analog-to-Digital Converter (Conversor Analógico-Digital)}
+
+\newacronym{IoT}{IoT}
+{Internet of Things (Internet de las Cosas)}
 
 %%% Definiciones %%%
 %%%%%%%%%%%%%%%%%%%%
 
-\newglossaryentry{metadatos}
+\newglossaryentry{microrred}
 {
-    name = metadatos,
-    description = {Datos estructurados que describen, explican y permiten localizar o gestionar recursos de información}
+    name = Microrred,
+    description = {Sistema eléctrico local que integra generación distribuida, almacenamiento y cargas, capaz de operar conectado a la red principal o en modo aislado (isla)}
 }
 
-\newglossaryentry{compilador}
+\newglossaryentry{agente}
 {
-    name = compilador,
-    description = {Programa que transforma código fuente escrito por un programador en instrucciones ejecutables por una computadora}
+    name = Agente,
+    description = {Entidad de hardware y software con capacidad de procesamiento autónomo que interactúa con otros agentes para alcanzar un objetivo de control común}
 }
 
-\newglossaryentry{plataforma}
+\newglossaryentry{firmware}
 {
-    name = plataforma,
-    description = {Infraestructura tecnológica y sociocultural que integra hardware, software, algoritmos y políticas, mediando prácticas sociales y producciones de contenido}
+    name = Firmware,
+    description = {Software específico que controla directamente el hardware de un dispositivo electrónico, ejecutándose típicamente en un microcontrolador}
 }
 
-\newglossaryentry{multiplataforma}
+\newglossaryentry{broker}
 {
-    name = multiplataforma,
-    description = {Software o tecnología capaz de ejecutarse e interoperar en múltiples sistemas operativos o entornos digitales}
+    name = Broker MQTT,
+    description = {Servidor central en la arquitectura MQTT que recibe mensajes de los clientes publicadores y los distribuye a los clientes suscriptores}
 }
 
-\newglossaryentry{online}
+\newglossaryentry{docker}
 {
-    name = online,
-    description = {Estado de conexión a una red digital, generalmente Internet, o actividad realizada a través de ella}
+    name = Docker,
+    description = {Plataforma de software que permite crear, probar e implementar aplicaciones rápidamente mediante el uso de contenedores estandarizados}
 }
 
-\newglossaryentry{twitter}
+\newglossaryentry{espnow}
 {
-    name = Twitter,
-    description = {Servicio de microblogging para la publicación breve y dinámica de mensajes}
+    name = ESP-NOW,
+    description = {Protocolo de comunicación inalámbrica de baja latencia desarrollado por Espressif, que permite la transmisión directa de paquetes entre dispositivos sin necesidad de un router Wi-Fi}
 }
 
-\newglossaryentry{LaTeX}
+\newglossaryentry{payload}
 {
-    name = LaTeX,
-    description = {Sistema de preparación de documentos basado en TeX, desarrollado por Leslie Lamport, ampliamente utilizado en el ámbito académico y científico}
+    name = Payload,
+    description = {Carga útil de datos contenida dentro de un paquete de comunicación, excluyendo los encabezados y metadatos del protocolo}
+}
+
+\newglossaryentry{littleendian}
+{
+    name = Little Endian,
+    description = {Formato de almacenamiento o transmisión de datos digitales en el cual el byte menos significativo se coloca en la posición más baja de memoria o se transmite primero}
+}
+
+\newglossaryentry{histeresis}
+{
+    name = Histéresis,
+    description = {Tendencia de un sistema a conservar sus propiedades en ausencia del estímulo que las ha generado. En control, se utiliza para evitar oscilaciones rápidas alrededor de un punto de consigna}
+}
+
+\newglossaryentry{topico}
+{
+    name = Tópico,
+    description = {Cadena de texto utilizada en MQTT para filtrar y enrutar mensajes. Los clientes se suscriben a tópicos específicos para recibir la información deseada}
 }

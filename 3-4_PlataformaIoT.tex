@@ -1,9 +1,62 @@
-\cleardoublepage                                   
+\cleardoublepage
 \chapter{Plataforma IoT}
+
+La implementación final de la plataforma de supervisión se llevó a cabo materializando la arquitectura de microservicios descrita anteriormente. El sistema se despliega sobre un entorno contenerizado con Docker, lo que permitió aislar las dependencias de cada servicio y garantizar la portabilidad del software entre el entorno de desarrollo y el servidor de producción (VPS).
+
+A continuación se detallan los aspectos técnicos del desarrollo del backend y el diseño de la interfaz de usuario.
+
+\section{Desarrollo del Backend y Procesamiento}
+
+El núcleo lógico de la plataforma reside en dos componentes de software desarrollados en lenguaje Python:
+
+\begin{enumerate}
+    \item \textbf{Gestor de Telemetría (MQTT Worker):} Se implementó un script que opera como demonio (servicio en segundo plano). Este componente utiliza la librería \texttt{paho-mqtt} para suscribirse al broker y recibir en tiempo real los paquetes de datos JSON enviados por el AC. Su función es decodificar los payloads, validar que los valores eléctricos (tensión, corriente, potencia) se encuentren en rangos físicos coherentes y persistir la información en la base de datos MariaDB.
+    
+    \item \textbf{Servidor de Aplicación (Flask):} Para la lógica web se utilizó el micro-framework Flask. Este se encarga de exponer los endpoints o rutas de la aplicación, gestionar las consultas SQL a la base de datos histórica y servir las plantillas HTML al navegador del cliente.
+\end{enumerate}
+
+\section{Diseño de Interfaz y Experiencia de Usuario}
+
+La interfaz visual (Frontend) fue construida utilizando el motor de plantillas Jinja2 integrado en Flask, combinado con el framework CSS Bootstrap para garantizar la adaptabilidad (diseño responsivo) en diferentes tamaños de pantalla.
+
+Para dotar al sistema de una estética profesional y limpia, se seleccionó el tema Cerulean de la suite Bootswatch. Este tema se caracteriza por el uso de tonalidades azules y una tipografía clara que facilita la lectura de datos técnicos. Adicionalmente, se implementó mediante JavaScript una funcionalidad de cambio de modo (Claro/Oscuro), permitiendo al operador ajustar el contraste de la interfaz según las condiciones de iluminación del entorno, tal como se aprecia en la Figura~\ref{fig:iot}.
 
 \begin{figure}[hbt!]
     \centering
-    \includegraphics[width=1\textwidth]{imagenes/IoT.png}
-    \caption{Plataforma-IoT realizada}
-    \label{img:plataforma-iot}
+    \subfigure[]{
+        \includegraphics[width=0.46\textwidth]{imagenes/IoT.png}
+        \label{fig:plataforma-iot-claro}
+    }
+    \hfill
+    \subfigure[]{
+        \includegraphics[width=0.46\textwidth]{imagenes/IoT-oscuro.png}
+        \label{fig:plataforma-iot-oscuro}
+    }
+    \caption{Vista Principal de la Plataforma-IoT implementada. (a) Tema Claro. (b) Tema Oscuro.}
+    \label{fig:iot}
 \end{figure}
+
+El panel de control principal (Dashboard) integra los siguientes elementos informativos:
+\begin{itemize}
+    \item \textbf{Tarjetas de Estado (Top Cards):} Ubicadas en la parte superior, ofrecen una lectura inmediata de las variables críticas: Potencia Disponible, Corriente Disponible, Tensión de Red y Consumo Total Agregado.
+    \item \textbf{Gráfico Principal:} Se utiliza la librería \textit{Chart.js} para renderizar la evolución temporal de la energía. Este gráfico permite visualizar la curva de disponibilidad (simulando, por ejemplo, un perfil solar) superpuesta con el consumo real, facilitando la identificación visual de los momentos de déficit o superávit energético.
+\end{itemize}
+
+Para un análisis más granular, se desarrolló una vista de detalle por nodo, mostrada en la Figura~\ref{fig:iot-nodos}. En esta sección, el usuario puede supervisar el comportamiento individual de cada NC, verificando los ciclos de conexión y desconexión ejecutados por el algoritmo de prioridad distribuida.
+
+\begin{figure}[hbt!]
+    \centering
+    \subfigure[]{
+        \includegraphics[width=0.46\textwidth]{imagenes/IoT-nodos.png}
+        \label{fig:plataforma-nodos-claro}
+    }
+    \hfill
+    \subfigure[]{
+        \includegraphics[width=0.46\textwidth]{imagenes/IoT-nodos-oscuro.png}
+        \label{fig:plataforma-nodos-oscuro}
+    }
+    \caption{Vista de consumos en detalle. (a) Tema Claro. (b) Tema Oscuro.}
+    \label{fig:iot-nodos}
+\end{figure}
+
+Finalmente, la seguridad en el acceso remoto se garantizó mediante el despliegue de un contenedor Nginx actuando como proxy inverso, el cual gestiona certificados SSL de Let's Encrypt para forzar la comunicación encriptada vía HTTPS.

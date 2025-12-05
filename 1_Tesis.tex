@@ -105,8 +105,26 @@
 \appendix
 \part{Anexos}
 \cleardoublepage
-\chapter{Circuito Esquemático del Nodo de Consumo (NC)}
-\label{anx:esquematico-nc}
+
+\chapter{Prototipado del Nodo de Consumo (NC)}
+\label{cap:prototipado}
+\begin{figure}[hbt!]
+    \centering
+    \subfigure[]{
+        \includegraphics[width=0.8\textwidth]{imagenes/nc-v0.jpg}
+        \label{fig:prototipo-componentes}
+    }
+    \hfill
+    \subfigure[]{
+        \includegraphics[width=0.8\textwidth]{imagenes/nc-v0-atras.jpg}
+        \label{fig:prototipo-atras}
+    }
+    \caption{Primera version del NC ensablada en placa perforada. (a) Vista de componentes. (b) Conexiones.}
+    \label{fig:prototipo}
+\end{figure}
+
+\chapter{Circuito Esquemático y Diseño de PCB del Nodo de Consumo (NC)}
+\label{anx:esquematico-pcb-nc}
 
 \includepdf[
     pages=-,
@@ -115,7 +133,52 @@
     landscape=true,
 ]{imagenes/esquematico-nc.pdf}
 
+\includepdf[
+    pages=-,
+    scale=1,        % escalar basado en el tamaño de la página LaTeX
+    fitpaper=false,  % ajusta el PDF al tamaño de la hoja
+    landscape=true,
+]{imagenes/PCB-nc.pdf}
 
+\chapter{Circuito Esquemático y Diseño de PCB del Agente de Carga (AC)}
+\label{anx:esquematico-pcb-ac}
+
+\includepdf[
+    pages=-,
+    scale=1,        % escalar basado en el tamaño de la página LaTeX
+    fitpaper=false,  % ajusta el PDF al tamaño de la hoja
+    landscape=true,
+]{imagenes/esquematico-ac.pdf}
+
+\includepdf[
+    pages=-,
+    scale=1,        % escalar basado en el tamaño de la página LaTeX
+    fitpaper=false,  % ajusta el PDF al tamaño de la hoja
+    landscape=true,
+]{imagenes/PCB-ac.pdf}
+
+\chapter{Desarrollo de Hardware}
+\label{cap:desarrollo}
+\begin{figure}[hbt!]
+    \centering
+    \includegraphics[width=1\textwidth]{imagenes/PCB-desarrollo.jpg}
+    \caption{Desarrollo de las PCB de los NC en su versión anterior y AC}
+    \label{img:PCB-desarrollo}
+\end{figure}
+
+\begin{figure}[hbt!]
+    \centering
+    \includegraphics[width=1\textwidth]{imagenes/primera-version.jpg}
+    \caption{Primera versión de los NC y AC ensamblados}
+    \label{img:SGC-v1}
+\end{figure}
+
+\begin{figure}[hbt!]
+    \centering
+    \includegraphics[width=1\textwidth]{imagenes/SGC.jpg}
+    \caption{Version Final anterior}
+    \label{img:SGC}
+\end{figure}
 
 %\appendixpage
 %\addappheadtotoc 
