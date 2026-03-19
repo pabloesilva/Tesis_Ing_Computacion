@@ -60,15 +60,56 @@ Además, el protocolo incluye mecanismos como el “Last Will and Testament” (
 
 \section{Medición de Variables Fisicas}
 \subsection{Conversor Análogico-Digital(ADC)}
-a
+La conversión analógico-digital consiste en transformar la señal proveniente del circuito de muestreo y retención en una secuencia de valores binarios (digitales) que representan la amplitud de la señal analógica en cada instante en que se realiza el muestreo. Gracias al proceso de muestreo y retención, la amplitud de la señal de entrada se mantiene estable entre un pulso de muestreo y el siguiente, lo que permite llevar a cabo la conversión utilizando un valor fijo, en lugar de trabajar con una señal que cambia durante el tiempo que dura la conversión, es decir, el intervalo entre dos muestras consecutivas \cite{floyd2015digital}.
+
+Existen diferentes métodos para realizar la conversión analógico-digital, cada uno con sus propias características y aplicaciones. Algunos de los métodos son:
+\begin{itemize}
+    \item \textbf{Convertidor analógico-digital flash (paralelo)}: Se compara el valor de entrada con una serie de tensiones de referencia. Cuando la señal de entrada supera una referencia, el convertidor genera un bit alto en la salida correspondiente. Este método es extremadamente rápido, pero requiere una gran cantidad de comparadores, lo que lo hace costoso y poco práctico para resoluciones altas.
+    \item \textbf{Convertidor analógico-digital de pendiente doble}: Este método integra la señal analógica durante un período de tiempo específico y luego compara el resultado con un valor de referencia. Es comúnmente utilizado en aplicaciones de medición de precisión, como multímetros digitales.
+    \item \textbf{Convertidor analógico-digital sigma-delta}: Este método oversamplea la señal analógica a una frecuencia mucho mayor que la frecuencia de Nyquist y utiliza un modulador sigma-delta para convertir la señal en una secuencia de bits, cuantificando el incremento o decremento sufrido por la señal.
+    \item \textbf{Convertidor analógico-digital por aproximaciones sucesivas SAR }: Este método utiliza un registro de desplazamiento para generar una aproximación binaria de la señal analógica. El proceso comienza con el bit más significativo (MSB) y continúa hasta el bit menos significativo (LSB), ajustando cada bit en función de si la aproximación es mayor o menor que la señal de entrada.
+\end{itemize}
+
+Este último método es el utilizado por el microcontrolador ESP32 para realizar la conversión analógico-digital, lo que permite obtener una resolución de hasta 12 bits y una velocidad de muestreo adecuada para la mayoría de las aplicaciones de monitoreo y control en sistemas embebidos.
+
 \subsection{Sensor de Tensión ZMPT101B}
-a
+
+El módulo ZMPT101B está diseñado para medir tensiones alternas, como las presentes en instalaciones domésticas, que no pueden ser leídas directamente por el ADC de un microcontrolador debido a que exceden su rango de entrada. Para resolver esto, el dispositivo reduce el voltaje de entrada a un nivel adecuado para su lectura por microcontroladores. Puede trabajar con señales de hasta 250 $VAC$ y proporciona en su salida una onda senoidal cuya amplitud puede ajustarse mediante un potenciómetro incorporado.
+
+Este módulo combina un transformador con una etapa de acondicionamiento de señal. El transformador proporciona aislamiento galvánico y permite la medición de señales alternas. Su bobina primaria se conecta a la fuente de voltaje a medir, mientras que la secundaria alimenta el circuito de acondicionamiento \cite{zmpt101b_datasheet}. Dicho circuito incluye un divisor de tensión y un amplificador operacional LM358, encargado de añadir un desplazamiento de nivel (offset) a la señal de salida. Este desplazamiento es necesario para evitar valores negativos y adaptar la señal al rango del ADC. Su valor depende de la tensión de alimentación, por ejemplo, con 5 $V$ se obtiene un offset de 2,5 $V$, y con 3,3 $V$, uno de 1,65 $V$. La salida del módulo puede conectarse directamente a una entrada analógica del microcontrolador, permitiendo medir el voltaje instantáneo.
+
 \subsection{Sensor de corriente ACS712}
-a
+El sensor de corriente ACS712, en específico la versión de 20 $A$, permite medir tanto corriente continua como alterna en un rango de hasta $\pm$ 20 $A$ mediante el uso del efecto Hall. Es una solución económica, precisa y fácil de implementar, tipicamente usado en control de motores, detección y gestión de cargas, protección de sobrecorriente, entre otros \cite{acs712_datasheet}.
+
+Para utilizarlo, se debe interrumpir el conductor por donde circula la corriente y conectarse a las borneras del módulo, mientras que el sensor se alimenta mediante los pines $VCC$ y $GND$. La salida del dispositivo es analógica y entrega un voltaje proporcional a la corriente medida. En condiciones de 0 $A$, la salida es de 2,5 $V$. Esta señal puede conectarse a una entrada ADC de un microcontrolador, y a partir de ella calcular la corriente medida mediante la la Ecuación~\ref{eq:acs712}. Donde $A_{out}$ es el voltaje de salida del sensor y $S$ es la sensibilidad del sensor. Es importante tener en cuenta que el valor obtenido representa la corriente instantánea, por lo que para obtener valores promedio o RMS en el caso de corriente alterna, se deben realizar cálculos adicionales sobre una serie de muestras.
+
+\begin{equation}
+    I = \frac{(A_{out} - 2,5 V)}{S \frac{mV}{A}}
+    \label{eq:acs712}
+\end{equation}
+
 
 \section{Contenerización Docker}
+
+Docker es una plataforma de software abierta que permite crear y ejecutar aplicaciones. Utiliza diferentes objetos, entre ellos las imagenes y los contenedores. Donde una imagen es una plantilla con instrucciones para crear un contenedor. Por otro lado, un contenedor es una instancia ejecutable de una imagen.
+
+La contenerización de una aplicación permite que cada componente de la misma se ejecute en un contenedor separado, es decir, cada contenedor hace una tarea que contribuye al funcionamiento de la aplicación. Cada componenete se ejecuta de forma aislada y es autocontendio, lo que significa que tiene todo lo necesario para funcionar por si mismo. Además son independientes y portables por lo que un contenedor no depende de otro y pueden ejecutarse en diferentes entornos \cite{docker_container_docs}. 
+
+
 \subsection{Broker MQTT}
-a
+
+Un broker MQTT es un elemento central encargado de facilitar la comunicación mediante mensajes entre clientes y dispositivos IoT a través de este protocolo. Funciona bajo el modelo de publicación-suscripción (pub/sub), siendo responsable de gestionar las conexiones y el flujo de información. Su tarea consiste en recibir los mensajes enviados por los publicadores, validar sus permisos, organizarlos según los niveles de calidad de servicio (QoS) y, posteriormente, distribuirlos a los suscriptores que estén autorizados a recibirlos.
+Hay diferentes tipos de brokers MQTT:
+\begin{itemize}
+    \item \textbf{broker MQTT de código abierto}: Son aquellos que se pueden descargar, modificar y utilizar de forma gratuita, como Mosquitto.
+    \item \textbf{broker MQTT en la nube}: Un broker MQTT online hospedado y ejecutado en la nube, como AWS IoT Core.
+    \item \textbf{Broker MQTT local}: Instalado y hospedado por completo en un servidor local, lo que permite un control total sobre la infraestructura y los datos.
+    \item \textbf{Broker MQTT empresarial}: Ofrecidos por proveedores de servicios con características avanzadas, soporte técnico y opciones de personalización.
+\end{itemize}
+
+Un broker MQTT es aplicable en diversos casos de uso y áreas como la salud, el sector automotriz, los sistemas de hogares inteligentes y muchas más. 
+Utilizar un broker MQTT como solución de transmisión de datos permite, por ejemplo, a los fabricantes obtener información en tiempo real sobre el rendimiento de la maquinaria. También se puede aplicar a sistemas de gestión energética para agregar datos de consumo eléctrico de contadores inteligentes en ubicaciones distribuidas \cite{mosquitto_homepage}.
+
 \subsection{Base de Datos}
 a
 \subsubsection{SQL}
