@@ -14,7 +14,7 @@ a
 \section{Tencnologías de comunicación}
 \subsection{bus CAN}
 
-El protocolo CAN (Controller Area Network) es un sistema de comunicación serial robusto y altamente confiable, desarrollado originalmente por Bosch para permitir el intercambio eficiente de información entre múltiples dispositivos en entornos embebidos. De acuerdo con la descripción técnica recopilada por National Instruments, todos los nodos conectados al bus comparten el mismo medio físico y reciben cada mensaje transmitido, decidiendo de manera autónoma si la información es relevante para ellos. Esta característica elimina la necesidad de una unidad central de control y favorece arquitecturas distribuidas.
+El protocolo CAN (\textit{Controller Area Network}) es un sistema de comunicación serial robusto y altamente confiable, desarrollado originalmente por Bosch para permitir el intercambio eficiente de información entre múltiples dispositivos en entornos embebidos. De acuerdo con la descripción técnica recopilada por National Instruments, todos los nodos conectados al bus comparten el mismo medio físico y reciben cada mensaje transmitido, decidiendo de manera autónoma si la información es relevante para ellos. Esta característica elimina la necesidad de una unidad central de control y favorece arquitecturas distribuidas.
 Una de las propiedades más destacadas de CAN es su método de arbitraje no destructivo. Cuando dos nodos intentan transmitir simultáneamente, el bus no sufre colisiones que invaliden los datos, sino que el protocolo determina de inmediato qué mensaje posee mayor prioridad. Esto se logra mediante la comparación bit a bit del identificador del mensaje, donde el ID con mayor precedencia conserva el acceso mientras el resto de los nodos interrumpe su transmisión.
 En lo referido a integridad, CAN incorpora mecanismos avanzados de detección de errores, incluidos códigos CRC, supervisión continua de bit y campos especiales que anuncian la presencia de fallos. Cuando se detecta un error, la trama afectada se descarta y el transmisor envía una señal que obliga a repetir el envío. Además, el protocolo incluye un sistema de confinamiento que evita que nodos con fallas reiteradas degraden el funcionamiento del bus, pudiendo incluso desconectarlos temporalmente si alcanzan ciertos umbrales de error.
 Finalmente, la topología del bus CAN permite reducir significativamente el cableado respecto de los sistemas punto a punto tradicionales, ya que todos los dispositivos comparten un único par de líneas diferenciales. Este enfoque simplifica el diseño físico, reduce costos y mantiene la inmunidad al ruido, lo que explica su amplia adopción en la industria automotriz y en sistemas embebidos de alta exigencia \cite{niCANoverview}.
@@ -38,25 +38,25 @@ El periférico ofrece funciones avanzadas como la detección de patrones especí
 
 \subsection{I$^{2}$C}
 
-El bus I²C (Inter-Integrated Circuit) , especificado por NXP, constituye un método de comunicación serial síncrona ampliamente adoptado en sistemas embebidos para interconectar sensores, memorias y periféricos de baja y media velocidad. Su funcionamiento se basa en solo dos líneas compartidas: una para datos (SDA) y otra para la señal de reloj (SCL). Esta característica simplifica el diseño del hardware y permite conectar múltiples dispositivos en el mismo bus.
+El bus I²C (\textit{Inter-Integrated Circuit}), especificado por NXP, constituye un método de comunicación serial síncrona ampliamente adoptado en sistemas embebidos para interconectar sensores, memorias y periféricos de baja y media velocidad. Su funcionamiento se basa en solo dos líneas compartidas: una para datos (SDA) y otra para la señal de reloj (SCL). Esta característica simplifica el diseño del hardware y permite conectar múltiples dispositivos en el mismo bus.
 Cada componente conectado a I²C posee una dirección única y puede actuar como transmisor o receptor según el contexto. La especificación oficial contempla la existencia de múltiples maestros, lo que implica que distintos dispositivos pueden iniciar una transmisión. Para resolver posibles conflictos, el bus incorpora un mecanismo de arbitraje que garantiza que solo un maestro controle la comunicación en cada momento sin generar colisiones destructivas.
 I²C dispone de diversos modos de operación que varían en velocidad, desde el modo estándar de 100 kbit/s hasta configuraciones de alta velocidad que alcanzan 3,4 Mbit/s. Esta flexibilidad permite emplearlo tanto en aplicaciones de bajo consumo como en sistemas que necesitan tasas de transferencia superiores. Además, están definidos con precisión los parámetros eléctricos, los tiempos de conmutación y las condiciones que deben respetarse para garantizar la integridad de la señal, lo que facilita el diseño de redes estables y confiables con múltiples dispositivos conectados simultáneamente \cite{i2cNXP}.
 
 \subsection{MQTT}
 
-MQTT (Message Queuing Telemetry Transport) es un protocolo de mensajería ligero basado en el patrón publish/subscribe, diseñado para entornos con recursos limitados y redes que pueden tener baja velocidad, alta latencia o conexiones poco fiables. 
+MQTT (\textit{Message Queuing Telemetry Transport}) es un protocolo de mensajería ligero basado en el patrón \textit{publish}/\textit{subscribe}, diseñado para entornos con recursos limitados y redes que pueden tener baja velocidad, alta latencia o conexiones poco fiables. 
 Este protocolo opera sobre TCP/IP, lo que le permite garantizar conexiones ordenadas y bidireccionales. 
 El hecho de mantener la conexión abierta entre cliente y broker minimiza el sobrecosto de establecer nuevas conexiones, algo clave cuando se trabaja con dispositivos de bajo consumo. 
-La arquitectura de MQTT se articula entre clientes (que pueden publicar mensajes o suscribirse a temas) y un broker, encargado de recibir, filtrar y reenviar los mensajes según los temas (“topics”) suscritos. 
-Gracias a este modelo, los emisores y receptores quedan desacoplados, lo que permite escalabilidad eficiente y flexibilidad en la comunicación. MQTT define tres niveles de “Quality of Service” (QoS) para la entrega de mensajes:
+La arquitectura de MQTT se articula entre clientes (que pueden publicar mensajes o suscribirse a temas) y un broker, encargado de recibir, filtrar y reenviar los mensajes según los temas (“\textit{topics}”) suscritos. 
+Gracias a este modelo, los emisores y receptores quedan desacoplados, lo que permite escalabilidad eficiente y flexibilidad en la comunicación. MQTT define tres niveles de “\textit{Quality of Service}” (QoS) para la entrega de mensajes:
 \begin{enumerate}
-    \item QoS 0: entrega a lo sumo una vez (“fire-and-forget”).
+    \item QoS 0: entrega a lo sumo una vez (“\textit{fire-and-forget}”).
     \item QoS 1: entrega al menos una vez.
     \item QoS 2: entrega exactamente una vez. 
 \end{enumerate}
 
 
-Además, el protocolo incluye mecanismos como el “Last Will and Testament” (LWT), que permite a un cliente informar a otros sobre su desconexión inesperada, y sesiones persistentes, que facilitan la reconexión después de una caída de red \cite{mqtt311}\cite{mqtt50}.
+Además, el protocolo incluye mecanismos como el “\textit{Last Will and Testament}” (LWT), que permite a un cliente informar a otros sobre su desconexión inesperada, y sesiones persistentes, que facilitan la reconexión después de una caída de red \cite{mqtt311}\cite{mqtt50}.
 
 \section{Medición de Variables Fisicas}
 \subsection{Conversor Análogico-Digital(ADC)}
@@ -74,14 +74,14 @@ Este último método es el utilizado por el microcontrolador ESP32 para realizar
 
 \subsection{Sensor de Tensión ZMPT101B}
 
-El módulo ZMPT101B está diseñado para medir tensiones alternas, como las presentes en instalaciones domésticas, que no pueden ser leídas directamente por el ADC de un microcontrolador debido a que exceden su rango de entrada. Para resolver esto, el dispositivo reduce el voltaje de entrada a un nivel adecuado para su lectura por microcontroladores. Puede trabajar con señales de hasta 250 $VAC$ y proporciona en su salida una onda senoidal cuya amplitud puede ajustarse mediante un potenciómetro incorporado.
+El módulo ZMPT101B está diseñado para medir tensiones alternas, como las presentes en instalaciones domésticas, comerciales e indutriales, que no pueden ser leídas directamente por el ADC de un microcontrolador debido a que exceden su rango de entrada. Para resolver esto, el dispositivo reduce el voltaje de entrada a un nivel adecuado para su lectura por microcontroladores. Puede trabajar con señales de hasta 250 $VAC$ y proporciona en su salida una onda senoidal cuya amplitud puede ajustarse mediante un potenciómetro incorporado.
 
-Este módulo combina un transformador con una etapa de acondicionamiento de señal. El transformador proporciona aislamiento galvánico y permite la medición de señales alternas. Su bobina primaria se conecta a la fuente de voltaje a medir, mientras que la secundaria alimenta el circuito de acondicionamiento \cite{zmpt101b_datasheet}. Dicho circuito incluye un divisor de tensión y un amplificador operacional LM358, encargado de añadir un desplazamiento de nivel (offset) a la señal de salida. Este desplazamiento es necesario para evitar valores negativos y adaptar la señal al rango del ADC. Su valor depende de la tensión de alimentación, por ejemplo, con 5 $V$ se obtiene un offset de 2,5 $V$, y con 3,3 $V$, uno de 1,65 $V$. La salida del módulo puede conectarse directamente a una entrada analógica del microcontrolador, permitiendo medir el voltaje instantáneo.
+Este módulo combina un transformador con una etapa de acondicionamiento de señal. El transformador proporciona aislamiento galvánico y permite la medición de señales alternas. Su bobina primaria se conecta a la fuente de voltaje a medir, mientras que la secundaria alimenta el circuito de acondicionamiento \cite{zmpt101b_datasheet}. Dicho circuito incluye un divisor de tensión y un amplificador operacional LM358, encargado de añadir un desplazamiento de nivel (\textit{offset}) a la señal de salida. Este desplazamiento es necesario para evitar valores negativos y adaptar la señal al rango del ADC. Su valor depende de la tensión de alimentación, por ejemplo, con 5 $V$ se obtiene un \textit{offset} de 2,5 $V$, y con 3,3 $V$, uno de 1,65 $V$. La salida del módulo puede conectarse directamente a una entrada analógica del microcontrolador, permitiendo medir el voltaje instantáneo.
 
 \subsection{Sensor de corriente ACS712}
 El sensor de corriente ACS712, en específico la versión de 20 $A$, permite medir tanto corriente continua como alterna en un rango de hasta $\pm$ 20 $A$ mediante el uso del efecto Hall. Es una solución económica, precisa y fácil de implementar, tipicamente usado en control de motores, detección y gestión de cargas, protección de sobrecorriente, entre otros \cite{acs712_datasheet}.
 
-Para utilizarlo, se debe interrumpir el conductor por donde circula la corriente y conectarse a las borneras del módulo, mientras que el sensor se alimenta mediante los pines $VCC$ y $GND$. La salida del dispositivo es analógica y entrega un voltaje proporcional a la corriente medida. En condiciones de 0 $A$, la salida es de 2,5 $V$. Esta señal puede conectarse a una entrada ADC de un microcontrolador, y a partir de ella calcular la corriente medida mediante la la Ecuación~\ref{eq:acs712}. Donde $A_{out}$ es el voltaje de salida del sensor y $S$ es la sensibilidad del sensor. Es importante tener en cuenta que el valor obtenido representa la corriente instantánea, por lo que para obtener valores promedio o RMS en el caso de corriente alterna, se deben realizar cálculos adicionales sobre una serie de muestras.
+Para utilizarlo, se debe interrumpir el conductor por donde circula la corriente y conectarse a las borneras del módulo, mientras que el sensor se alimenta mediante los pines $VCC$ y $GND$. La salida del dispositivo es analógica y entrega un voltaje proporcional a la corriente medida. En condiciones de 0 $A$, la salida es de 2,5 $V$. Esta señal puede conectarse a una entrada ADC de un microcontrolador, y a partir de ella calcular la corriente medida con la Ecuación~\ref{eq:acs712}. Donde $A_{out}$ es el voltaje de salida del sensor y $S$ es la sensibilidad del sensor. Es importante tener en cuenta que el valor obtenido representa la corriente instantánea, por lo que para obtener valores promedio o RMS en el caso de corriente alterna, se deben realizar cálculos adicionales sobre una serie de muestras.
 
 \begin{equation}
     I = \frac{(A_{out} - 2,5 V)}{S \frac{mV}{A}}
@@ -108,11 +108,18 @@ Hay diferentes tipos de brokers MQTT:
 \end{itemize}
 
 Un broker MQTT es aplicable en diversos casos de uso y áreas como la salud, el sector automotriz, los sistemas de hogares inteligentes y muchas más. 
-Utilizar un broker MQTT como solución de transmisión de datos permite, por ejemplo, a los fabricantes obtener información en tiempo real sobre el rendimiento de la maquinaria. También se puede aplicar a sistemas de gestión energética para agregar datos de consumo eléctrico de contadores inteligentes en ubicaciones distribuidas \cite{mosquitto_homepage}.
+Utilizar un broker MQTT como solución de transmisión de datos permite, por ejemplo, a los fabricantes obtener información en tiempo real sobre el rendimiento de las máquinas de sus fabricas o en sistemas de gestión energética para agregar datos de consumo eléctrico de medidores inteligentes en ubicaciones distribuidas \cite{mosquitto_homepage}.
 
 \subsection{Base de Datos}
-a
+Una base de datos puede entenderse como un conjunto organizado de información estructurada, que generalmente se almacena de manera digital dentro de un sistema informático. Por lo general, su administración está a cargo de un sistema de gestión de bases de datos (DBMS). En conjunto, los datos, el DBMS y las aplicaciones que interactúan con ellos conforman lo que se conoce como un sistema de bases de datos, término que habitualmente se simplifica simplemente como base de datos.
+
+En la mayoría de los sistemas actuales, la información se organiza en tablas compuestas por filas y columnas, lo que facilita tanto el procesamiento como la consulta de los datos. Esta estructura permite acceder, administrar, modificar, actualizar y organizar la información de forma eficiente. Además, es común que estas bases de datos empleen el lenguaje SQL para realizar operaciones de consulta y manipulación de los datos \cite{oracle_what_is_database}.
+
 \subsubsection{SQL}
-a
+
+El lenguaje de consulta estructurada (SQL) es un lenguaje de programación ampliamente utilizado en bases de datos relacionales para almacenar, consultar y gestionar información. Estas bases de datos organizan los datos en tablas compuestas por filas y columnas, que representan atributos y relaciones entre los distintos valores. Mediante SQL es posible realizar operaciones como insertar, actualizar, eliminar y recuperar datos, así como definir su estructura, controlar el acceso y optimizar el rendimiento del sistema.
+
 \subsection{NGINX}
-a
+
+NGINX (/``\textit{engine x}''/) es un servidor web HTTP, proxy reverso, caché de contenido, balanceador de carga, servidor proxy TCP/UDP y de correo. Funciona con un proceso maestro y varios procesos de trabajo o \textit{workers}. El proceso maestro se encarga de leer y validar la configuración, así como de administrar a los \textit{workers}.
+Los \textit{workers} son resposables de manejar las conexiones y procesar las solicitudes. NGINX utiliza un modelo de eventos asíncrono y no bloqueante, lo que le permite manejar un gran número de conexiones simultáneas con un uso eficiente de los recursos del sistema. Existe una relación de compromiso entre el número de \textit{workers} y el uso de recursos disponibles del sistema \cite{nginx_beginners_guide}.
