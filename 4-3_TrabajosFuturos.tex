@@ -1,3 +1,64 @@
 \cleardoublepage 
 \chapter{Trabajo a Futuro}
 \label{cap:TrabajosFuturos}
+
+Si bien el sistema desarrollado cumple con los objetivos planteados y permite validar la viabilidad del enfoque propuesto, existen diversas líneas de trabajo que podrían explorarse para mejorar sus prestaciones y ampliar su campo de aplicación.
+
+Resulta de interés profundizar en la evaluación del sistema verificando su comportamiento en escenarios más complejos y variados para recrear posibles situaciones de uso real. Esto permitiría identificar posibles limitaciones o áreas de mejora, así como validar su robustez y adaptabilidad a diferentes condiciones operativas. En esta mimsa linea, para verificar la escalabilidad del sistema, se podrían realizar pruebas con un número mayor de nodos y los demás agentes que componen la microrred, lo que permitiría evaluar cómo se comporta el sistema a medida que aumenta su tamaño y complejidad. Esto implicaría analizar el impacto en las comunicaciones, la latencia en la toma de decisiones y la estabilidad del control distribuido, así como desarrollar estrategias que permitan mantener un funcionamiento robusto en redes de mayor tamaño.
+
+\section{Optimización del algoritmo de control de cargas}
+
+\subsection{Desconexión anticipada de cargas de baja prioridad}
+
+En la implementación actual, la lógica de desconexión de cargas se basa en un criterio jerárquico en función de la prioridad asignada a cada nodo de consumo. Ante una condición de déficit energético, es decir, cuando la corriente total consumida ($I_{total}$) supera a la corriente disponible ($I_{disponible}$), el sistema identifica en primer lugar aquellas cargas con menor prioridad y procede a su desconexión. En caso de existir múltiples cargas con igual nivel de prioridad, se selecciona para su desconexión aquella que presenta el menor consumo, con el objetivo de maximizar el uso de la energía disponible.
+
+Sin embargo, este enfoque presenta una limitación cuando la desconexión de una única carga no resulta suficiente para restablecer el equilibrio entre generación y consumo. En la versión actual, el sistema requiere iteraciones sucesivas para continuar desconectando cargas adicionales, lo que introduce un retardo en la respuesta y puede prolongar el estado de sobrecarga.
+
+Como mejora, se propone modificar el algoritmo de decisión de manera que, el sistema evalúe de forma anticipada el efecto de las desconexiones y que en lugar de esperar a la siguiente iteración para desconectar a la siguiente carga en la linea de desconexión, lo haga en ese instante debido a que cuenta con la información necesaria para hacerlo.
+
+Para ilustrar esta situación, considérese un escenario en el cual la disponibilidad de corriente total es de 6 $A$. Dentro de la instalación existe una carga de alta prioridad con un consumo de 5 $A$ (P1), la cual no es candidata a desconexión. Adicionalmente, se tienen dos cargas de baja prioridad (P3): la carga A con un consumo de 2 $A$ y la carga B con un consumo de 3 $A$. En estas condiciones, el consumo total asciende a 10 $A$, lo que genera un déficit energético de 4 $A$. A los fines del análisis, se asume que ambos nodos de consumo realizan la evaluación de su estado de manera simultánea.
+
+Bajo el algoritmo actual, ambas cargas de baja prioridad evalúan la posibilidad de desconectarse. Sin embargo, únicamente la carga A resulta desconectada en primera instancia, dado que, entre las cargas de igual prioridad, es la de menor consumo. Por su parte, la carga B permanece conectada al no cumplir con este criterio. Como consecuencia, la desconexión de la carga A reduce el consumo total a 8 $A$, lo que implica que aún persiste un déficit de 2 $A$. En este esquema, el sistema requiere una nueva iteración para que la carga B revalue su estado y eventualmente se desconecte, introduciendo un retardo en la respuesta y prolongando la condición de sobrecarga.
+
+Con la mejora propuesta, el algoritmo incorpora una evaluación anticipada dentro de una misma iteración. En el escenario planteado, la carga A se desconecta de la misma manera que en el caso anterior. No obstante, la carga B, al disponer de información sobre el estado global del sistema y su posición relativa dentro del conjunto de cargas de igual prioridad, puede determinar que la desconexión de la carga A no resulta suficiente para satisfacer la restricción de disponibilidad energética. En consecuencia, procede a su desconexión en la misma instancia de evaluación, sin necesidad de esperar una nueva iteración. Ambos escenarios se ilustran en la Figura~\ref{img:desconexion_anticipada}.
+
+\begin{figure}[hbt!]
+    \centering
+    \includegraphics[width=1\textwidth]{imagenes/desconexion-anticipada.png}
+    \caption{Comparativa entre algoritmo actual y la mejora propuesta para la desconexión de cargas.}
+    \label{img:desconexion_anticipada}
+\end{figure}
+
+De esta forma, la decisión deja de ser estrictamente incremental y pasa a considerar el aporte conjunto de múltiples cargas. Esto permite alcanzar más rápidamente una condición de operación válida, mejorando el tiempo de respuesta del sistema y reduciendo la permanencia en estados transitorios de sobrecarga, particularmente en escenarios donde múltiples cargas se encuentren en situación de déficit energético. Cabe aclarar que no se encuentra limitado a cargas de igual prioridad, sino que también puede aplicarse a cargas de diferentes niveles de prioridad, siempre y cuando se mantenga el criterio jerárquico establecido.
+
+\subsection{Incorporación de mensajes de desconexión para cargas de menor prioridad}
+
+En determinados casos, se puede dar lugar a situaciones en las cuales una carga de mayor prioridad permanece desconectada debido a una restricción momentánea de disponibilidad energética, mientras que una o más cargas de menor prioridad se reconectan. Esto puede ocurrir, por ejemplo, cuando las condiciones del sistema cambian luego de la última evaluación que tuvo como consecuencia desconectar la carga con mayor prioridad y posteriormente conectar la de menor prioridad.
+
+Para abordar esta limitación, se propone incorporar un mecanismo de coordinación explícito mediante el cual un nodo asociado a una carga de mayor prioridad, al detectar que podría reconectarse si se liberara capacidad, pueda emitir una solicitud de desconexión dirigida a uno o más nodos de menor prioridad. De este modo, la decisión deja de ser completamente pasiva, incorporando un esquema de interacción que permite reorganizar dinámicamente el uso de la energía disponible.
+
+Este mecanismo introduce una forma de negociación entre nodos, donde las cargas de menor prioridad pueden ceder su lugar en favor de aquellas consideradas de mayor relevancia. Como resultado, se mejora la eficiencia en la asignación del recurso energético, asegurando que la energía disponible sea utilizada preferentemente por las cargas de mayor prioridad.
+
+Para ilustrar el funcionamiento, considérese un sistema con tres cargas: la carga A con prioridad alta (P1) y consumo de 5 $A$, la carga B con prioridad media (P2) y consumo de 4 $A$, y la carga C con prioridad baja (P3) y consumo de 2 $A$.
+
+Inicialmente, ante una reducción de la disponibilidad energética a 6 $A$, el sistema desconecta las cargas de menor prioridad, manteniendo únicamente conectada la carga A, dado que es la de mayor prioridad. En este estado, tanto B como C permanecen desconectadas.
+
+Posteriormente, si la disponibilidad aumenta a 8 $A$, el sistema permite la conexión de la carga C, ya que su consumo (2 $A$) puede ser absorbido sin violar la restricción energética, alcanzando un consumo total de 7 $A$. En esta instancia, la carga B continúa desconectada debido a que su consumo (4 $A$) excedería la disponibilidad si se conectara.
+
+Finalmente, cuando la disponibilidad energética aumenta a 10 $A$, se presenta una situación subóptima en la implementación actual. Si bien existe suficiente capacidad para alimentar a las cargas A y B $(5 A + 4 A = 9 A)$, la presencia de la carga C ya conectada impide la conexión de B, dado que el consumo total alcanzaría los 11 $A$, superando la disponibilidad. En este escenario, el sistema actual mantiene conectadas las cargas A y C, mientras que la carga B, a pesar de tener mayor prioridad que C, permanece desconectada.
+
+Con la inclusión de este mecanismo, la carga B, al detectar que podría conectarse si se liberara capacidad, envía una solicitud de desconexión a la carga C. Como resultado, la carga C se desconecta, liberando 2 $A$ de consumo, lo que permite la posterior conexión de la carga B. De esta forma, el sistema reconfigura su estado hacia una condición más eficiente, priorizando el suministro a las cargas de mayor relevancia. Esta situación se ilustra en la Figura~\ref{img:desconexion_coordinada}.
+
+\begin{figure}[hbt!]
+    \centering
+    \includegraphics[width=1\textwidth]{imagenes/desconexion-coordinada.png}
+    \caption{Comparativa entre algoritmo actual y la implementación de mensajes para la desconexión de cargas.}
+    \label{img:desconexion_coordinada}
+\end{figure}
+
+Este ejemplo evidencia cómo la incorporación de un mecanismo de coordinación entre nodos permite evitar configuraciones subóptimas y mejorar la asignación del recurso energético disponible, garantizando que las cargas de mayor prioridad tengan preferencia efectiva en el uso de la energía. Esta función podría ser implementada de manera opcional, permitiendo a los usuarios configurar su activación según las necesidades específicas de su sistema y las características de las cargas involucradas.
+
+\section{Mejoras en la Plataforma de Monitoreo}
+
+\subsection{Cambios de Prioridad de Nodos en forma Remota}
+dfasdfa...
