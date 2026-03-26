@@ -8,7 +8,7 @@ Resulta de interés profundizar en la evaluación del sistema verificando su com
 
 \section{Optimización del algoritmo de control de cargas}
 
-\subsection{Desconexión anticipada de cargas de baja prioridad}
+\subsection{Desconexión anticipada de cargas con baja prioridad}
 
 En la implementación actual, la lógica de desconexión de cargas se basa en un criterio jerárquico en función de la prioridad asignada a cada nodo de consumo. Ante una condición de déficit energético, es decir, cuando la corriente total consumida ($I_{total}$) supera a la corriente disponible ($I_{disponible}$), el sistema identifica en primer lugar aquellas cargas con menor prioridad y procede a su desconexión. En caso de existir múltiples cargas con igual nivel de prioridad, se selecciona para su desconexión aquella que presenta el menor consumo, con el objetivo de maximizar el uso de la energía disponible.
 
@@ -61,4 +61,34 @@ Este ejemplo evidencia cómo la incorporación de un mecanismo de coordinación 
 \section{Mejoras en la Plataforma de Monitoreo}
 
 \subsection{Cambios de Prioridad de Nodos en forma Remota}
-dfasdfa...
+
+Se propone incorporar la posibilidad de modificar de manera remota la prioridad asignada a cada nodo de consumo. En la implementación actual, esta configuración se realiza de forma manual mediante un conjunto de interruptores tipo DIP (\textit{deep switch}) presentes en cada dispositivo, lo que implica una intervención física directa sobre el hardware para realizar cualquier ajuste.
+
+Si bien este enfoque resulta adecuado en etapas iniciales de desarrollo por su simplicidad, presenta limitaciones significativas en términos de flexibilidad y escalabilidad, especialmente en instalaciones con múltiples nodos. Además, dificulta la reconfiguración dinámica del sistema frente a cambios en los requerimientos de uso.
+
+Como mejora, se plantea integrar esta funcionalidad dentro de la plataforma de monitoreo, permitiendo que la prioridad de cada nodo pueda ser configurada de manera remota a través de una interfaz de usuario. De esta forma, el sistema podría adaptarse en tiempo real a distintas necesidades, como la modificación de la importancia relativa de ciertas cargas según el contexto operativo, horarios específicos o preferencias del usuario.
+
+Desde el punto de vista del sistema, esta modificación implica que los nodos de consumo reciban y actualicen su nivel de prioridad mediante los mecanismos de comunicación ya existentes, eliminando la dependencia de configuraciones físicas locales. Utilizando el broker MQTT, admeás de la publicación de mensajes por parte de del agente de carga, se realizaría la actualización de prioridades. Donde el agente de carga, se subscribiría a un tópico específico para recibir las actualizaciones de prioridad para luego comunicarlas a los nodos de consumo.
+
+\subsection{Configuración del modo Deep Sleep en horarios determinados}
+
+Integrar la posibilidad de configurar de manera remota horarios de operación para los nodos de consumo, permitiendo que estos ingresen en modos de bajo consumo energético, como el modo \textit{deep sleep}, durante períodos en los que no se requiera su funcionamiento activo. En la implementación actual, los nodos permanecen operativos de forma continua, lo que implica un consumo energético constante, incluso en momentos en los que su participación en el sistema no es necesaria.
+
+Esta incorporación permitiría optimizar el consumo energético del propio sistema de control, donde se busca maximizar la eficiencia global de la instalación. Desde el punto de vista de implementación, esta mejora requiere no solo la incorporación de una interfaz de configuración en la plataforma de monitoreo, sino también modificaciones en el firmware de los nodos, de modo que puedan gestionar de manera autónoma sus ciclos de activación y suspensión en función de los horarios definidos.
+
+La implementación sería similar a la propuesta para la configuración de prioridades, donde los cambios en los estados de los nodos de consumo se realzarían mediante la publicación de mensajes desde la plataforma en el broker MQTT.
+
+\subsection{Análisis del Consumo y Generación de Estadísticass}
+
+Se plantea la inclusión de herramientas de análisis y generación de estadísticas sobre los hábitos de consumo energético. Actualmente, la plataforma permite visualizar variables en tiempo real y registrar datos históricos, pero no explota completamente el potencial de esta información para generar recomendaciones o alertas. Mediante el procesamiento de los datos recolectados, sería posible obtener indicadores relevantes, tales como perfiles de consumo por nodo, patrones horarios, identificación de consumos anómalos, entre otros.
+
+La disponibilidad de este tipo de información permitiría no solo mejorar la toma de decisiones por parte del usuario, sino también optimizar la configuración del sistema, ajustando prioridades, estrategias de control o políticas de uso en función de patrones reales de consumo. Además, abre la
+posibilidad de integrar funcionalidades más avanzadas, como recomendaciones automáticas o estrategias predictivas, alineando la plataforma con tendencias actuales en gestión energética inteligente.
+
+\section{Adaptación del diseño PCB a procesos de manufactura industrial}
+
+En la implementación actual, los circuitos impresos fueron desarrollados mediante el método de transferencia térmica (planchado), lo cual resulta apropiado para etapas iniciales de desarrollo, pero presenta limitaciones en términos de precisión, repetibilidad y calidad eléctrica. Como línea de mejora, se propone el rediseño de las placas electrónicas con el objetivo de adecuarlas a procesos de fabricación profesional. 
+
+La migración hacia un diseño orientado a fabricación industrial permitiría mejorar significativamente la confiabilidad del sistema, reducir errores asociados al proceso manual y optimizar el desempeño eléctrico mediante un diseño más controlado de pistas, planos de masa y distribución de componentes. Asimismo, habilita la producción de múltiples unidades con características homogéneas, facilitando la escalabilidad del sistema.
+
+Este rediseño implicaría la utilización de herramientas de diseño electrónico (EDA) para la generación de archivos de fabricación estandarizados, así como la consideración de aspectos propios de la manufactura profesional, tales como el dimensionamiento adecuado de pistas, separación entre conductores, incorporación de serigrafía y el uso de placas multicapa.
