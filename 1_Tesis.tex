@@ -5,6 +5,14 @@
 % Contacto: carlos.brys@fce.unam.edu.ar /       Telegram:@CarlosBrys
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\documentclass[
+titlepage,
+oneside,
+openright,
+onecolumn,
+a4paper,
+12pt]{book}
+
 \input{Preambulo} % Carga la configuración general del documento
 
 \begin{document}
@@ -14,10 +22,11 @@
 \input{0-2_Licencia}
 \input{0-3_Redefiniciones}
 
-% Paginas numeradas en numeros romanos. 
+% Paginas preliminares sin numeracion visible.
 % Capitulos sin numero
 \cleardoublepage
-\frontmatter 
+\pagenumbering{gobble}
+\pagestyle{empty}
 
 \setcounter{secnumdepth}{4}
 \setcounter{tocdepth}{4}
@@ -44,12 +53,12 @@
 %There are special commands containing details on the running page of the document.
 %thepage 	number of the current page
 %\leftmark 	current chapter name printed 
-%\rightmark 	current section name printed 
+%\rightmark 	current section name priwnted 
 %\chaptername 	the name chapter in the current language. If this is English, it will display %"Chapter"
 %\thechapter 	current chapter number
 %\thesection 	current section number
 
-\pagestyle{fancy}
+\pagestyle{plain}
 \fancyhf{}
 \setlength{\headheight}{15pt} 
 %\fancyhead[LO]{\rightmark} % Print the nearest section name on the left side of odd pages
@@ -71,26 +80,26 @@
 
 \include{1-1_IndiceComentado} % Antes del Indice General, va el Comentado
 
-\part{Contextualización}
+\part{Contextualización} \label{part:contexto}
 \include{1-2_PalabrasClave}  
 \include{1-3_Introduccion}
 \include{1-4_Antecedentes}
 \include{1-5_Problema}
 
-\part{Investigación}
+\part{Investigación} \label{part:investigacion}
 \include{2-1_MarcoTeorico}
 \include{2-2_ArquitecturaPropuesta}
 \include{2-3_AnalisisMercado}
 
 
-\part{Desarrollo y Resultados}
+\part{Desarrollo y Resultados} \label{part:desarrollo}
 \include{3-1_Control}
 \include{3-2_AC}
 \include{3-3_NC}
 \include{3-4_PlataformaIoT}
 \include{3-5_IntegracionSistema}
 
-\part{Discusión y Conclusiones}
+\part{Discusión y Conclusiones} \label{part:conclusiones}
 \include{4-1_Discusion} 
 \include{4-2_Conclusiones}
 \include{4-3_TrabajosFuturos}
