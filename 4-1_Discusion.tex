@@ -3,6 +3,7 @@
 \label{cap:Discusion}
 
 \section{Mediciones de corriente en cargas no lineales}
+
 En los últimos años, la cantidad de dispositivos con cargas no lineales en entornos residenciales ha aumentado de manera significativa, impulsada principalmente por la masificación de dispositivos electrónicos basados en fuentes conmutadas, tales como computadoras, televisores, cargadores, iluminación LED y electrodomésticos modernos. En este contexto, resulta crucial que los sistemas de monitoreo energético sean capaces de medir correctamente este tipo de consumos, ya que constituyen una porción cada vez más representativa de la demanda total.
 
 A diferencia de las cargas lineales, donde la corriente es proporcional a la tensión y mantiene una forma de onda senoidal, las cargas no lineales presentan corrientes altamente distorsionadas, con la presencia de armónicos y picos abruptos. 
@@ -57,4 +58,17 @@ En la Figura~\ref{fig:fuente_ruido_osciloscopio} se muestra la medición realiza
 Estos resultados muestran la importancia de considerar el diseño de la etapa de alimentación y acondicionamiento de señal como un aspecto crítico del sistema. Si bien en la implementación actual se emplean técnicas básicas de mitigación, como filtrado y calibración de offset, los ensayos realizados evidencian que el ruido de la fuente puede constituir una limitación relevante, especialmente en escenarios donde se requiere medir consumos bajos con mayor precisión.
 
 \section{Limitaciones del uso del protocolo ESP-NOW en conjunto con MQTT}
-asda \dots
+
+En relación con las limitaciones del uso conjunto de ESP-NOW y MQTT, un aspecto fundamental a considerar es la restricción propia de los microcontroladores ESP32 respecto al uso simultáneo de modos de comunicación inalámbrica. Si bien el ESP32 permite operar tanto en WiFi convencional como utilizando el protocolo ESP-NOW, la coexistencia de ambos no es completamente transparente, ya que comparten el mismo hardware de radio. Esto implica que, en la práctica, la operación simultánea presenta limitaciones en términos de configuración, estabilidad y rendimiento, especialmente cuando se requiere mantener una conexión activa a una red WiFi mientras se intercambian datos mediante ESP-NOW.
+
+El problema principal radica en que los routers WiFi suelen cambiar automáticamente de canal (\textit{channel hopping}), lo que afecta directamente a redes basadas en ESP-NOW, ya que este protocolo requiere operar en el mismo canal que el dispositivo receptor. Cuando el router cambia de canal, todos los dispositivos ESP-NOW se ven afectados, debido a que requiere una reconfiguracón de la red.
+
+Para abordar esta limitación, existen distintas estrategias. Una de las más utilizadas es la topología con un gateway. En este esquema, solo un ESP32 (Gateway) está conectado al router. Los demás ESP32 no conocen la contraseña del Wi-Fi ni se conectan a él; solo se comunican con el gateway mediante ESP-NOW. Esto agrega un mayor nivel de complejidad y un punto de falla adicional que concentra las comunicaciones a contramando del esquema distribuido que se plantea en este trabajo. Dendro de este esquema, hay a su vez dos alternativas: una es utilizando un gateway de con dos chips uno para manejar la conexión WiFi y otro para manejar ESP-NOW; la otra alternatva es un mismo chip para ambas funciones, pero en este caso se requiere un escaneo dinamico de canales para mantener la comunicación \cite{eichhorn2025_espnow_wifi}.
+
+Por otro lado si se tiene acceso a la configuración del router, otra solución más estable es desactivar el canal automático y fijar uno manualmente. Esto elimina el problema de raíz, ya que el radio del ESP32 nunca tendrá que saltar de frecuencia para seguir al AP forzando un canal estático. Esta alternativa no siempre es posible y puede generar problemas de interferencia con otras redes WiFi cercanas, además de limitar la flexibilidad del sistema.
+
+Esta restricción tiene una consecuencia directa en la arquitectura del sistema implementado. En particular, impide que cada nodo de consumo pueda actuar de manera independiente como cliente MQTT, es decir, conectarse a un broker, suscribirse a tópicos y publicar información de forma directa. La necesidad de alternar o compatibilizar ambos modos de comunicación introduce complejidad adicional y puede afectar la confiabilidad del sistema, especialmente en aplicaciones que requieren comunicación continua o en tiempo real.
+
+Como resultado, se optó por una arquitectura en la cual no todos los nodos interactúan directamente con el broker MQTT, sino que la comunicación se estructura en capas: por un lado, ESP-NOW se utiliza para la coordinación local entre nodos, y por otro, el agente de carga mediante la inclusión de otro ESP y el comunicación UART maneja la red WiFi y la conexión mediante MQTT. Si bien esta solución permite sortear la limitación mencionada, introduce una dependencia adicional en el sistema, concentrando funciones en un único punto y generando posibles cuellos de botella o puntos únicos de falla.
+
+En este sentido, la combinación de ambos protocolos, si bien resulta funcional y adecuada para el propósito del sistema, presenta limitaciones que deben ser consideradas en el diseño general, especialmente en términos de escalabilidad, robustez y flexibilidad en la comunicación.
