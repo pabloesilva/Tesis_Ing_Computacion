@@ -31,7 +31,30 @@ El valor de corriente reportado por el sistema corresponde al nodo NC3, que al m
 Esta comparación permitió validar que, aun en presencia de cargas no lineales, el sistema presenta un comportamiento consistente y adecuado para medición de corriente en entornos generales.
 
 \section{Influencia del ruido introducido por la fuente}
-adasfd \dots
+
+En relación con la influencia del ruido introducido por la fuente de alimentación, se realizaron ensayos experimentales con el objetivo de evaluar cómo las perturbaciones eléctricas afectan la calidad de las mediciones de corriente del sistema. En particular, se analizó el impacto del ruido superpuesto a la señal proveniente del sensor de corriente, comparando dos tipos de fuentes: una fuente de laboratorio, caracterizada por presentar un bajo nivel de ruido y una salida altamente regulada, y una fuente comercial conmutada, con un mayor nivel de \textit{ripple} y perturbaciones en su tensión de salida. Esto se observa en la Figura~\ref{fig:ensayo_fuentes}.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.9\textwidth]{imagenes/ensayo_fuentes.jpg}
+    \caption{Ensayo comparativo de la señal de corriente medida con una fuente de laboratorio yuna fuente comercial conmutada.}
+    \label{fig:ensayo_fuentes}
+\end{figure}
+
+Durante las pruebas, se observó que la presencia de ruido en la fuente se traduce en fluctuaciones sobre la señal medida, las cuales son posteriormente digitalizadas por el ADC. Este fenómeno introduce errores en el cálculo del valor eficaz de la corriente, dado que el ruido se suma a la señal útil, alterando su amplitud y, en consecuencia, el resultado del procesamiento. Este efecto se vuelve particularmente significativo en condiciones de baja corriente, donde la señal de interés tiene una amplitud reducida y, por lo tanto, resulta más susceptible a ser enmascarada por el ruido.
+
+Desde el punto de vista del análisis de señales, esta situación puede interpretarse en términos de la relación señal-ruido (SNR). Cuando el nivel de ruido es comparable con la señal medida, la SNR disminuye, lo que deriva en una menor precisión y confiabilidad de la medición. En los ensayos realizados, se evidenció que, para valores pequeños de corriente, el sistema presenta una mayor dispersión en las mediciones, atribuible a la influencia relativa del ruido sobre la señal. En cambio, a medida que la corriente aumenta, la señal adquiere mayor amplitud y la SNR mejora, reduciendo el impacto del ruido en el resultado final. 
+
+En la Figura~\ref{fig:fuente_ruido_osciloscopio} se muestra la medición realizada con el osciloscopio de la señal digitalizada a la salida del sensor en presencia de ruido, donde se puede apreciar cómo las fluctuaciones introducidas por la fuente afectan la forma de onda obteniendo un valor de 24 $mV$ eficaz cuando no hay ninguna carga conectada. Dependiendo de la sensibilidad del sensor, este nivel de ruido puede representar una limitación importante para la medición de corrientes bajas, ya que el valor medido podría estar dominado por el ruido en lugar de reflejar el consumo real.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{imagenes/fuente_ruido_osciloscopio.jpg}
+    \caption{Medición de la señal a la salida del sensor en presencia de ruido utilizando un osciloscopio.}
+    \label{fig:fuente_ruido_osciloscopio}  
+\end{figure}
+
+Estos resultados muestran la importancia de considerar el diseño de la etapa de alimentación y acondicionamiento de señal como un aspecto crítico del sistema. Si bien en la implementación actual se emplean técnicas básicas de mitigación, como filtrado y calibración de offset, los ensayos realizados evidencian que el ruido de la fuente puede constituir una limitación relevante, especialmente en escenarios donde se requiere medir consumos bajos con mayor precisión.
 
 \section{Limitaciones del uso del protocolo ESP-NOW en conjunto con MQTT}
 asda \dots
