@@ -2,6 +2,18 @@
 \chapter{Marco Teórico}
 \label{sec:marco-teorico}
 
+\section{Microrredes eléctricas}
+\label{sec:microrredes_elec}
+El concepto de Microrred es definido como aquellos sistemas integrados, que combinan elementos tales como generadores, dispositivos de almacenamiento y cargas eléctricas ubicados dentro de un área delimitada, con la capacidad de operar tanto de forma autónoma como conectadas a la red de distribución principal \cite{Olulope2022}. El término hace referencia a un pequeño número de recursos energéticos que puede actuar como una entidad única a nivel de red y proporcionar un modo de funcionamiento desconectado o conectado a la red, brindando así el suministro de energía permanente a las cargas eléctricas locales \cite{Uddin2023}.
+
+Considerando el bus que permite la transferencia de energía entre los componentes, estas pueden clasificarse en tres tipos fundamentales \cite{Kim2023,Lei2025}:
+
+\begin{itemize}
+    \item \textbf{Microrredes de corriente alterna (M-CA):} poseen un bus o barra de CA al que se conectan generación, almacenamiento y cargas. Estos sistemas presentan una integración sencilla a la red eléctrica convencional y utilizan tecnologías maduras, pero requieren conversiones extras cuando las fuentes y/o cargas son de CC (ej. paneles fotovoltaicos, baterías), lo que reduce la eficiencia.
+    \item \textbf{Microrredes de corriente continua (M-CC):} se estructuran alrededor de un bus de CC. Presentan una eficiencia más alta al evitar múltiples conversiones; son adecuadas para cargas modernas que ya trabajan en CC y no presentan los inconvenientes de sincronización y estabilidad típicos de CA. Pero aún falta estandarización en niveles de tensión y dispositivos de protección.
+    \item \textbf{Microrredes híbridas (M-CACC):} combinan buses de CA y CC interconectados mediante convertidores electrónicos de potencia bidireccionales, permitiendo aprovechar las ventajas de ambos. Presentan flexibilidad para integrar recursos en CA y CC al mismo tiempo, pero requieren una mejor coordinación del control entre los dos buses.
+\end{itemize}
+
 \section{Teoría del control}
 \label{sec:teoria_control}
 Para asegurar la estabilidad, la calidad de la energía y la eficiencia económica de la microrred, los convertidores deben operar bajo una estructura de control que contemple diversas estrategias, en función de la tarea específica que desempeñen dentro de la microrred. Entre las arquitecturas de control más aceptadas en la comunidad científica, se encuentra el ``control jerárquico'', el cual organiza las funciones de control en distintos niveles, cada uno con objetivos definidos y operando en diferentes escalas de tiempo \cite{Shuai2018}.
@@ -19,18 +31,6 @@ Según cómo se toman las decisiones de control y dónde reside la ``inteligenci
 
 Las estrategias de control centralizadas utilizan un controlador único que decide actuar basándose en información global de la microrred; si bien esto favorece una coordinación precisa entre los componentes del sistema, el control es vulnerable a fallos en el controlador y/o las comunicaciones. En las estrategias de control descentralizado, cada controlador aplicado a los convertidores opera con mediciones locales, sin comunicación con otros dispositivos; esto reduce la vulnerabilidad a fallos pero limita el conocimiento del estado global del sistema. En las estrategias de control distribuidas, los controladores de los convertidores intercambian información limitada para coordinar decisiones; de esta forma se combina tolerancia a fallos y conocimiento global de la microrred.
 
-\section{Microrredes eléctricas}
-\label{sec:microrredes_elec}
-El concepto de Microrred es definido como aquellos sistemas integrados, que combinan elementos tales como generadores, dispositivos de almacenamiento y cargas eléctricas ubicados dentro de un área delimitada, con la capacidad de operar tanto de forma autónoma como conectadas a la red de distribución principal \cite{Olulope2022}. El término hace referencia a un pequeño número de recursos energéticos que puede actuar como una entidad única a nivel de red y proporcionar un modo de funcionamiento desconectado o conectado a la red, brindando así el suministro de energía permanente a las cargas eléctricas locales \cite{Uddin2023}.
-
-Considerando el bus que permite la transferencia de energía entre los componentes, estas pueden clasificarse en tres tipos fundamentales \cite{Kim2023,Lei2025}:
-
-\begin{itemize}
-    \item \textbf{Microrredes de corriente alterna (M-CA):} poseen un bus o barra de CA al que se conectan generación, almacenamiento y cargas. Estos sistemas presentan una integración sencilla a la red eléctrica convencional y utilizan tecnologías maduras, pero requieren conversiones extras cuando las fuentes y/o cargas son de CC (ej. paneles fotovoltaicos, baterías), lo que reduce la eficiencia.
-    \item \textbf{Microrredes de corriente continua (M-CC):} se estructuran alrededor de un bus de CC. Presentan una eficiencia más alta al evitar múltiples conversiones; son adecuadas para cargas modernas que ya trabajan en CC y no presentan los inconvenientes de sincronización y estabilidad típicos de CA. Pero aún falta estandarización en niveles de tensión y dispositivos de protección.
-    \item \textbf{Microrredes híbridas (M-CACC):} combinan buses de CA y CC interconectados mediante convertidores electrónicos de potencia bidireccionales, permitiendo aprovechar las ventajas de ambos. Presentan flexibilidad para integrar recursos en CA y CC al mismo tiempo, pero requieren una mejor coordinación del control entre los dos buses.
-\end{itemize}
-
 \section{Sistemas Multiagente}
 Un Sistema Multiagente (MAS) es un paradigma computacional compuesto por múltiples entidades autónomas, denominadas agentes, que interactúan entre sí para resolver problemas que exceden las capacidades de un agente individual \cite{Stennikov2022}. En el ámbito de las microrredes, los agentes representan componentes físicos (generadores, cargas, almacenamiento) con capacidad de procesamiento local y comunicación \cite{Altin2023}.
 
@@ -47,7 +47,7 @@ Donde los componentes de la ecuación representan:
 \end{itemize}
 Bajo este enfoque, el sistema logra que, tras procesar un número suficiente de muestras, la diferencia entre las estimaciones locales de cada nodo desaparezca, alcanzando un valor de consenso que representa el promedio de la carga total en la microrred. 
 
-\section{Tencnologías de comunicación}
+\section{Tecnologías de comunicación}
 \subsection{bus CAN}
 
 El protocolo CAN (\textit{Controller Area Network}) es un sistema de comunicación serial robusto y altamente confiable, desarrollado originalmente por Bosch para permitir el intercambio eficiente de información entre múltiples dispositivos en entornos embebidos. De acuerdo con la descripción técnica recopilada por National Instruments, todos los nodos conectados al bus comparten el mismo medio físico y reciben cada mensaje transmitido, decidiendo de manera autónoma si la información es relevante para ellos. Esta característica elimina la necesidad de una unidad central de control y favorece arquitecturas distribuidas.
@@ -67,7 +67,7 @@ Otra característica importante es la posibilidad de registrar múltiples dispos
 
 \subsection{UART}
 
-UART es un método tradicional de comunicación serial asíncrona que continúa siendo fundamental en sistemas embebidos debido a su simplicidad y confiabilidad. La documentación técnica de Espressif describe que los dispositivos ESP32 disponen de varios controladores UART independientes, cada uno configurable en aspectos como la velocidad de transmisión, el número de bits de datos, el uso de paridad y la cantidad de bits de parada.
+UART (\textit{Universal Asynchronous Receiver-Transmitter}) es un método tradicional de comunicación serial asíncrona que continúa siendo fundamental en sistemas embebidos debido a su simplicidad y confiabilidad. La documentación técnica de Espressif describe que los dispositivos ESP32 disponen de varios controladores UART independientes, cada uno configurable en aspectos como la velocidad de transmisión, el número de bits de datos, el uso de paridad y la cantidad de bits de parada.
 La comunicación no requiere una señal de reloj compartida, ya que cada extremo acuerda previamente la velocidad de transmisión. Esta característica facilita el uso de UART en sistemas donde solo se necesita un intercambio punto a punto, evitando la complejidad de buses más estructurados.
 El controlador UART del ESP32 permite manejar interrupciones asociadas a la recepción y transmisión de datos mediante colas de eventos en FreeRTOS, lo que reduce la carga del procesador y mejora la capacidad del sistema para reaccionar de manera oportuna. También incorpora soporte para control de flujo tanto por hardware como por software, lo que resulta útil cuando es necesario evitar desbordamientos del buffer en transmisiones de alta velocidad.
 El periférico ofrece funciones avanzadas como la detección de patrones específicos dentro del flujo de datos, lo que permite generar interrupciones cuando se reconocen secuencias particulares, y la operación en modos especiales como RS-485, que añade la capacidad de usar líneas diferenciales y trabajar en topologías half-duplex. Estas características amplían significativamente el rango de aplicaciones posibles, desde comunicaciones simples entre microcontroladores hasta sistemas industriales donde se requiere robustez y adaptación a diferentes entornos eléctricos \cite{uartEspressif}.

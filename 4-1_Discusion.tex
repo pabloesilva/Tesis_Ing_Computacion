@@ -38,7 +38,7 @@ En relación con la influencia del ruido introducido por la fuente de alimentaci
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.9\textwidth]{imagenes/ensayo_fuentes.jpg}
-    \caption{Ensayo comparativo de la señal de corriente medida con una fuente de laboratorio yuna fuente comercial conmutada.}
+    \caption{Ensayo comparativo de la señal de salida del sensor utilizando una fuente de laboratorio y una fuente comercial conmutada.}
     \label{fig:ensayo_fuentes}
 \end{figure}
 
@@ -57,9 +57,9 @@ En la Figura~\ref{fig:fuente_ruido_osciloscopio} se muestra la medición realiza
 
 Estos resultados muestran la importancia de considerar el diseño de la etapa de alimentación y acondicionamiento de señal como un aspecto crítico del sistema. Si bien en la implementación actual se emplean técnicas básicas de mitigación, como filtrado y calibración de offset, los ensayos realizados evidencian que el ruido de la fuente puede constituir una limitación relevante, especialmente en escenarios donde se requiere medir consumos bajos con mayor precisión.
 
-\section{Limitaciones del uso del protocolo ESP-NOW en conjunto con MQTT}
+\section{Limitaciones del uso del protocolo ESP-NOW en conjunto con WiFi}
 
-En relación con las limitaciones del uso conjunto de ESP-NOW y MQTT, un aspecto fundamental a considerar es la restricción propia de los microcontroladores ESP32 respecto al uso simultáneo de modos de comunicación inalámbrica. Si bien el ESP32 permite operar tanto en WiFi convencional como utilizando el protocolo ESP-NOW, la coexistencia de ambos no es completamente transparente, ya que comparten el mismo hardware de radio. Esto implica que, en la práctica, la operación simultánea presenta limitaciones en términos de configuración, estabilidad y rendimiento, especialmente cuando se requiere mantener una conexión activa a una red WiFi mientras se intercambian datos mediante ESP-NOW.
+En relación con las limitaciones del uso conjunto de ESP-NOW y WiFi, un aspecto fundamental a considerar es la restricción propia de los microcontroladores ESP32 respecto al uso simultáneo de modos de comunicación inalámbrica. Si bien el ESP32 permite operar tanto en WiFi convencional como utilizando el protocolo ESP-NOW, la coexistencia de ambos no es completamente transparente, ya que comparten el mismo hardware de radio. Esto implica que, en la práctica, la operación simultánea presenta limitaciones en términos de configuración, estabilidad y rendimiento, especialmente cuando se requiere mantener una conexión activa a una red WiFi mientras se intercambian datos mediante ESP-NOW.
 
 El problema principal radica en que los routers WiFi suelen cambiar automáticamente de canal (\textit{channel hopping}), lo que afecta directamente a redes basadas en ESP-NOW, ya que este protocolo requiere operar en el mismo canal que el dispositivo receptor. Cuando el router cambia de canal, todos los dispositivos ESP-NOW se ven afectados, debido a que requiere una reconfiguracón de la red.
 
