@@ -14,6 +14,19 @@ Considerando el bus que permite la transferencia de energía entre los component
     \item \textbf{Microrredes híbridas (M-CACC):} combinan buses de CA y CC interconectados mediante convertidores electrónicos de potencia bidireccionales, permitiendo aprovechar las ventajas de ambos. Presentan flexibilidad para integrar recursos en CA y CC al mismo tiempo, pero requieren una mejor coordinación del control entre los dos buses.
 \end{itemize}
 
+\subsection{Clasificación de las cargas en una microrred}
+El estándar IEEE 2030.7 clasifica las cargas de una microrred basándose en su nivel de criticidad y en su capacidad de ser controladas. Específicamente, se dividen en las siguientes categorías:
+\begin{itemize}
+    \item \textbf{Cargas críticas}: Son aquellas que deben recibir suministro en todos los modos de operación normales de la microrred. Por lo general, no pueden ser recortadas ni interrumpidas. Ejemplos de esto incluyen sistemas de tecnología de la información, sistemas de seguridad y sistemas de soporte vital o seguridad humana.
+    \item \textbf{Cargas prioritarias}: Son cargas que pueden ser reducidas o interrumpidas si es estrictamente necesario, pero que el sistema debe intentar mantener abastecidas en la medida de lo posible.
+    \item \textbf{Cargas controlables}: Pueden ser interrumpidas periódicamente o ajustadas a diferentes niveles de consumo. Ejemplos comunes son los sistemas de calefacción, ventilación y aire acondicionado (HVAC) o equipos de procesos industriales que no son esenciales.
+    \item \textbf{Cargas interrumpibles}: Son cargas que pueden desconectarse en cualquier momento para permitir que la generación disponible cubra una demanda alta. Ejemplos de esto incluyen el almacenamiento de energía térmica y la carga de baterías.
+    \item \textbf{Cargas de desvío o vertedero}: Se utilizan para absorber energía cuando hay un exceso de capacidad de generación y reducir la generación no es posible, o cuando resulta económicamente beneficioso aprovechar esa energía sobrante (por ejemplo, una carga de desvío para la energía de ráfagas en una turbina eólica).
+    \item \textbf{Cargas no definidas}: Cualquier otra carga que no tenga características definidas o que no encaje en las clasificaciones anteriores.
+\end{itemize}
+
+También establece que el sistema de control de la microrred debe contar con un despacho basado en prioridades (\textit{priority-based energy management}) para gestionar y optimizar la energía. Esto se aplica tanto cuando la microrred está conectada a la red principal como cuando opera en forma aislada (\textit{islanded mode}). Durante el modo aislado, la priorización es clave para mantener la estabilidad del sistema, permitiendo ejecutar acciones como la desconexión de cargas de emergencia (\textit{emergency load shedding}) y el control general de la demanda basándose en la jerarquía de las cargas \cite{IEEE2030-7-2017}.
+
 \section{Teoría del control}
 \label{sec:teoria_control}
 Para asegurar la estabilidad, la calidad de la energía y la eficiencia económica de la microrred, los convertidores deben operar bajo una estructura de control que contemple diversas estrategias, en función de la tarea específica que desempeñen dentro de la microrred. Entre las arquitecturas de control más aceptadas en la comunidad científica, se encuentra el ``control jerárquico'', el cual organiza las funciones de control en distintos niveles, cada uno con objetivos definidos y operando en diferentes escalas de tiempo \cite{Shuai2018}.
