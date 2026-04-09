@@ -107,7 +107,7 @@ Gracias a este modelo, los emisores y receptores quedan desacoplados, lo que per
 
 Además, el protocolo incluye mecanismos como el “\textit{Last Will and Testament}” (LWT), que permite a un cliente informar a otros sobre su desconexión inesperada, y sesiones persistentes, que facilitan la reconexión después de una caída de red \cite{mqtt311}\cite{mqtt50}.
 
-\section{Medición de Variables Fisicas}
+\section{Medición de Variables Físicas}
 \subsection{Conversor Análogico-Digital(ADC)}
 La conversión analógico-digital consiste en transformar la señal proveniente del circuito de muestreo y retención en una secuencia de valores binarios (digitales) que representan la amplitud de la señal analógica en cada instante en que se realiza el muestreo. Gracias al proceso de muestreo y retención, la amplitud de la señal de entrada se mantiene estable entre un pulso de muestreo y el siguiente, lo que permite llevar a cabo la conversión utilizando un valor fijo, en lugar de trabajar con una señal que cambia durante el tiempo que dura la conversión, es decir, el intervalo entre dos muestras consecutivas \cite{floyd2015digital}.
 
@@ -125,7 +125,14 @@ Este último método es el utilizado por el microcontrolador ESP32 para realizar
 
 El módulo ZMPT101B está diseñado para medir tensiones alternas, como las presentes en instalaciones domésticas, comerciales e indutriales, que no pueden ser leídas directamente por el ADC de un microcontrolador debido a que exceden su rango de entrada. Para resolver esto, el dispositivo reduce el voltaje de entrada a un nivel adecuado para su lectura por microcontroladores. Puede trabajar con señales de hasta 250 $VAC$ y proporciona en su salida una onda senoidal cuya amplitud puede ajustarse mediante un potenciómetro incorporado.
 
-Este módulo combina un transformador con una etapa de acondicionamiento de señal. El transformador proporciona aislamiento galvánico y permite la medición de señales alternas. Su bobina primaria se conecta a la fuente de voltaje a medir, mientras que la secundaria alimenta el circuito de acondicionamiento \cite{zmpt101b_datasheet}. Dicho circuito incluye un divisor de tensión y un amplificador operacional LM358, encargado de añadir un desplazamiento de nivel (\textit{offset}) a la señal de salida. Este desplazamiento es necesario para evitar valores negativos y adaptar la señal al rango del ADC. Su valor depende de la tensión de alimentación, por ejemplo, con 5 $V$ se obtiene un \textit{offset} de 2,5 $V$, y con 3,3 $V$, uno de 1,65 $V$. La salida del módulo puede conectarse directamente a una entrada analógica del microcontrolador, permitiendo medir el voltaje instantáneo.
+Este módulo combina un transformador con una etapa de acondicionamiento de señal. El transformador proporciona aislamiento galvánico y permite la medición de señales alternas. Su bobina primaria se conecta a la fuente de voltaje a medir, mientras que la secundaria alimenta el circuito de acondicionamiento \cite{zmpt101b_datasheet}. Dicho circuito incluye un divisor de tensión y un amplificador operacional LM358, encargado de añadir un desplazamiento de nivel (\textit{offset}) a la señal de salida. Este desplazamiento es necesario para evitar valores negativos y adaptar la señal al rango del ADC. Su valor depende de la tensión de alimentación, por ejemplo, con 5 $V$ se obtiene un \textit{offset} de 2,5 $V$, y con 3,3 $V$, uno de 1,65 $V$. La salida del módulo puede conectarse directamente a una entrada analógica del microcontrolador, permitiendo medir el voltaje instantáneo. Esto se puede observar en la Figura~\ref{fig:senial-azmpt101b}.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.9\textwidth]{imagenes/senial-zmpt101b.png}
+    \caption{Señal de salida del módulo ZMPT101B al medir una tensión alterna de 220 $VAC$ conalimentaciones de 5 $V$ y 3,3 $V$.}
+    \label{fig:senial-azmpt101b}
+\end{figure}
 
 \subsection{Sensor de corriente ACS712}
 El sensor de corriente ACS712, en específico la versión de 20 $A$, permite medir tanto corriente continua como alterna en un rango de hasta $\pm$ 20 $A$ mediante el uso del efecto Hall. Es una solución económica, precisa y fácil de implementar, tipicamente usado en control de motores, detección y gestión de cargas, protección de sobrecorriente, entre otros \cite{acs712_datasheet}.
