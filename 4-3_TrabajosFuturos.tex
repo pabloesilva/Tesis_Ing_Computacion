@@ -78,6 +78,17 @@ Esta incorporación permitiría optimizar el consumo energético del propio sist
 
 La implementación sería similar a la propuesta para la configuración de prioridades, donde los cambios en los estados de los nodos de consumo se realzarían mediante la publicación de mensajes desde la plataforma en el broker MQTT.
 
+\subsection{Migración a bases de datos orientadas a series temporales}
+
+En la implementación actual, el almacenamiento de la información se realiza mediante una base de datos relacional, lo cual resulta adecuado para el manejo estructurado de datos y relaciones entre entidades, pero presenta limitaciones cuando se trata de gestionar grandes volúmenes de datos indexados en función del tiempo. Como alternativa, se tiene el almacenamiento de datos orientado a series temporales (TSDB).
+
+En sistemas de monitoreo, donde se generan continuamente mediciones de variables como corriente, tensión o potencia, el tiempo se convierte en el atributo principal de los datos. En este contexto, las bases de datos de series temporales ofrecen ventajas significativas, ya que están diseñadas específicamente para la inserción eficiente de datos secuenciales, consultas basadas en ventanas temporales y almacenamiento optimizado mediante técnicas de compresión y retención de datos.
+
+La migración hacia una solución basada en TSDB permitiría mejorar el rendimiento en la escritura y consulta de datos, especialmente con una alta frecuencia de muestreo. Asimismo, facilitaría la implementación de funcionalidades avanzadas, tales como agregaciones automáticas, \textit{downsampling}, definición de políticas de retención y análisis de tendencias a lo largo del tiempo, lo cual resulta particularmente relevante para la evaluación de hábitos de consumo y la optimización del sistema.
+
+Desde el punto de vista de la arquitectura, esta transición implicaría la adaptación de los servicios encargados del almacenamiento de datos y la adaptación de la visualización compatible con este tipo de bases de datos. 
+Teniendo en cuenta que la adaptación no sería significativa en terminos de modificaciones a la estructura de control, esta migración representaría una mejora del sistema de monitoreo, permitiendo escalar la solución, mejorar su desempeño y habilitar nuevas funcionalidades analíticas que aporten valor al usuario y a la gestión energética de la microrred.
+
 \subsection{Análisis del Consumo y Generación de Estadísticas}
 
 Se plantea la inclusión de herramientas de análisis y generación de estadísticas sobre los hábitos de consumo energético. Actualmente, la plataforma permite visualizar variables en tiempo real y registrar datos históricos, pero no explota completamente el potencial de esta información para generar recomendaciones o alertas. Mediante el procesamiento de los datos recolectados, sería posible obtener indicadores relevantes, tales como perfiles de consumo por nodo, patrones horarios, identificación de consumos anómalos, entre otros.
