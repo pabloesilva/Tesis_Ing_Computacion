@@ -2,9 +2,6 @@
 \chapter{Conclusiones}
 \label{cap:Conclusiones}
 
-
-
-
 % \section{Comprobación final}
 
 % Lo que sigue puede ser útil como lista de comprobación
@@ -13,3 +10,15 @@
 % Pida siempre a otra persona que lea la tesis para comprobar su legibilidad, gramática, etc. 
 
 % No tiene por qué ser alguien que la entienda perfectamente. De hecho, los miembros de la familia pueden ser voluntarios
+
+El presente trabajo permitió validar la viabilidad de un sistema de gestión energética distribuido aplicado a microrredes, basado en el uso de microcontroladores de bajo costo, protocolos de comunicación inalámbrica y buses industriales. Realizando la identificación de las necesidades y características clave asociadas al monitoreo y control del consumo energético en una microrred para poder seleccionar las soluciones que resultarón más adecuadas en términos de eficiencia, simplicidad de implementación y confiabilidad en la transmisión de información. Este análisis permitió definir una arquitectura capaz de adaptarse a las particularidades de entornos aislados, donde la disponibilidad de recursos y la robustez del sistema son factores críticos.
+
+A partir de esta base, se diseñó e implementó un sistema de medición, adquisición y visualización de datos, que posibilita la comunicación efectiva entre los distintos nodos que componen las cargas conectadas a la microrred. La solución desarrollada integra mecanismos de medición local, intercambio de información distribuido y una plataforma de monitoreo basada en tecnologías IoT, permitiendo no solo la supervisión en tiempo real, sino también el almacenamiento y análisis histórico de los datos. Esta integración facilita la optimización del uso de la energía generada por fuentes renovables, al proporcionar información relevante tanto para el sistema de control como para el usuario final.
+
+En relación con la estrategia de control, la implementación de un mecanismo de gestión de cargas basado en prioridad (\textit{priority-based load shedding}) demostró ser efectiva para mantener el equilibrio energético del sistema. Este enfoque permite ajustar dinámicamente la demanda en función de la disponibilidad de energía, garantizando el suministro a cargas críticas y reduciendo el impacto de las variaciones en la generación. De este modo, se logra una operación más estable y eficiente, particularmente en escenarios caracterizados por la intermitencia de las fuentes renovables.
+
+Con el fin de evaluar el desempeño del sistema, se definieron y analizaron diferentes condiciones operativas, contemplando tanto escenarios favorables como desfavorables en realación al deficit energético. Para ello, se consideraron diferentes perfiles de generación así como distintos patrones de consumo vinculados a cargas específicas. Esta metodología permitió someter al sistema a situaciones representativas de operación real, evaluando su capacidad de respuesta ante condiciones dinámicas.
+
+Los resultados obtenidos permitieron validar el correcto funcionamiento del sistema bajo las distintas condiciones analizadas, evidenciando su capacidad para adaptarse a variaciones en la generación y la demanda, y para mantener la estabilidad operativa de la microrred. Asimismo, la plataforma de monitoreo desarrollada, basada en una arquitectura contenerizada, demostró ser una herramienta efectiva para la visualización en tiempo real, el análisis histórico y la verificación remota del comportamiento del sistema.
+
+Finalmente, la propuesta presenta un alto grado de resiliencia, especialmente en aplicaciones orientadas a microrredes rurales. La independencia de infraestructuras externas para la coordinación local, junto con el bajo costo de implementación, la convierten en una solución viable para contextos donde el acceso a la red eléctrica es limitado o inexistente. En este sentido, el sistema desarrollado constituye una alternativa concreta para mejorar la gestión y el aprovechamiento de la energía en entornos aislados, alineándose con las tendencias actuales hacia sistemas energéticos distribuidos, eficientes y sostenibles.
