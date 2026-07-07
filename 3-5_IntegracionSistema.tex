@@ -75,8 +75,8 @@ Finalmente, para la integración con la plataforma IoT, el sistema publica la te
 \begin{tabular}{|l|l|l|}
 \hline
 \textbf{Tipo de dato} & \textbf{Tópico MQTT} & \textbf{Descripción} \\ \hline
-Datos por nodo & \texttt{nodo/<ID>} & Publica el consumo instantáneo individual. \\ \hline
-Totales sistema & \texttt{energia/totales} & Publica las variables globales del sistema. \\ \hline
+Datos por nodo & \texttt{consumos} & Publica el consumo instantáneo individual. \\ \hline
+Totales sistema & \texttt{totales} & Publica las variables globales del sistema. \\ \hline
 Heartbeat & \texttt{status} & Notificación periódica de estado de conexion\\ 
          &              &  del AC al broker. \\ \hline
 \end{tabular}
@@ -91,7 +91,7 @@ Las cargas útiles (payloads) de los mensajes están estructuradas como objetos 
 \begin{tabular}{|l|l|l|}
 \hline
 \textbf{Campo} & \textbf{Tipo} & \textbf{Descripción} \\ \hline
-\texttt{nodo} & string & Identificador único del nodo (ej: ``nodo\_1'') \\ \hline
+\texttt{nodo} & string & Identificador único del nodo (ej: ``00:1A:2B:3C:4D:5E'') \\ \hline
 \texttt{consumo} & float & Consumo medido en Amperes o Watts \\ \hline
 \texttt{fecha} & string (ISO) & Marca de tiempo (ej: ``2025-02-18T14:55:10'') \\ \hline
 \end{tabular}
@@ -112,7 +112,11 @@ Las cargas útiles (payloads) de los mensajes están estructuradas como objetos 
 \end{tabular}
 \end{table}
 
-\section{Validación Experimental}
+\section{Ensayos Realizados en la Validación Experimental}
+
+Con el propósito de validar experimentalmente el sistema desarrollado, se realizaron una serie de ensayos destinados a evaluar su desempeño bajo diferentes condiciones de operación. Las pruebas fueron diseñadas para verificar el correcto funcionamiento del algoritmo de gestión del consumo y del sistema de monitoreo, considerando tanto distintos perfiles de generación como aspectos relacionados con la comunicación. En particular, se evaluó la respuesta del sistema ante un perfil de generación fotovoltaica para validar el algoritmo de priorización de cargas, se analizó el alcance de comunicación entre los nodos bajo condiciones de operación representativas y, finalmente, se realizaron ensayos utilizando un perfil de generación eólica con el fin de comprobar el comportamiento del sistema frente a una fuente de generación con características diferentes. En las siguientes subsecciones se describen la metodología empleada y los resultados obtenidos en cada uno de los ensayos realizados.
+
+\subsection{Validación del algoritmo de priorización de cargas mediante un perfil de generación fotovoltaica}
 
 Para evaluar la respuesta del algoritmo de priorización ante escenarios de generación variable, se diseñó un ensayo dinámico integral. Se conectaron cargas reales a los NC's, tal como se muestra en la Figura~\ref{img:prueba-carga}, configurando un escenario con diferentes tipos de demanda y niveles de importancia:
 
@@ -130,8 +134,6 @@ Para evaluar la respuesta del algoritmo de priorización ante escenarios de gene
 \end{itemize}
 
 La condición de entrada para el ensayo fue un perfil de irradiancia solar simulado. En la placa TI que actúa como Agente de Generación, se programó una curva de generación que emula el comportamiento de un día solar completo (amanecer, mediodía, atardecer), pero comprimido temporalmente en un ciclo acelerado de 5 minutos. Esto permitió someter al sistema a rampas pronunciadas de subida y bajada de disponibilidad energética, forzando la actuación de los NC y validando la respuesta del algoritmo.
-
-\subsection{Análisis de Resultados}
 
 La Figura~\ref{img:validacion} presenta la evolución temporal de las corrientes durante el ensayo completo. La línea punteada verde representa la corriente disponible ($I_{disp}$) dictada por el perfil solar simulado, mientras que la línea punteada roja muestra el consumo total ($I_{total}$) agregado de la red que el sistema intenta regular.
 
@@ -154,3 +156,40 @@ El comportamiento del sistema se analiza cronológicamente a través de los even
 \end{itemize}
 
 Este ensayo valida integralmente la lógica de control distribuido, demostrando que los NC's son capaces de auto-gestionarse para mantener el equilibrio energético de la microrred sin intervención del usuario, respetando estrictamente la jerarquía de prioridades establecida.
+
+\subsection{Evaluación del alcance de comunicación entre nodos bajo un perfil de generación fotovoltaica}
+
+Con el objetivo de evaluar el desempeño de la comunicación inalámbrica, se realizó un ensayo en el que los nodos de consumo fueron ubicados en diferentes ambientes y a distancias variables entre sí, reproduciendo una distribución representativa de una instalación real. Durante el ensayo se mantuvo el mismo perfil de generación fotovoltaica empleado en la validación funcional del algoritmo de priorización, resumido en intervalos de cinco minutos, con el fin de verificar que la separación física entre los dispositivos no afectara el intercambio de información ni la ejecución de la estrategia de gestión del consumo. La disposición física de los equipos y las distancias consideradas se presentan en la Figura~\ref{img:layout-prueba-distancia-nodo}. Los espacios utilizados para el ensayo fueron el laboratorio de electrónica y una de las oficinas de la Facultad de Ingeniería. El entorno contaba con paredes de ladrillo, mobiliario y diferentes dispositivos electrónicos compartiendo la misma banda de frecuencia, lo que representa un escenario de comunicación más exigente que un espacio abierto, debido a la presencia de obstáculos y posibles interferencias electromagnéticas.
+
+\begin{figure}[hbt!]
+    \centering
+    \includegraphics[width=1\textwidth]{imagenes/layout-prueba-distancia-nodo.png}
+    \caption{Plano de disposición de nodos para ensayo de alcance de comunicación}
+    \label{img:layout-prueba-distancia-nodo}
+\end{figure}
+
+La Figura~\ref{img:prueba-distancia} presenta la evolución temporal de la corriente disponible, el consumo total y la corriente consumida por cada uno de los nodos. Puede observarse que, a medida que aumenta la corriente disponible (línea roja), se fueron conectando los nodos habilitando sus respectivas cargas. Inicialmente se conecta el Nodo 2, seguido por el Nodo 3 y, finalmente, el Nodo 1. Cuando la disponibilidad de corriente disminuye, las cargas son desconectadas preservando el suministro de las cargas con mayor prioridad hasta que la energía disponible resulta insuficiente.
+
+En primer lugar, cuando disminuye la disponibilidad de corriente, se desconecta el Nodo 2. Seguidamente, al continuar la caída de la corriente disponible, se desconecta el Nodo 1. Finalmente, cuando la corriente disponible es insuficiente para mantener la carga del Nodo 3, este último también se desconecta. En el último instante, antes de que la disponibilidad de corriente llege a cero, se observa una reconexión breve del Nodo 1. Esto se debe a que por un momento la corriente disponible es suficiente para alimentar su carga, lo que demuestra que el sistema es capaz de evaluar en tiempo real la disponibilidad de energía y tomar decisiones de conexión o desconexión de manera autónoma.
+
+\begin{figure}[hbt!]
+    \centering
+    \includegraphics[width=1\textwidth]{imagenes/prueba-distancia-foco-calo.png}
+    \caption{Resultados del ensayo de alcance de comunicación bajo perfil de irradiancia solar}
+    \label{img:prueba-distancia}
+\end{figure}
+
+\subsection{Validación del sistema mediante un perfil de generación eólica}
+
+A fin de corroborar el funcionamiento del sistema bajo condiciones de generación diferentes a las utilizadas en los ensayos anteriores, se realizó una prueba empleando un perfil de generación eólica. Para ello, se utilizó un perfil correspondiente a un día de operación, resumido en intervalos de cinco minutos. Al igual que en el ensayo anterior, se utilizaron tres nodos de consumo. 
+
+La Figura~\ref{img:prueba-perfil-eolico} presenta la evolución temporal de la corriente disponible, el consumo total y la corriente demandada por cada uno de los nodos de consumo durante el ensayo. En los intervalos en que la generación disminuye, se desconecta inicialmente la carga asociada al Nodo 2, preservando la alimentación de las cargas con mayor prioridad. Cuando la corriente disponible continúa reduciéndose, el sistema desconecta posteriormente el Nodo 1, permaneciendo energizada únicamente la carga correspondiente al Nodo 3. En ese instante, luego de la desconexión de la carga del Nodo 1, el Nodo 2 se reconecta, ya que la corriente disponible resulta suficiente para alimentar su carga. Seguidamente, el Nodo 2 vuelve a desconectarse y la corriente disponible permanece prácticamente estable durante aproximadamente 30 segundos. En ese intervalo puede observarse que el Nodo 2 mantiene su carga desconectada debido a que, para tomar la decisión de reconexión, el algoritmo evalúa el último valor de consumo registrado más un margen del 5 \%. En esas condiciones, la corriente disponible aún resulta insuficiente para habilitar nuevamente la carga. Finalmente, cuando la corriente disponible aumenta, el Nodo 2 se reconecta y permanece energizado hasta el final del ensayo. Posteriormente, al incrementarse nuevamente la corriente disponible, el Nodo 1 también recupera su estado de conexión.
+
+\begin{figure}[hbt!]
+    \centering
+    \includegraphics[width=1\textwidth]{imagenes/prueba-perfil-eolico.png}
+    \caption{Resultados del ensayo de alcance de comunicación bajo perfil de generación eólica}
+    \label{img:prueba-perfil-eolico}
+\end{figure}
+
+Los resultados obtenidos demuestran que el algoritmo de gestión del consumo mantiene un comportamiento consistente frente a diferentes perfiles de generación, adaptando el consumo de forma automática a la disponibilidad energética sin comprometer el suministro de las cargas prioritarias. Asimismo, durante todo el ensayo no se observaron oscilaciones ni cambios de estado inconsistentes, lo que evidencia la estabilidad del sistema y confirma que la estrategia desarrollada es independiente del tipo de generación empleada para alimentar la microrred.
