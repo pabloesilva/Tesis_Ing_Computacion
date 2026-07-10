@@ -58,3 +58,39 @@ Para un análisis más granular, se desarrolló una vista de detalle por nodo, m
 \end{figure}
 
 Finalmente, la seguridad en el acceso remoto se garantizó mediante el despliegue de un contenedor Nginx actuando como proxy inverso, el cual gestiona certificados SSL de Let's Encrypt para forzar la comunicación encriptada vía HTTPS.
+
+\section{Migración de la plataforma a Grafana}
+
+Debido a la necesidad de contar con un sistema de visualización más robusto y flexible, se decidió migrar la plataforma de monitoreo hacia Grafana. Esta herramienta permite crear dashboards interactivos y altamente personalizables, facilitando la integración de múltiples fuentes de datos y ofreciendo una mejor experiencia de usuario. Por otro lado, Grafana proporciona soporte nativo para bases de datos orientadas a series temporales, lo que mejora significativamente la eficiencia en la gestión de grandes volúmenes de datos históricos.
+
+\subsection{Migración a bases de datos orientadas a series temporales}
+
+En la implementación actual, el almacenamiento de la información se realiza mediante una base de datos relacional, lo cual resulta adecuado para el manejo estructurado de datos y relaciones entre entidades, pero presenta limitaciones cuando se trata de gestionar grandes volúmenes de datos indexados en función del tiempo. Como alternativa, se tiene el almacenamiento de datos orientado a series temporales (TSDB).
+
+En sistemas de monitoreo como el propuesto, donde se generan continuamente mediciones de variables como corriente, tensión o potencia, el tiempo se convierte en el atributo principal de los datos. En este contexto, las bases de datos de series temporales ofrecen ventajas significativas, ya que están diseñadas específicamente para la inserción eficiente de datos secuenciales, consultas basadas en ventanas temporales y almacenamiento optimizado mediante técnicas de compresión y retención de datos.
+
+Por este motivo, se decidió realizar la migración hacia una solución basada en TSDB para mejorar el rendimiento en la escritura y consulta de datos, facilitando la implementación de funcionalidades avanzadas, tales como agregaciones automáticas, \textit{downsampling}, definición de políticas de retención y análisis de tendencias a lo largo del tiempo, lo cual resulta particularmente relevante para la evaluación de hábitos de consumo y la optimización del sistema.
+
+Se optó por utilizar InfluxDB, una de las bases de datos de series temporales más populares y ampliamente adoptadas en la industria, debido a su facilidad de integración con Grafana y su capacidad para manejar grandes volúmenes de datos con alta eficiencia. La implementación se llevó a cabo mediante la creación de un contenedor Docker específico para InfluxDB, configurando los parámetros de almacenamiento y retención de datos manteniendo la compatibilidad con el esquema de datos previamente definido en la base de datos relacional. Además, se adaptó el worker MQTT para que, en lugar de persistir los datos en MariaDB, los enviara a InfluxDB utilizando la API de escritura de la base de datos.
+
+\subsection{Integración con Grafana}
+
+Con el fin de mantener la coherencia en la visualización de los datos, se configuró Grafana para conectarse a InfluxDB como fuente de datos. Se crearon dashboards personalizados que replican y mejoran las funcionalidades del panel de control original, permitiendo a los usuarios explorar los datos históricos y en tiempo real mediante gráficos interactivos, tablas y alertas configurables.
+
+Como se puede observar en la Figura~\ref{fig:grafana-dashboard}, la interfaz de Grafana ofrece la misma experiencia visual que el panel de control original, pero con opciones de filtrado, selección de rangos temporales y visualización de métricas agregadas, lo que facilita la toma de decisiones informadas sobre el consumo energético y la gestión de los nodos conectados.
+
+\begin{figure}[hbt!]
+    \centering
+    \includegraphics[width=1\textwidth]{imagenes/plataforma-grafana.png}
+    \caption{Vista del dashboard de Grafana con la integración de InfluxDB como fuente de datos}
+    \label{fig:grafana-dashboard}
+\end{figure}
+
+Además, se incluyeron los graficos individuales de cada nodo, permitiendo un análisis detallado del comportamiento de cada NC, similar a la vista de detalle implementada en la plataforma original. Esto se observa en la Figura~\ref{fig:plataforma-grafana-nodos}, donde se muestran los gráficos de corriente, con la posibilidad de comparar su desempeño a lo largo del tiempo.
+
+\begin{figure}[hbt!]
+    \centering
+    \includegraphics[width=1\textwidth]{imagenes/plataforma-grafana-nodos.png}
+    \caption{Vista de los gráficos individuales de cada nodo en Grafana}
+    \label{fig:plataforma-grafana-nodos}
+\end{figure}
