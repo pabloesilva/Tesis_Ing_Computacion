@@ -94,9 +94,9 @@
 \usepackage[tight,spanish]{minitoc}
 
 \usepackage[spanish, es-tabla, activeacute]{babel}
-% \addto\captionsspanish{% se agrega para cambiar "Índice de Imágenes" por "Índice de Figuras"
-%   \renewcommand{\listfigurename}{Índice de Figuras}%
-% }
+\addto\captionsspanish{% se agrega para cambiar "Índice de Imágenes" por "Índice de Figuras"
+  \renewcommand{\listfigurename}{Índice de Figuras}%
+}
 
 \usepackage{fvextra}
 \usepackage{csquotes}
@@ -285,3 +285,6 @@ title={#2},#1}
 
 \usepackage{xspace}
 \usepackage{morewrites}
+
+% Comando uniforme para términos técnicos en inglés (se muestran en cursiva)
+\newcommand{\ing}[1]{\textit{#1}}

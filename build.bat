@@ -21,4 +21,7 @@ pdflatex %TEXFILE%
 echo ============================================
 echo  COMPILACION COMPLETA: Revisar %TEXFILE%.pdf
 echo ============================================
+
+echo Limpiando archivos temporales...
+call clean.bat
 pause

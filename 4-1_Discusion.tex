@@ -1,5 +1,5 @@
 \cleardoublepage                                  % 
-\chapter{Discusion}
+\chapter{Discusión y Trabajo a Futuro}
 \label{cap:Discusion}
 
 \section{Mediciones de corriente en cargas no lineales}
@@ -11,12 +11,12 @@ Debido a que el cálculo RMS es válido para cualquier forma de onda, es posible
 
 Con el objetivo de analizar el comportamiento del sistema frente a cargas no lineales, se realizó una evaluación experimental utilizando como caso de estudio un cargador de computadora portátil, representativo de este tipo de consumos debido a su naturaleza conmutada. Este tipo de dispositivo presenta una corriente caracterizada por picos pronunciados y una alta distorsión respecto de la forma senoidal ideal, lo que lo convierte en un escenario adecuado para validar el desempeño del sistema de medición.
 
-Durante el ensayo, se compararon los valores de corriente obtenidos por el sistema desarrollado con mediciones de referencia realizadas mediante una punta de corriente conectada a un osciloscopio. La La  punta  fue  ajustada  a  una  sensibilidad  de 100  $mV$/$A$,  obteniéndose  un  consumo  de  0,490  $A$  de  corriente eficaz como se observa en la Figura~\ref{fig:medicion_referencia}. 
+Durante el ensayo, se compararon los valores de corriente obtenidos por el sistema desarrollado con mediciones de referencia realizadas mediante una punta de corriente conectada a un osciloscopio. La punta fue ajustada a una sensibilidad de 100 $mV$/$A$, obteniéndose un consumo de 0,490 $A$ de corriente eficaz, como se observa en la Figura~\ref{fig:medicion_referencia}.
 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.8\textwidth]{imagenes/medicion_referencia.png}
-    \caption{Medición de corriente en un cargador de computadora portátil utilizando la punta de corrriente conectada a un osciloscopio.}
+    \caption{Medición de corriente en un cargador de computadora portátil utilizando la punta de corriente conectada a un osciloscopio.}
     \label{fig:medicion_referencia}  
 \end{figure}
 
@@ -29,7 +29,7 @@ El valor de corriente reportado por el sistema corresponde al nodo NC3, que al m
     \label{fig:medicion_nc3}
 \end{figure}
 
-Esta comparación permitió validar que, aun en presencia de cargas no lineales, el sistema presenta un comportamiento consistente y adecuado para medición de corriente en entornos generales.
+Esta comparación permitió validar que, aun en presencia de cargas no lineales, el sistema presenta un comportamiento consistente y adecuado para la medición de corriente en entornos residenciales con presencia de cargas no lineales.
 
 \section{Influencia del ruido introducido por la fuente}
 
@@ -55,20 +55,28 @@ En la Figura~\ref{fig:fuente_ruido_osciloscopio} se muestra la medición realiza
     \label{fig:fuente_ruido_osciloscopio}  
 \end{figure}
 
-Estos resultados muestran la importancia de considerar el diseño de la etapa de alimentación y acondicionamiento de señal como un aspecto crítico del sistema. Si bien en la implementación actual se emplean técnicas básicas de mitigación, como filtrado y calibración de offset, los ensayos realizados evidencian que el ruido de la fuente puede constituir una limitación relevante, especialmente en escenarios donde se requiere medir consumos bajos con mayor precisión.
+Estos resultados muestran la importancia de considerar el diseño de la etapa de alimentación y acondicionamiento de señal como un aspecto crítico del sistema. Si bien en la implementación actual se emplean técnicas básicas de mitigación, como filtrado y calibración de \ing{offset}, los ensayos realizados evidencian que el ruido de la fuente puede constituir una limitación relevante, especialmente en escenarios donde se requiere medir consumos bajos con mayor precisión.
 
-\section{Limitaciones del uso del protocolo ESP-NOW en conjunto con WiFi}
+\section{Limitaciones del uso del protocolo ESP-NOW en conjunto con Wi-Fi}
 
-En relación con las limitaciones del uso conjunto de ESP-NOW y WiFi, un aspecto fundamental a considerar es la restricción propia de los microcontroladores ESP32 respecto al uso simultáneo de modos de comunicación inalámbrica. Si bien el ESP32 permite operar tanto en WiFi convencional como utilizando el protocolo ESP-NOW, la coexistencia de ambos no es completamente transparente, ya que comparten el mismo hardware de radio. Esto implica que, en la práctica, la operación simultánea presenta limitaciones en términos de configuración, estabilidad y rendimiento, especialmente cuando se requiere mantener una conexión activa a una red WiFi mientras se intercambian datos mediante ESP-NOW.
+En relación con las limitaciones del uso conjunto de ESP-NOW y Wi-Fi, un aspecto fundamental a considerar es la restricción propia de los microcontroladores ESP32 respecto al uso simultáneo de modos de comunicación inalámbrica. Si bien el ESP32 permite operar tanto en Wi-Fi convencional como utilizando el protocolo ESP-NOW, la coexistencia de ambos no es completamente transparente, ya que comparten el mismo \ing{hardware} de radio. Esto implica que, en la práctica, la operación simultánea presenta limitaciones en términos de configuración, estabilidad y rendimiento, especialmente cuando se requiere mantener una conexión activa a una red Wi-Fi mientras se intercambian datos mediante ESP-NOW.
 
-El problema principal radica en que los routers WiFi suelen cambiar automáticamente de canal (\textit{channel hopping}), lo que afecta directamente a redes basadas en ESP-NOW, ya que este protocolo requiere operar en el mismo canal que el dispositivo receptor. Cuando el router cambia de canal, todos los dispositivos ESP-NOW se ven afectados, debido a que requiere una reconfiguracón de la red.
+El problema principal radica en que los \ing{routers} Wi-Fi suelen cambiar automáticamente de canal (\textit{channel hopping}), lo que afecta directamente a redes basadas en ESP-NOW, ya que este protocolo requiere operar en el mismo canal que el dispositivo receptor. Cuando el \ing{router} cambia de canal, todos los dispositivos ESP-NOW se ven afectados, debido a que requiere una reconfiguración de la red.
 
-Para abordar esta limitación, existen distintas estrategias. Una de las más utilizadas es la topología con un gateway. En este esquema, solo un ESP32 (Gateway) está conectado al router. Los demás ESP32 no conocen la contraseña del Wi-Fi ni se conectan a él; solo se comunican con el gateway mediante ESP-NOW. Esto agrega un mayor nivel de complejidad y un punto de falla adicional que concentra las comunicaciones a contramando del esquema distribuido que se plantea en este trabajo. Dendro de este esquema, hay a su vez dos alternativas: una es utilizando un gateway de con dos chips uno para manejar la conexión WiFi y otro para manejar ESP-NOW; la otra alternatva es un mismo chip para ambas funciones, pero en este caso se requiere un escaneo dinamico de canales para mantener la comunicación \cite{eichhorn2025_espnow_wifi}.
+Para abordar esta limitación, existen distintas estrategias. Una de las más utilizadas es la topología con un \ing{gateway}. En este esquema, solo un ESP32 (\ing{Gateway}) está conectado al \ing{router}. Los demás ESP32 no conocen la contraseña del Wi-Fi ni se conectan a él; solo se comunican con el \ing{gateway} mediante ESP-NOW. Esto agrega un mayor nivel de complejidad y un punto de falla adicional que concentra las comunicaciones a contramano del esquema distribuido que se plantea en este trabajo. Dentro de este esquema, hay a su vez dos alternativas: una es utilizar un \ing{gateway} con dos chips, uno para manejar la conexión Wi-Fi y otro para manejar ESP-NOW; la otra alternativa es un mismo chip para ambas funciones, pero en este caso se requiere un escaneo dinámico de canales para mantener la comunicación \cite{eichhorn2025_espnow_wifi}.
 
-Por otro lado si se tiene acceso a la configuración del router, otra solución más estable es desactivar el canal automático y fijar uno manualmente. Esto elimina el problema de raíz, ya que el radio del ESP32 nunca tendrá que saltar de frecuencia para seguir al AP forzando un canal estático. Esta alternativa no siempre es posible y puede generar problemas de interferencia con otras redes WiFi cercanas, además de limitar la flexibilidad del sistema.
+Por otro lado si se tiene acceso a la configuración del \ing{router}, otra solución más estable es desactivar el canal automático y fijar uno manualmente. Esto elimina el problema de raíz, ya que el radio del ESP32 nunca tendrá que saltar de frecuencia para seguir al AP forzando un canal estático. Esta alternativa no siempre es posible y puede generar problemas de interferencia con otras redes Wi-Fi cercanas, además de limitar la flexibilidad del sistema.
 
-Esta restricción tiene una consecuencia directa en la arquitectura del sistema implementado. En particular, impide que cada nodo de consumo pueda actuar de manera independiente como cliente MQTT, es decir, conectarse a un broker, suscribirse a tópicos y publicar información de forma directa. La necesidad de alternar o compatibilizar ambos modos de comunicación introduce complejidad adicional y puede afectar la confiabilidad del sistema, especialmente en aplicaciones que requieren comunicación continua o en tiempo real.
+Esta restricción tiene una consecuencia directa en la arquitectura del sistema implementado. En particular, impide que cada nodo de consumo pueda actuar de manera independiente como cliente MQTT, es decir, conectarse a un \ing{broker}, suscribirse a tópicos y publicar información de forma directa. La necesidad de alternar o compatibilizar ambos modos de comunicación introduce complejidad adicional y puede afectar la confiabilidad del sistema, especialmente en aplicaciones que requieren comunicación continua o en tiempo real.
 
-Como resultado, se optó por una arquitectura en la cual no todos los nodos interactúan directamente con el broker MQTT, sino que la comunicación se estructura en capas: por un lado, ESP-NOW se utiliza para la coordinación local entre nodos, y por otro, el agente de carga mediante la inclusión de otro ESP y el comunicación UART maneja la red WiFi y la conexión mediante MQTT. Si bien esta solución permite sortear la limitación mencionada, introduce una dependencia adicional en el sistema, concentrando funciones en un único punto y generando posibles cuellos de botella o puntos únicos de falla.
+Como resultado, se optó por una arquitectura en la cual no todos los nodos interactúan directamente con el \ing{broker} MQTT, sino que la comunicación se estructura en capas: por un lado, ESP-NOW se utiliza para la coordinación local entre nodos, y por otro, el agente de carga, mediante la inclusión de otro ESP y la comunicación UART, maneja la red Wi-Fi y la conexión mediante MQTT. Si bien esta solución permite sortear la limitación mencionada, introduce una dependencia adicional en el sistema, concentrando funciones en un único punto y generando posibles cuellos de botella o puntos únicos de falla.
 
 En este sentido, la combinación de ambos protocolos, si bien resulta funcional y adecuada para el propósito del sistema, presenta limitaciones que deben ser consideradas en el diseño general, especialmente en términos de escalabilidad, robustez y flexibilidad en la comunicación.
+
+\section{Alcance de comunicación y elección de la antena}
+
+Un factor determinante en el desempeño de la comunicación inalámbrica del sistema es la elección del módulo ESP32 y, en particular, del tipo de antena que este integra. En los ensayos de alcance realizados (véase la Sección~\ref{sec:ensayo_alcance}), en los que los nodos se distribuyeron en distintos ambientes de una instalación real con paredes de ladrillo y mobiliario, se verificó que los módulos empleados, que utilizan una antena impresa sobre la propia PCB, mantienen una comunicación estable a distancias de entre 20 y 25 m atravesando paredes. Este alcance resulta suficiente para la mayoría de los entornos residenciales y rurales de pequeña escala considerados en este trabajo.
+
+No obstante, en instalaciones de mayor extensión, donde las cargas pueden encontrarse más alejadas del Agente de Carga, este alcance podría constituir una limitación. En tales casos, la cobertura puede ampliarse de manera significativa seleccionando módulos ESP32 que dispongan de un conector para antena externa (por ejemplo, del tipo u.FL/IPEX), lo que permite incorporar antenas de mayor ganancia orientadas a extender el alcance o a mejorar la penetración a través de obstáculos. En contraposición, se recomienda evitar las variantes más compactas del módulo, que emplean antenas de montaje superficial tipo SMD, ya que su menor ganancia reduce el alcance efectivo y las vuelve más susceptibles a la atenuación producida por paredes e interferencias del entorno. La elección del módulo constituye así un compromiso entre tamaño, costo y alcance que debe evaluarse en función de las dimensiones y características de cada instalación.
+
+\input{4-3_TrabajosFuturos}

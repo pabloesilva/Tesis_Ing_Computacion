@@ -21,7 +21,12 @@ del /q *.ist 2>nul
 del /q *.ilg 2>nul
 del /q *.nlo 2>nul
 del /q *.nls 2>nul
+del /q *.maf 2>nul
+del /q *.mtc 2>nul
+del /q *.mtc0 2>nul
+del /q *.run.xml 2>nul
 del /q *.mw 2>nul
+del /q *.glg 2>nul
 del /q *.fdb_latexmk 2>nul
 del /q *.fls 2>nul
 del /q *.synctex.gz 2>nul

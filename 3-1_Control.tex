@@ -1,9 +1,12 @@
 \cleardoublepage
 \chapter{Control prioritario de la demanda de energía de las cargas}
+\label{cap:control}
 
 La estrategia de gestión de demanda implementada en el SGC se fundamenta en un esquema de priorización estática definido por el usuario. Este enfoque permite que el sistema tome decisiones autónomas de desconexión y reconexión de cargas sin depender de un controlador central que dicte las acciones individuales de cada nodo.
 
 El objetivo principal del algoritmo es asegurar que la demanda total de corriente de la microrred ($I_{total}$) se mantenga siempre por debajo de la corriente máxima disponible ($I_{disponible}$) informada por el AC, garantizando en todo momento el suministro a los dispositivos esenciales.
+
+Si bien el estándar IEEE 2030.7 define seis categorías de cargas (críticas, prioritarias, controlables, interrumpibles, de desvío y no definidas), como se presentó en la Sección~\ref{sec:microrredes_elec}, en este trabajo dicha taxonomía se simplificó a un esquema de cuatro niveles orientado a la implementación. Esta reducción responde a que el sistema actúa exclusivamente sobre la conexión o desconexión de cargas finales según su criticidad, por lo que se conservó la distinción esencial entre cargas críticas y no críticas, subdividiendo estas últimas en tres niveles de prioridad que determinan el orden de desconexión.
 
 Para lograr esto, a cada NC se le asigna un nivel de prioridad que determina su jerarquía en el orden de desconexión ante un déficit energético. La Tabla \ref{tab:niveles_prioridad} detalla los cuatro niveles definidos para la operación del sistema.
 
@@ -30,7 +33,7 @@ Cuando la carga se encuentra activa, el nodo monitorea si la corriente total con
 
 \begin{enumerate}
     \item \textbf{Verificación de Criticidad:} Si el nodo tiene configurada una prioridad de nivel 0 (Crítica), ignora la condición de sobrecarga y mantiene el suministro, trasladando la responsabilidad de desconexión a los nodos no críticos.
-    \item \textbf{Evaluación de Prioridad Global:} El nodo verifica si posee la prioridad más baja (valor numérico más alto) entre todos los dispositivos que están actualmente conectados a la red. En caso de que el nodo sea el único que poseea la menor prioridad, el mismo se desconecta. Si existen nodos con una prioridad menor (ej. prioridad 3) y el nodo actual tiene prioridad alta (ej. 1), este último se mantiene conectado.
+    \item \textbf{Evaluación de Prioridad Global:} El nodo verifica si posee la prioridad más baja (valor numérico más alto) entre todos los dispositivos que están actualmente conectados a la red. En caso de que el nodo sea el único que posea la menor prioridad, el mismo se desconecta. Si existen nodos con una prioridad menor (ej. prioridad 3) y el nodo actual tiene prioridad alta (ej. 1), este último se mantiene conectado.
     \item \textbf{Desempate por Consumo:} En el caso de que existan múltiples nodos compartiendo la prioridad más baja (por ejemplo, dos estufas con prioridad 3), el sistema debe decidir cuál de ellas desconectar para estabilizar la red con el menor impacto posible. Para ello, el algoritmo implementa una regla de desempate basada en el consumo: se desconecta aquel nodo que presente el menor consumo de corriente medido.
 \end{enumerate}
 
@@ -44,4 +47,4 @@ La condición para reconectar una carga es:
     I_{total} + I_{carga\_propia} + I_{margen} < I_{disponible}
 \end{equation}
 
-Donde $I_{carga\_propia}$ es el último valor de corriente registrado por el nodo antes de desconectarse e $I_{margen}$ es un valor de seguridad adicional. Solo si la capacidad disponible en la red es suficiente para soportar la carga del nodo más este margen de seguridad, el NC decide su reconexión automática.
+En esta expresión, $I_{carga\_propia}$ es el último valor de corriente registrado por el nodo antes de desconectarse e $I_{margen}$ es un valor de seguridad adicional, adoptado en la implementación como un margen del 5 \% respecto de dicho consumo. Solo si la capacidad disponible en la red es suficiente para soportar la carga del nodo más este margen de seguridad, el NC decide su reconexión automática.

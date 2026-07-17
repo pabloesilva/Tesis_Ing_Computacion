@@ -48,20 +48,24 @@ Las estrategias de control centralizadas utilizan un controlador único que deci
 Un Sistema Multiagente (MAS) es un paradigma computacional compuesto por múltiples entidades autónomas, denominadas agentes, que interactúan entre sí para resolver problemas que exceden las capacidades de un agente individual \cite{Stennikov2022}. En el ámbito de las microrredes, los agentes representan componentes físicos (generadores, cargas, almacenamiento) con capacidad de procesamiento local y comunicación \cite{Altin2023}.
 
 La implementación de MAS en el control de microrredes proporciona beneficios significativos en términos de resiliencia, ya que la falla de un agente no compromete la totalidad del sistema, y escalabilidad, permitiendo la integración de nuevos nodos de consumo de manera modular \cite{Altin2023}.
+
 \subsection{Teoría del consenso medio}
+\label{sec:consenso_medio}
+en el firmware de cada nodo.
 El consenso medio es un algoritmo fundamental en los sistemas distribuidos que permite que un grupo de agentes alcance un acuerdo sobre el promedio de sus estados iniciales mediante intercambios de información únicamente con sus vecinos directos \cite{OlfatiSaber2004}. En el SGC propuesto, esta teoría permite que cada Nodo de Consumo (NC) estime la corriente total demandada por la red sin depender de un servidor central. A través de iteraciones sucesivas, los nodos convergen hacia un valor común de consumo total agregado, lo que permite la ejecución de la lógica de priorización distribuida. Para el tratamiento de la información procesada por muestras, la dinámica de actualización de estado para cada agente $i$ se expresa de forma discreta mediante la Ecuación \ref{eq:consenso_discreto}:
 \begin{equation}x_i[k+1] = \omega_{ii} x_i[k] + \sum_{j \in N_i} \omega_{ij} x_j[k]\label{eq:consenso_discreto}\end{equation}
-Donde los componentes de la ecuación representan:
+En esta ecuación, los componentes representan:
 \begin{itemize}
     \item $x_i[k+1]$ y $x_i[k]$: Representan el estado del agente (el valor estimado de corriente total) en la muestra actual y en la muestra anterior, respectivamente.
     \item $N_i$: Es el conjunto de nodos vecinos con los que el agente $i$ tiene comunicación directa.
     \item $\omega_{ii}$ (\textbf{Peso local}): Es un factor que define cuánta importancia se le otorga al valor propio o estimación previa del nodo dentro del cálculo actual.
     \item $\omega_{ij}$ (\textbf{Peso de los vecinos}): Es un factor que determina cuánta importancia se le asigna a la información reportada por los demás nodos vecinos de la red.\item $\sum x_j[k]$: Representa la sumatoria de los estados o valores informados por los vecinos en la muestra anterior.
 \end{itemize}
-Bajo este enfoque, el sistema logra que, tras procesar un número suficiente de muestras, la diferencia entre las estimaciones locales de cada nodo desaparezca, alcanzando un valor de consenso que representa el promedio de la carga total en la microrred. 
+Bajo este enfoque, el sistema logra que, tras procesar un número suficiente de muestras, la diferencia entre las estimaciones locales de cada nodo desaparezca, alcanzando un valor de consenso que representa el promedio de la carga total en la microrred.
+% TODO(revisión): mantener la coherencia con la implementación final. Explicitar (aquí o en los Cap. 5/9) qué versión quedó implementada para estimar el consumo agregado: el consenso iterativo con pesos descrito en esta sección o la suma directa de los reportes de los nodos (\texttt{totalCurrent}) empleada en la Tabla 11.2.
 
 \section{Tecnologías de comunicación}
-\subsection{bus CAN}
+\subsection{Bus CAN}
 
 El protocolo CAN (\textit{Controller Area Network}) es un sistema de comunicación serial robusto y altamente confiable, desarrollado originalmente por Bosch para permitir el intercambio eficiente de información entre múltiples dispositivos en entornos embebidos. De acuerdo con la descripción técnica recopilada por National Instruments, todos los nodos conectados al bus comparten el mismo medio físico y reciben cada mensaje transmitido, decidiendo de manera autónoma si la información es relevante para ellos. Esta característica elimina la necesidad de una unidad central de control y favorece arquitecturas distribuidas.
 Una de las propiedades más destacadas de CAN es su método de arbitraje no destructivo. Cuando dos nodos intentan transmitir simultáneamente, el bus no sufre colisiones que invaliden los datos, sino que el protocolo determina de inmediato qué mensaje posee mayor prioridad. Esto se logra mediante la comparación bit a bit del identificador del mensaje, donde el ID con mayor precedencia conserva el acceso mientras el resto de los nodos interrumpe su transmisión.
@@ -82,12 +86,12 @@ Otra característica importante es la posibilidad de registrar múltiples dispos
 
 UART (\textit{Universal Asynchronous Receiver-Transmitter}) es un método tradicional de comunicación serial asíncrona que continúa siendo fundamental en sistemas embebidos debido a su simplicidad y confiabilidad. La documentación técnica de Espressif describe que los dispositivos ESP32 disponen de varios controladores UART independientes, cada uno configurable en aspectos como la velocidad de transmisión, el número de bits de datos, el uso de paridad y la cantidad de bits de parada.
 La comunicación no requiere una señal de reloj compartida, ya que cada extremo acuerda previamente la velocidad de transmisión. Esta característica facilita el uso de UART en sistemas donde solo se necesita un intercambio punto a punto, evitando la complejidad de buses más estructurados.
-El controlador UART del ESP32 permite manejar interrupciones asociadas a la recepción y transmisión de datos mediante colas de eventos en FreeRTOS, lo que reduce la carga del procesador y mejora la capacidad del sistema para reaccionar de manera oportuna. También incorpora soporte para control de flujo tanto por hardware como por software, lo que resulta útil cuando es necesario evitar desbordamientos del buffer en transmisiones de alta velocidad.
+El controlador UART del ESP32 permite manejar interrupciones asociadas a la recepción y transmisión de datos mediante colas de eventos en FreeRTOS, lo que reduce la carga del procesador y mejora la capacidad del sistema para reaccionar de manera oportuna. También incorpora soporte para control de flujo tanto por \ing{hardware} como por \ing{software}, lo que resulta útil cuando es necesario evitar desbordamientos del \ing{buffer} en transmisiones de alta velocidad.
 El periférico ofrece funciones avanzadas como la detección de patrones específicos dentro del flujo de datos, lo que permite generar interrupciones cuando se reconocen secuencias particulares, y la operación en modos especiales como RS-485, que añade la capacidad de usar líneas diferenciales y trabajar en topologías half-duplex. Estas características amplían significativamente el rango de aplicaciones posibles, desde comunicaciones simples entre microcontroladores hasta sistemas industriales donde se requiere robustez y adaptación a diferentes entornos eléctricos \cite{uartEspressif}.
 
 \subsection{\texorpdfstring{I$^{2}$C}{I2C}}
 
-El bus I²C (\textit{Inter-Integrated Circuit}), especificado por NXP, constituye un método de comunicación serial síncrona ampliamente adoptado en sistemas embebidos para interconectar sensores, memorias y periféricos de baja y media velocidad. Su funcionamiento se basa en solo dos líneas compartidas: una para datos (SDA) y otra para la señal de reloj (SCL). Esta característica simplifica el diseño del hardware y permite conectar múltiples dispositivos en el mismo bus.
+El bus I²C (\textit{Inter-Integrated Circuit}), especificado por NXP, constituye un método de comunicación serial síncrona ampliamente adoptado en sistemas embebidos para interconectar sensores, memorias y periféricos de baja y media velocidad. Su funcionamiento se basa en solo dos líneas compartidas: una para datos (SDA) y otra para la señal de reloj (SCL). Esta característica simplifica el diseño del \ing{hardware} y permite conectar múltiples dispositivos en el mismo bus.
 Cada componente conectado a I²C posee una dirección única y puede actuar como transmisor o receptor según el contexto. La especificación oficial contempla la existencia de múltiples maestros, lo que implica que distintos dispositivos pueden iniciar una transmisión. Para resolver posibles conflictos, el bus incorpora un mecanismo de arbitraje que garantiza que solo un maestro controle la comunicación en cada momento sin generar colisiones destructivas.
 I²C dispone de diversos modos de operación que varían en velocidad, desde el modo estándar de 100 kbit/s hasta configuraciones de alta velocidad que alcanzan 3,4 Mbit/s. Esta flexibilidad permite emplearlo tanto en aplicaciones de bajo consumo como en sistemas que necesitan tasas de transferencia superiores. Además, están definidos con precisión los parámetros eléctricos, los tiempos de conmutación y las condiciones que deben respetarse para garantizar la integridad de la señal, lo que facilita el diseño de redes estables y confiables con múltiples dispositivos conectados simultáneamente \cite{i2cNXP}.
 
@@ -95,8 +99,8 @@ I²C dispone de diversos modos de operación que varían en velocidad, desde el 
 
 MQTT (\textit{Message Queuing Telemetry Transport}) es un protocolo de mensajería ligero basado en el patrón \textit{publish}/\textit{subscribe}, diseñado para entornos con recursos limitados y redes que pueden tener baja velocidad, alta latencia o conexiones poco fiables. 
 Este protocolo opera sobre TCP/IP, lo que le permite garantizar conexiones ordenadas y bidireccionales. 
-El hecho de mantener la conexión abierta entre cliente y broker minimiza el sobrecosto de establecer nuevas conexiones, algo clave cuando se trabaja con dispositivos de bajo consumo. 
-La arquitectura de MQTT se articula entre clientes (que pueden publicar mensajes o suscribirse a temas) y un broker, encargado de recibir, filtrar y reenviar los mensajes según los temas (“\textit{topics}”) suscritos. 
+El hecho de mantener la conexión abierta entre cliente y \ing{broker} minimiza el sobrecosto de establecer nuevas conexiones, algo clave cuando se trabaja con dispositivos de bajo consumo. 
+La arquitectura de MQTT se articula entre clientes (que pueden publicar mensajes o suscribirse a temas) y un \ing{broker}, encargado de recibir, filtrar y reenviar los mensajes según los temas (“\textit{topics}”) suscritos. 
 Gracias a este modelo, los emisores y receptores quedan desacoplados, lo que permite escalabilidad eficiente y flexibilidad en la comunicación. MQTT define tres niveles de “\textit{Quality of Service}” (QoS) para la entrega de mensajes:
 \begin{enumerate}
     \item QoS 0: entrega a lo sumo una vez (“\textit{fire-and-forget}”).
@@ -105,17 +109,17 @@ Gracias a este modelo, los emisores y receptores quedan desacoplados, lo que per
 \end{enumerate}
 
 
-Además, el protocolo incluye mecanismos como el “\textit{Last Will and Testament}” (LWT), que permite a un cliente informar a otros sobre su desconexión inesperada, y sesiones persistentes, que facilitan la reconexión después de una caída de red \cite{mqtt311}\cite{mqtt50}.
+Además, el protocolo incluye mecanismos como el “\textit{Last Will and Testament}” (LWT), que permite a un cliente informar a otros sobre su desconexión inesperada, y sesiones persistentes, que facilitan la reconexión después de una caída de red \cite{mqtt311, mqtt50}.
 
 \section{Medición de Variables Físicas}
-\subsection{Conversor Análogico-Digital(ADC)}
+\subsection{Conversor Analógico-Digital (ADC)}
 La conversión analógico-digital consiste en transformar la señal proveniente del circuito de muestreo y retención en una secuencia de valores binarios (digitales) que representan la amplitud de la señal analógica en cada instante en que se realiza el muestreo. Gracias al proceso de muestreo y retención, la amplitud de la señal de entrada se mantiene estable entre un pulso de muestreo y el siguiente, lo que permite llevar a cabo la conversión utilizando un valor fijo, en lugar de trabajar con una señal que cambia durante el tiempo que dura la conversión, es decir, el intervalo entre dos muestras consecutivas \cite{floyd2015digital}.
 
 Existen diferentes métodos para realizar la conversión analógico-digital, cada uno con sus propias características y aplicaciones. Algunos de los métodos son:
 \begin{itemize}
     \item \textbf{Convertidor analógico-digital flash (paralelo)}: Se compara el valor de entrada con una serie de tensiones de referencia. Cuando la señal de entrada supera una referencia, el convertidor genera un bit alto en la salida correspondiente. Este método es extremadamente rápido, pero requiere una gran cantidad de comparadores, lo que lo hace costoso y poco práctico para resoluciones altas.
     \item \textbf{Convertidor analógico-digital de pendiente doble}: Este método integra la señal analógica durante un período de tiempo específico y luego compara el resultado con un valor de referencia. Es comúnmente utilizado en aplicaciones de medición de precisión, como multímetros digitales.
-    \item \textbf{Convertidor analógico-digital sigma-delta}: Este método oversamplea la señal analógica a una frecuencia mucho mayor que la frecuencia de Nyquist y utiliza un modulador sigma-delta para convertir la señal en una secuencia de bits, cuantificando el incremento o decremento sufrido por la señal.
+    \item \textbf{Convertidor analógico-digital sigma-delta}: Este método sobremuestrea la señal analógica a una frecuencia mucho mayor que la frecuencia de Nyquist y utiliza un modulador sigma-delta para convertir la señal en una secuencia de bits, cuantificando el incremento o decremento sufrido por la señal.
     \item \textbf{Convertidor analógico-digital por aproximaciones sucesivas SAR }: Este método utiliza un registro de desplazamiento para generar una aproximación binaria de la señal analógica. El proceso comienza con el bit más significativo (MSB) y continúa hasta el bit menos significativo (LSB), ajustando cada bit en función de si la aproximación es mayor o menor que la señal de entrada.
 \end{itemize}
 
@@ -123,48 +127,51 @@ Este último método es el utilizado por el microcontrolador ESP32 para realizar
 
 \subsection{Sensor de Tensión ZMPT101B}
 
-El módulo ZMPT101B está diseñado para medir tensiones alternas, como las presentes en instalaciones domésticas, comerciales e indutriales, que no pueden ser leídas directamente por el ADC de un microcontrolador debido a que exceden su rango de entrada. Para resolver esto, el dispositivo reduce el voltaje de entrada a un nivel adecuado para su lectura por microcontroladores. Puede trabajar con señales de hasta 250 $VAC$ y proporciona en su salida una onda senoidal cuya amplitud puede ajustarse mediante un potenciómetro incorporado.
+El módulo ZMPT101B está diseñado para medir tensiones alternas, como las presentes en instalaciones domésticas, comerciales e industriales, que no pueden ser leídas directamente por el ADC de un microcontrolador debido a que exceden su rango de entrada. Para resolver esto, el dispositivo reduce el voltaje de entrada a un nivel adecuado para su lectura por microcontroladores. Puede trabajar con señales de hasta 250 V de CA y proporciona en su salida una onda senoidal cuya amplitud puede ajustarse mediante un potenciómetro incorporado.
 
 Este módulo combina un transformador con una etapa de acondicionamiento de señal. El transformador proporciona aislamiento galvánico y permite la medición de señales alternas. Su bobina primaria se conecta a la fuente de voltaje a medir, mientras que la secundaria alimenta el circuito de acondicionamiento \cite{zmpt101b_datasheet}. Dicho circuito incluye un divisor de tensión y un amplificador operacional LM358, encargado de añadir un desplazamiento de nivel (\textit{offset}) a la señal de salida. Este desplazamiento es necesario para evitar valores negativos y adaptar la señal al rango del ADC. Su valor depende de la tensión de alimentación, por ejemplo, con 5 $V$ se obtiene un \textit{offset} de 2,5 $V$, y con 3,3 $V$, uno de 1,65 $V$. La salida del módulo puede conectarse directamente a una entrada analógica del microcontrolador, permitiendo medir el voltaje instantáneo. Esto se puede observar en la Figura~\ref{fig:senial-azmpt101b}.
 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=0.9\textwidth]{imagenes/senial-zmpt101b.png}
-    \caption{Señal de salida del módulo ZMPT101B al medir una tensión alterna de 220 $VAC$ conalimentaciones de 5 $V$ y 3,3 $V$.}
+    \caption{Señal de salida del módulo ZMPT101B al medir una tensión alterna de 220 V de CA con alimentaciones de 5 V y 3,3 V.}
     \label{fig:senial-azmpt101b}
 \end{figure}
 
 \subsection{Sensor de corriente ACS712}
-El sensor de corriente ACS712, en específico la versión de 20 $A$, permite medir tanto corriente continua como alterna en un rango de hasta $\pm$ 20 $A$ mediante el uso del efecto Hall. Es una solución económica, precisa y fácil de implementar, tipicamente usado en control de motores, detección y gestión de cargas, protección de sobrecorriente, entre otros \cite{acs712_datasheet}.
+El sensor de corriente ACS712, en específico la versión de 20~A, permite medir tanto corriente continua como alterna en un rango de hasta $\pm$20~A mediante el uso del efecto Hall, fenómeno por el cual un conductor que transporta corriente en presencia de un campo magnético perpendicular genera una tensión proporcional a dicha corriente~\cite{hall_effect}. Es una solución económica, precisa y fácil de implementar, típicamente usado en control de motores, detección y gestión de cargas, protección de sobrecorriente, entre otros \cite{acs712_datasheet}.
 
-Para utilizarlo, se debe interrumpir el conductor por donde circula la corriente y conectarse a las borneras del módulo, mientras que el sensor se alimenta mediante los pines $VCC$ y $GND$. La salida del dispositivo es analógica y entrega un voltaje proporcional a la corriente medida. En condiciones de 0 $A$, la salida es de 2,5 $V$. Esta señal puede conectarse a una entrada ADC de un microcontrolador, y a partir de ella calcular la corriente medida con la Ecuación~\ref{eq:acs712}. Donde $A_{out}$ es el voltaje de salida del sensor y $S$ es la sensibilidad del sensor. Es importante tener en cuenta que el valor obtenido representa la corriente instantánea, por lo que para obtener valores promedio o RMS en el caso de corriente alterna, se deben realizar cálculos adicionales sobre una serie de muestras.
+Para utilizarlo, se debe interrumpir el conductor por donde circula la corriente y conectarse a las borneras del módulo, mientras que el sensor se alimenta mediante los pines $VCC$ y $GND$. La salida del dispositivo es analógica y entrega una tensión proporcional a la corriente instantánea. De manera análoga a lo que ocurre con el módulo ZMPT101B, al medir corriente alterna la salida es una señal senoidal montada sobre un nivel de continua (\ing{offset}), en condiciones de 0~A y con alimentación de 5~V, la salida se ubica en 2,5~V. Dado que este nivel excede el rango de entrada del ADC del ESP32, la señal se adapta mediante un divisor resistivo, de forma similar a lo observado en la Figura~\ref{fig:senial-azmpt101b}. 
+
+Esta señal puede conectarse a una entrada ADC de un microcontrolador, y a partir de ella calcular la corriente medida con la Ecuación~\ref{eq:acs712}, donde $A_{out}$ es el voltaje de salida del sensor (en mV) y $S$ es la sensibilidad del sensor, expresada en mV/A. Es importante tener en cuenta que el valor obtenido representa la corriente instantánea, por lo que para obtener valores promedio o eficaces (RMS, del inglés \textit{Root Mean Square}) en el caso de corriente alterna, se deben realizar cálculos adicionales sobre una serie de muestras.
 
 \begin{equation}
-    I = \frac{(A_{out} - 2,5 V)}{S \frac{mV}{A}}
+    I = \frac{A_{out} - 2{,}5\,V}{S}
     \label{eq:acs712}
 \end{equation}
 
 
 \section{Contenerización Docker}
+\label{sec:docker}
 
-Docker es una plataforma de software abierta que permite crear y ejecutar aplicaciones. Utiliza diferentes objetos, entre ellos las imagenes y los contenedores. Donde una imagen es una plantilla con instrucciones para crear un contenedor. Por otro lado, un contenedor es una instancia ejecutable de una imagen.
+Docker es una plataforma de \ing{software} abierta que permite crear y ejecutar aplicaciones. Utiliza diferentes objetos, entre ellos las imágenes y los contenedores. Una imagen es una plantilla con instrucciones para crear un contenedor, mientras que un contenedor es una instancia ejecutable de una imagen.
 
-La contenerización de una aplicación permite que cada componente de la misma se ejecute en un contenedor separado, es decir, cada contenedor hace una tarea que contribuye al funcionamiento de la aplicación. Cada componenete se ejecuta de forma aislada y es autocontendio, lo que significa que tiene todo lo necesario para funcionar por si mismo. Además son independientes y portables por lo que un contenedor no depende de otro y pueden ejecutarse en diferentes entornos \cite{docker_container_docs}. 
+La contenerización de una aplicación permite que cada componente de la misma se ejecute en un contenedor separado, es decir, cada contenedor hace una tarea que contribuye al funcionamiento de la aplicación. Cada componente se ejecuta de forma aislada y es autocontenido, lo que significa que tiene todo lo necesario para funcionar por sí mismo. Además son independientes y portables por lo que un contenedor no depende de otro y pueden ejecutarse en diferentes entornos \cite{docker_container_docs}. 
 
 
 \subsection{Broker MQTT}
 
-Un broker MQTT es un elemento central encargado de facilitar la comunicación mediante mensajes entre clientes y dispositivos IoT a través de este protocolo. Funciona bajo el modelo de publicación-suscripción (pub/sub), siendo responsable de gestionar las conexiones y el flujo de información. Su tarea consiste en recibir los mensajes enviados por los publicadores, validar sus permisos, organizarlos según los niveles de calidad de servicio (QoS) y, posteriormente, distribuirlos a los suscriptores que estén autorizados a recibirlos.
-Hay diferentes tipos de brokers MQTT:
+Un \ing{broker} MQTT es un elemento central encargado de facilitar la comunicación mediante mensajes entre clientes y dispositivos IoT a través de este protocolo. Funciona bajo el modelo de publicación-suscripción (\ing{pub/sub}), siendo responsable de gestionar las conexiones y el flujo de información. Su tarea consiste en recibir los mensajes enviados por los publicadores, validar sus permisos, organizarlos según los niveles de calidad de servicio (QoS) y, posteriormente, distribuirlos a los suscriptores que estén autorizados a recibirlos.
+Hay diferentes tipos de \ing{brokers} MQTT:
 \begin{itemize}
-    \item \textbf{broker MQTT de código abierto}: Son aquellos que se pueden descargar, modificar y utilizar de forma gratuita, como Mosquitto.
-    \item \textbf{broker MQTT en la nube}: Un broker MQTT online hospedado y ejecutado en la nube, como AWS IoT Core.
+    \item \textbf{Broker MQTT de código abierto}: Son aquellos que se pueden descargar, modificar y utilizar de forma gratuita, como Mosquitto.
+    \item \textbf{Broker MQTT en la nube}: Un \ing{broker} MQTT \ing{online} hospedado y ejecutado en la nube, como AWS IoT Core.
     \item \textbf{Broker MQTT local}: Instalado y hospedado por completo en un servidor local, lo que permite un control total sobre la infraestructura y los datos.
     \item \textbf{Broker MQTT empresarial}: Ofrecidos por proveedores de servicios con características avanzadas, soporte técnico y opciones de personalización.
 \end{itemize}
 
-Un broker MQTT es aplicable en diversos casos de uso y áreas como la salud, el sector automotriz, los sistemas de hogares inteligentes y muchas más. 
-Utilizar un broker MQTT como solución de transmisión de datos permite, por ejemplo, a los fabricantes obtener información en tiempo real sobre el rendimiento de las máquinas de sus fabricas o en sistemas de gestión energética para agregar datos de consumo eléctrico de medidores inteligentes en ubicaciones distribuidas \cite{mosquitto_homepage}.
+Un \ing{broker} MQTT es aplicable en diversos casos de uso y áreas como la salud, el sector automotriz, los sistemas de hogares inteligentes y muchas más. 
+Utilizar un \ing{broker} MQTT como solución de transmisión de datos permite, por ejemplo, a los fabricantes obtener información en tiempo real sobre el rendimiento de las máquinas de sus fábricas o en sistemas de gestión energética para agregar datos de consumo eléctrico de medidores inteligentes en ubicaciones distribuidas \cite{mosquitto_homepage}.
 
 \subsection{Base de Datos}
 Una base de datos puede entenderse como un conjunto organizado de información estructurada, que generalmente se almacena de manera digital dentro de un sistema informático. Por lo general, su administración está a cargo de un sistema de gestión de bases de datos (DBMS). En conjunto, los datos, el DBMS y las aplicaciones que interactúan con ellos conforman lo que se conoce como un sistema de bases de datos, término que habitualmente se simplifica simplemente como base de datos.
@@ -174,8 +181,19 @@ En la mayoría de los sistemas actuales, la información se organiza en tablas c
 \subsubsection{SQL}
 
 El lenguaje de consulta estructurada (SQL) es un lenguaje de programación ampliamente utilizado en bases de datos relacionales para almacenar, consultar y gestionar información. Estas bases de datos organizan los datos en tablas compuestas por filas y columnas, que representan atributos y relaciones entre los distintos valores. Mediante SQL es posible realizar operaciones como insertar, actualizar, eliminar y recuperar datos, así como definir su estructura, controlar el acceso y optimizar el rendimiento del sistema.
+% TODO(revisión): agregar una cita para esta subsección sobre SQL (la sección hermana 4.6.2 sí cita la fuente [54]).
+
+\subsubsection{Bases de datos de series temporales e InfluxDB}
+\label{sec:tsdb}
+Además de las bases de datos relacionales, existen las bases de datos de series temporales (TSDB, por sus siglas en inglés), diseñadas específicamente para almacenar y consultar datos indexados en función del tiempo. Estas resultan adecuadas para sistemas de monitoreo, donde se generan continuamente mediciones cuyo atributo principal es la marca temporal, y ofrecen ventajas como la inserción eficiente de datos secuenciales, consultas basadas en ventanas temporales, compresión del almacenamiento y políticas de retención automática de datos~\cite{influxdb}.
+
+InfluxDB es una de las TSDB de código abierto más adoptadas. Organiza la información en \ing{buckets} donde cada registro se compone de una marca de tiempo, campos con los valores medidos y etiquetas que permiten indexar y filtrar las series. Provee una API de escritura y consulta que facilita su integración con aplicaciones y herramientas de visualización~\cite{influxdb}.
+
+\subsubsection{Grafana}
+
+Grafana es una plataforma de código abierto para la visualización y el análisis de datos. Permite construir tableros (\ing{dashboards}) interactivos compuestos por paneles configurables ---gráficos temporales, indicadores, tablas--- que se alimentan de múltiples fuentes de datos, entre ellas InfluxDB, para las que cuenta con soporte nativo. Incorpora además funcionalidades de filtrado, selección de rangos temporales y definición de alertas, lo que la convierte en una herramienta habitual para la supervisión de sistemas en tiempo real~\cite{grafana}.
 
 \subsection{NGINX}
 
-NGINX (/``\textit{engine x}''/) es un servidor web HTTP, proxy reverso, caché de contenido, balanceador de carga, servidor proxy TCP/UDP y de correo. Funciona con un proceso maestro y varios procesos de trabajo o \textit{workers}. El proceso maestro se encarga de leer y validar la configuración, así como de administrar a los \textit{workers}.
-Los \textit{workers} son resposables de manejar las conexiones y procesar las solicitudes. NGINX utiliza un modelo de eventos asíncrono y no bloqueante, lo que le permite manejar un gran número de conexiones simultáneas con un uso eficiente de los recursos del sistema. Existe una relación de compromiso entre el número de \textit{workers} y el uso de recursos disponibles del sistema \cite{nginx_beginners_guide}.
+NGINX (pronunciado \textit{engine-x}) es un servidor web HTTP, proxy reverso, caché de contenido, balanceador de carga, servidor proxy TCP/UDP y de correo. Funciona con un proceso maestro y varios procesos de trabajo o \textit{workers}. El proceso maestro se encarga de leer y validar la configuración, así como de administrar a los \textit{workers}.
+Los \textit{workers} son responsables de manejar las conexiones y procesar las solicitudes. NGINX utiliza un modelo de eventos asíncrono y no bloqueante, lo que le permite manejar un gran número de conexiones simultáneas con un uso eficiente de los recursos del sistema. Existe una relación de compromiso entre el número de \textit{workers} y el uso de recursos disponibles del sistema \cite{nginx_beginners_guide}.

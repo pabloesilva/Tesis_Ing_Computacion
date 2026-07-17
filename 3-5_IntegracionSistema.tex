@@ -1,11 +1,11 @@
 \cleardoublepage
 \chapter{Integración del Sistema de Gestión de Consumos}
 
-La validación final del Sistema de Gestión de Consumos requirió la integración de todos los componentes desarrollados, incluyendo el AC, los NC's y la Plataforma IoT, en un entorno que emulara fielmente las condiciones operativas de una microrred real. Para ello, se diseñó un banco de pruebas híbrido que combina hardware real de potencia con emuladores digitales para los demas agentes involucrados en el control de la microrred.
+La validación final del Sistema de Gestión de Consumos requirió la integración de todos los componentes desarrollados, incluyendo el AC, los NC y la Plataforma IoT, en un entorno que emulara fielmente las condiciones operativas de una microrred real. Para ello, se diseñó un banco de pruebas híbrido que combina \ing{hardware} real de potencia con emuladores digitales para los demás agentes involucrados en el control de la microrred.
 
 \section{Interconexión con Agentes de la Microrred}
 
-Tal como se observa en la Figura~\ref{img:integracion}, la arquitectura física integra el AC en el bus de comunicaciones de la microrred. Dado que no se disponía de la infraestructura completa de generación, como paneles solares físicos y un banco de baterías de gran capacidad en el laboratorio de pruebas, se optó por emular el comportamiento de los agentes restantes utilizando hardware de alto rendimiento.
+Tal como se observa en la Figura~\ref{img:integracion}, la arquitectura física integra el AC en el bus de comunicaciones de la microrred. Dado que no se disponía de la infraestructura completa de generación, como paneles solares físicos y un banco de baterías de gran capacidad en el laboratorio de pruebas, se optó por emular el comportamiento de los agentes restantes utilizando \ing{hardware} de alto rendimiento.
 
 \begin{figure}[hbt!]
     \centering
@@ -27,10 +27,10 @@ En la configuración del ensayo, una de las placas TI asume el rol de Agente de 
 
 \section{Estructuras de Comunicación}
 
-El correcto funcionamiento del sistema distribuido depende de la integridad de los datos intercambiados en tres niveles de red distintos. A continuación, se detallan las estructuras de los paquetes implementados para cada protocolo, especificando el formato de los datos para garantizar la interoperabilidad entre las diferentes plataformas de hardware.
+El correcto funcionamiento del sistema distribuido depende de la integridad de los datos intercambiados en tres niveles de red distintos. A continuación, se detallan las estructuras de los paquetes implementados para cada protocolo, especificando el formato de los datos para garantizar la interoperabilidad entre las diferentes plataformas de \ing{hardware}.
 
 \subsection{Bus CAN}
-La comunicación entre el AC y el AG se realiza mediante tramas estándar CAN 2.0B. Es fundamental destacar que, para el empaquetado de los datos numéricos que ocupan más de un byte, se utiliza el formato Little Endian. Esto significa que el byte menos significativo (LSB) se transmite primero, seguido por el byte más significativo (MSB). Esta convención debe ser respetada rigurosamente por ambos microcontroladores para una correcta reconstrucción de los valores enviados en 16 bits.
+La comunicación entre el AC y el AG se realiza mediante tramas estándar CAN 2.0B. Es fundamental destacar que, para el empaquetado de los datos numéricos que ocupan más de un byte, se utiliza el formato \ing{Little Endian}. Esto significa que el byte menos significativo (LSB) se transmite primero, seguido por el byte más significativo (MSB). Esta convención debe ser respetada rigurosamente por ambos microcontroladores para una correcta reconstrucción de los valores enviados en 16 bits.
 
 La Tabla~\ref{tab:paquetes_can} detalla los identificadores (ID) y la codificación de los datos físicos utilizados en el ensayo. Los valores de tensión y corriente se envían como enteros sin signo.
 
@@ -49,7 +49,7 @@ La Tabla~\ref{tab:paquetes_can} detalla los identificadores (ID) y la codificaci
 \end{table}
 
 \subsection{ESP-NOW}
-Para la coordinación inalámbrica entre el AC y los NC's, se utilizan tramas de longitud fija que minimizan la latencia. A diferencia del bus CAN, aquí se transmiten valores en punto flotante para mayor precisión en la toma de decisiones del algoritmo distribuido. La estructura de estos mensajes se presenta en la Tabla~\ref{tab:paquetes_espnow}.
+Para la coordinación inalámbrica entre el AC y los NC, se utilizan tramas de longitud fija que minimizan la latencia. A diferencia del bus CAN, aquí se transmiten valores en punto flotante para mayor precisión en la toma de decisiones del algoritmo distribuido. La estructura de estos mensajes se presenta en la Tabla~\ref{tab:paquetes_espnow}.
 
 \begin{table}[ht!]
 \centering
@@ -77,12 +77,12 @@ Finalmente, para la integración con la plataforma IoT, el sistema publica la te
 \textbf{Tipo de dato} & \textbf{Tópico MQTT} & \textbf{Descripción} \\ \hline
 Datos por nodo & \texttt{consumos} & Publica el consumo instantáneo individual. \\ \hline
 Totales sistema & \texttt{totales} & Publica las variables globales del sistema. \\ \hline
-Heartbeat & \texttt{status} & Notificación periódica de estado de conexion\\ 
-         &              &  del AC al broker. \\ \hline
+Heartbeat & \texttt{status} & Notificación periódica de estado de conexión\\
+         &              &  del AC al \ing{broker}. \\ \hline
 \end{tabular}
 \end{table}
 
-Las cargas útiles (payloads) de los mensajes están estructuradas como objetos JSON estándar. La Tabla~\ref{tab:payload_nodo} muestra el formato utilizado para reportar la actividad de cada nodo individual, mientras que la Tabla~\ref{tab:payload_total} detalla el mensaje consolidado que describe el estado general de la microrred.
+Las cargas útiles (\ing{payloads}) de los mensajes están estructuradas como objetos JSON estándar. La Tabla~\ref{tab:payload_nodo} muestra el formato utilizado para reportar la actividad de cada nodo individual, mientras que la Tabla~\ref{tab:payload_total} detalla el mensaje consolidado que describe el estado general de la microrred.
 
 \begin{table}[ht!]
 \centering
@@ -91,9 +91,9 @@ Las cargas útiles (payloads) de los mensajes están estructuradas como objetos 
 \begin{tabular}{|l|l|l|}
 \hline
 \textbf{Campo} & \textbf{Tipo} & \textbf{Descripción} \\ \hline
-\texttt{nodo} & string & Identificador único del nodo (ej: ``00:1A:2B:3C:4D:5E'') \\ \hline
-\texttt{consumo} & float & Consumo medido en Amperes o Watts \\ \hline
-\texttt{fecha} & string (ISO) & Marca de tiempo (ej: ``2025-02-18T14:55:10'') \\ \hline
+\texttt{nodo} & \texttt{string} & Identificador único del nodo (ej: ``00:1A:2B:3C:4D:5E'') \\ \hline
+\texttt{consumo} & \texttt{float} & Consumo de corriente medido, en amperios (A) \\ \hline
+\texttt{fecha} & \texttt{string} (ISO) & Marca de tiempo (ej: ``2025-02-18T14:55:10'') \\ \hline
 \end{tabular}
 \end{table}
 
@@ -104,21 +104,22 @@ Las cargas útiles (payloads) de los mensajes están estructuradas como objetos 
 \begin{tabular}{|l|l|l|}
 \hline
 \textbf{Campo} & \textbf{Tipo} & \textbf{Descripción} \\ \hline
-\texttt{potencia} & float & Potencia total instantánea disponible \\ \hline
-\texttt{corriente} & float & Corriente total disponible \\ \hline
-\texttt{tension} & float & Tensión eficaz de red medida \\ \hline
-\texttt{consumo\_total} & float & Sumatoria del consumo de todos los NC's \\ \hline
-\texttt{fecha} & string (ISO) & Marca de tiempo sincronizada \\ \hline
+\texttt{potencia} & \texttt{float} & Potencia total instantánea disponible \\ \hline
+\texttt{corriente} & \texttt{float} & Corriente total disponible \\ \hline
+\texttt{tension} & \texttt{float} & Tensión eficaz de red medida \\ \hline
+\texttt{consumo\_total} & \texttt{float} & Sumatoria del consumo de todos los NC \\ \hline
+\texttt{fecha} & \texttt{string} (ISO) & Marca de tiempo sincronizada \\ \hline
 \end{tabular}
 \end{table}
 
 \section{Ensayos Realizados en la Validación Experimental}
 
 Con el propósito de validar experimentalmente el sistema desarrollado, se realizaron una serie de ensayos destinados a evaluar su desempeño bajo diferentes condiciones de operación. Las pruebas fueron diseñadas para verificar el correcto funcionamiento del algoritmo de gestión del consumo y del sistema de monitoreo, considerando tanto distintos perfiles de generación como aspectos relacionados con la comunicación. En particular, se evaluó la respuesta del sistema ante un perfil de generación fotovoltaica para validar el algoritmo de priorización de cargas, se analizó el alcance de comunicación entre los nodos bajo condiciones de operación representativas y, finalmente, se realizaron ensayos utilizando un perfil de generación eólica con el fin de comprobar el comportamiento del sistema frente a una fuente de generación con características diferentes. En las siguientes subsecciones se describen la metodología empleada y los resultados obtenidos en cada uno de los ensayos realizados.
+% TODO(revisión): unificar la nomenclatura de los nodos entre ensayos. En la Sección 11.3.1 se los denomina NC2, NC3 y NC4, mientras que en 11.3.2 y 11.3.3 se los llama Nodo 1, Nodo 2 y Nodo 3. Aclarar si son físicamente los mismos dispositivos con prioridades reasignadas y usar una única nomenclatura.
 
 \subsection{Validación del algoritmo de priorización de cargas mediante un perfil de generación fotovoltaica}
 
-Para evaluar la respuesta del algoritmo de priorización ante escenarios de generación variable, se diseñó un ensayo dinámico integral. Se conectaron cargas reales a los NC's, tal como se muestra en la Figura~\ref{img:prueba-carga}, configurando un escenario con diferentes tipos de demanda y niveles de importancia:
+Para evaluar la respuesta del algoritmo de priorización ante escenarios de generación variable, se diseñó un ensayo dinámico integral. Se conectaron cargas reales a los NC, tal como se muestra en la Figura~\ref{img:prueba-carga}, configurando un escenario con diferentes tipos de demanda y niveles de importancia:
 
 \begin{figure}[hbt!]
     \centering
@@ -144,20 +145,21 @@ La Figura~\ref{img:validacion} presenta la evolución temporal de las corrientes
     \label{img:validacion}
 \end{figure}
 
-El comportamiento del sistema se analiza cronológicamente a través de los eventos marcados en la gráfica, demostrando la capacidad de auto-regulación de los NC's:
+El comportamiento del sistema se analiza cronológicamente a través de los eventos marcados en la gráfica, demostrando la capacidad de auto-regulación de los NC:
 
 \begin{itemize}
     \item \textbf{Inicio (Instantes 0-1):} Con una disponibilidad inicial baja pero suficiente, se conecta manualmente la carga crítica (NC2). El sistema detecta que hay margen operativo y permite su funcionamiento continuo sin restricciones.
-    \item \textbf{Aumento de Generación (Instantes 2-3):} A medida que la irradiancia simulada aumenta hacia el mediodía, crece la capacidad de corriente disponible. Esto habilita la conexión manual de cargas adicionales. Primero se conecta el banco de lámparas (NC4, prioridad baja) y posteriormente la pava eléctrica (NC3, prioridad alta). En esta fase, el sistema admite todas las cargas por un momento debido al periodo de estabilizacion de las cargas y proceso de consenso entre los NC.
+    \item \textbf{Aumento de Generación (Instantes 2-3):} A medida que la irradiancia simulada aumenta hacia el mediodía, crece la capacidad de corriente disponible. Esto habilita la conexión manual de cargas adicionales. Primero se conecta el banco de lámparas (NC4, prioridad baja) y posteriormente la pava eléctrica (NC3, prioridad alta). En esta fase, el sistema admite todas las cargas por un momento debido al periodo de estabilización de las cargas y proceso de consenso entre los NC.
     \item \textbf{Saturación y Desconexión (Instante 4):} Se alcanza el punto de inflexión donde el sistema reconoce que la demanda agregada supera a la disponibilidad. El algoritmo distribuido detecta inmediatamente la condición de déficit ($I_{total} > I_{disp}$). Siguiendo estrictamente la lógica de prioridades, el sistema decide automáticamente desconectar el NC4, ya que posee la prioridad más baja (P3). Esta acción estabiliza la red de forma instantánea, protegiendo a las cargas de mayor jerarquía.
     \item \textbf{Reconexión Automática (Instante 5):} Al aumentar nuevamente la disponibilidad debido al pico de mediodía simulado, el nodo desconectado (NC4) evalúa su condición de reconexión. El nodo verifica matemáticamente que existe un margen suficiente ($I_{disp} > I_{total} + I_{propia} + Margen$) y procede a reconectarse automáticamente, demostrando la capacidad del sistema para recuperar cargas cuando las condiciones energéticas mejoran.
     \item \textbf{Descenso de Generación (Instantes 6-7):} Al simular el atardecer, la disponibilidad comienza a caer. El sistema reacciona desconectando escalonadamente las cargas según su importancia. Primero se desconecta nuevamente el NC4 (baja prioridad) y, al continuar el descenso de la curva de generación, se fuerza la desconexión del NC3 (alta prioridad), preservando la energía restante exclusivamente para la carga crítica.
     \item \textbf{Colapso Simulado (Instante 8):} La generación cae por debajo del mínimo necesario incluso para sostener la carga crítica. En este punto extremo, el sistema protege la integridad de la microrred desconectando finalmente al NC2. Es interesante observar que se produce una breve reconexión del NC4; esto ocurre porque su consumo es menor que el de la carga crítica y sí encaja dentro del pequeño margen de energía remanente, lo cual valida que la decisión se basa puramente en la capacidad matemática disponible en tiempo real y no en estados predefinidos.
 \end{itemize}
 
-Este ensayo valida integralmente la lógica de control distribuido, demostrando que los NC's son capaces de auto-gestionarse para mantener el equilibrio energético de la microrred sin intervención del usuario, respetando estrictamente la jerarquía de prioridades establecida.
+Este ensayo valida integralmente la lógica de control distribuido, demostrando que los NC son capaces de auto-gestionarse para mantener el equilibrio energético de la microrred sin intervención del usuario, respetando estrictamente la jerarquía de prioridades establecida.
 
 \subsection{Evaluación del alcance de comunicación entre nodos bajo un perfil de generación fotovoltaica}
+\label{sec:ensayo_alcance}
 
 Con el objetivo de evaluar el desempeño de la comunicación inalámbrica, se realizó un ensayo en el que los nodos de consumo fueron ubicados en diferentes ambientes y a distancias variables entre sí, reproduciendo una distribución representativa de una instalación real. Durante el ensayo se mantuvo el mismo perfil de generación fotovoltaica empleado en la validación funcional del algoritmo de priorización, resumido en intervalos de cinco minutos, con el fin de verificar que la separación física entre los dispositivos no afectara el intercambio de información ni la ejecución de la estrategia de gestión del consumo. La disposición física de los equipos y las distancias consideradas se presentan en la Figura~\ref{img:layout-prueba-distancia-nodo}. Los espacios utilizados para el ensayo fueron el laboratorio de electrónica y una de las oficinas de la Facultad de Ingeniería. El entorno contaba con paredes de ladrillo, mobiliario y diferentes dispositivos electrónicos compartiendo la misma banda de frecuencia, lo que representa un escenario de comunicación más exigente que un espacio abierto, debido a la presencia de obstáculos y posibles interferencias electromagnéticas.
 
@@ -168,9 +170,9 @@ Con el objetivo de evaluar el desempeño de la comunicación inalámbrica, se re
     \label{img:layout-prueba-distancia-nodo}
 \end{figure}
 
-La Figura~\ref{img:prueba-distancia} presenta la evolución temporal de la corriente disponible, el consumo total y la corriente consumida por cada uno de los nodos. Puede observarse que, a medida que aumenta la corriente disponible (línea roja), se fueron conectando los nodos habilitando sus respectivas cargas. Inicialmente se conecta el Nodo 2, seguido por el Nodo 3 y, finalmente, el Nodo 1. Cuando la disponibilidad de corriente disminuye, las cargas son desconectadas preservando el suministro de las cargas con mayor prioridad hasta que la energía disponible resulta insuficiente.
+La Figura~\ref{img:prueba-distancia} presenta la evolución temporal de la corriente disponible, el consumo total y la corriente consumida por cada uno de los nodos. Puede observarse que, a medida que aumenta la corriente disponible (línea verde punteada), se fueron conectando los nodos habilitando sus respectivas cargas. Inicialmente se conecta el Nodo 2, seguido por el Nodo 3 y, finalmente, el Nodo 1. Cuando la disponibilidad de corriente disminuye, las cargas son desconectadas preservando el suministro de las cargas con mayor prioridad hasta que la energía disponible resulta insuficiente.
 
-En primer lugar, cuando disminuye la disponibilidad de corriente, se desconecta el Nodo 2. Seguidamente, al continuar la caída de la corriente disponible, se desconecta el Nodo 1. Finalmente, cuando la corriente disponible es insuficiente para mantener la carga del Nodo 3, este último también se desconecta. En el último instante, antes de que la disponibilidad de corriente llege a cero, se observa una reconexión breve del Nodo 1. Esto se debe a que por un momento la corriente disponible es suficiente para alimentar su carga, lo que demuestra que el sistema es capaz de evaluar en tiempo real la disponibilidad de energía y tomar decisiones de conexión o desconexión de manera autónoma.
+En primer lugar, cuando disminuye la disponibilidad de corriente, se desconecta el Nodo 2. Seguidamente, al continuar la caída de la corriente disponible, se desconecta el Nodo 1. Finalmente, cuando la corriente disponible es insuficiente para mantener la carga del Nodo 3, este último también se desconecta. En el último instante, antes de que la disponibilidad de corriente llegue a cero, se observa una reconexión breve del Nodo 1. Esto se debe a que por un momento la corriente disponible es suficiente para alimentar su carga, lo que demuestra que el sistema es capaz de evaluar en tiempo real la disponibilidad de energía y tomar decisiones de conexión o desconexión de manera autónoma.
 
 \begin{figure}[hbt!]
     \centering
@@ -178,6 +180,8 @@ En primer lugar, cuando disminuye la disponibilidad de corriente, se desconecta 
     \caption{Resultados del ensayo de alcance de comunicación bajo perfil de irradiancia solar}
     \label{img:prueba-distancia}
 \end{figure}
+
+Adicionalmente, al ensayar distancias mayores entre dispositivos se observó el caso típico de nodo oculto, donde un nodo mantenía comunicación con el AC pero quedaba fuera del alcance directo de otro NC, situación que se retoma y explica en la Sección~\ref{sec:tf_alcance}.
 
 \subsection{Validación del sistema mediante un perfil de generación eólica}
 
@@ -188,7 +192,7 @@ La Figura~\ref{img:prueba-perfil-eolico} presenta la evolución temporal de la c
 \begin{figure}[hbt!]
     \centering
     \includegraphics[width=1\textwidth]{imagenes/prueba-perfil-eolico.png}
-    \caption{Resultados del ensayo de alcance de comunicación bajo perfil de generación eólica}
+    \caption{Resultados de la validación del algoritmo de gestión de consumos bajo perfil de generación eólica}
     \label{img:prueba-perfil-eolico}
 \end{figure}
 

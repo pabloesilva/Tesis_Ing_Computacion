@@ -1,9 +1,9 @@
 \cleardoublepage                                  % 
 \chapter{Arquitectura del sistema}
 
-El Sistema de Gestión de Consumos (SGC) propuesto plantea un esquema distribuido para la gestión de las cargas en una la microrred, enfocado en equilibrar la demanda de consumo con la potencia disponible en tiempo real. El SGC pretende garantizar un uso eficiente de la energía, priorizando el abastecimiento de las cargas críticas de la microrred. La Figura~\ref{img:arquitectura} muestra los elementos que componen al SGC propuesto. El Agente de Carga (AC) es un dispositivo construido en base a un microcontrolador, que es responsable de establecer el vínculo entre los recursos energéticos de la microrred y los Nodos de Consumo (NC).
+El Sistema de Gestión de Consumos (SGC) propuesto plantea un esquema distribuido para la gestión de las cargas en una microrred, enfocado en equilibrar la demanda de consumo con la potencia disponible en tiempo real. El SGC pretende garantizar un uso eficiente de la energía, priorizando el abastecimiento de las cargas críticas de la microrred. La Figura~\ref{img:arquitectura} muestra los elementos que componen al SGC propuesto. El Agente de Carga (AC) es un dispositivo construido en base a un microcontrolador, que es responsable de establecer el vínculo entre los recursos energéticos de la microrred y los Nodos de Consumo (NC).
 El AC establece comunicación con los demás agentes de la microrred mediante un bus de comunicación CAN, a fin de obtener el valor de potencia disponible, cuyo valor depende directamente de las condiciones de generación y/o almacenamiento que posee la microrred. El AC también realiza medición del voltaje eficaz en la línea de corriente alterna proveniente de la microrred; con este dato de tensión y el valor de potencia disponible, calcula la corriente eficaz total que puede utilizar el conjunto de cargas e informa este valor periódicamente a los NC. Estos últimos, constituyen dispositivos de control (basados en microcontroladores) que están asociados a diferentes cargas eléctricas (por ej. electrobombas, electrodomésticos, iluminación, entre otros).
-Cada NC dispone de una prioridad asignada, que es definida según la necesidad especifica del usuario. La comunicación entre los nodos se realiza de manera multidireccional, permitiendo que cada uno, a partir de mensajes de todos los demás, evalúe su condición operativa en relación con el valor de la corriente total disponible en la microrred, su nivel de consumo y prioridad frente a otros nodos. Con esa información, cada nodo toma la decisión de conexión, desconexión o reconexión de la carga que tiene asociada.
+Cada NC dispone de una prioridad asignada, que es definida según la necesidad específica del usuario. La comunicación entre los nodos se realiza de manera multidireccional, permitiendo que cada uno, a partir de mensajes de todos los demás, evalúe su condición operativa en relación con el valor de la corriente total disponible en la microrred, su nivel de consumo y prioridad frente a otros nodos. Con esa información, cada nodo toma la decisión de conexión, desconexión o reconexión de la carga que tiene asociada.
 
 \begin{figure}[hbt!]
     \centering
@@ -32,9 +32,8 @@ Esta estrategia facilita el balanceo de la demanda frente a la oferta y prioriza
 \end{figure}
 
 \section{Nodo de Consumo (NC)}
-Los Nodos de Consumo son las unidades responsables de decidir, de manera autónoma, si una carga eléctrica debe permanecer conectada o desconectada. Para ello, cada NC participa en un esquema de control distribuido donde intercambia información con los demás nodos y con el Agente de Carga (AC). Esta comunicación le permite conocer dos valores esenciales: la disponibilidad total de corriente para la microrred, que es informada periódicamente por el AC, y el consumo agregado de las cargas, estimado mediante el intercambio de mensajes entre los propios nodos.
-A partir de estos datos, cada NC evalúa su situación considerando la prioridad que tiene asignada. Las cargas críticas se mantienen siempre conectadas, mientras que las cargas no críticas pueden ser desconectadas si la demanda total supera la disponibilidad. Esta decisión no depende de un controlador central, sino que surge del propio nodo aplicando un algoritmo de consenso y priorización que asegura que la demanda global se mantenga por debajo del límite informado por el AC.
-Cada NC cuenta con una estructura, mostrada en la Figura~\ref{img:esq_nc}, para llevar a cabo la logica de control distribuido y realizar la actuación sobre la carga asociada.
+Los Nodos de Consumo son las unidades responsables de decidir, de manera autónoma, si una carga eléctrica debe permanecer conectada o desconectada. Para ello, cada NC participa en un esquema de control distribuido donde intercambia información con los demás nodos y con el Agente de Carga (AC). Esta comunicación le permite conocer dos valores esenciales: la disponibilidad total de corriente para la microrred, que es informada periódicamente por el AC, y el consumo agregado de las cargas, estimado mediante el intercambio de mensajes entre los propios nodos, aplicando el algoritmo de consenso descrito en la Sección~\ref{sec:consenso_medio} e implementado en el firmware de cada nodo.
+A partir de estos datos, cada NC evalúa su situación considerando la prioridad que tiene asignada. Las cargas críticas se mantienen siempre conectadas, mientras que las cargas no críticas pueden ser desconectadas si la demanda total supera la disponibilidad. Esta decisión no depende de un controlador central, sino que surge del propio nodo aplicando la lógica distribuida de estimación del consumo total y priorización, que asegura que la demanda global se mantenga por debajo del límite informado por el AC. Cada NC cuenta con una estructura, mostrada en la Figura~\ref{img:esq_nc}, para llevar a cabo la lógica de control distribuido y realizar la actuación sobre la carga asociada.
 
 \begin{figure}[H]
     \centering
@@ -45,7 +44,7 @@ Cada NC cuenta con una estructura, mostrada en la Figura~\ref{img:esq_nc}, para 
 
 \subsection{Lógica del Algoritmo de priorización de las Cargas}
 
-La autonomía del Nodo de Consumo se sustenta en una rutina de control cíclica que se ejecuta localmente en el microcontrolador. La Figura~\ref{img:Diagrama-Flujo} esquematiza el flujo de operaciones que realiza el firmware para gestionar el estado de la carga.
+La autonomía del Nodo de Consumo se sustenta en una rutina de control cíclica que se ejecuta localmente en el microcontrolador. La Figura~\ref{img:Diagrama-Flujo} esquematiza el flujo de operaciones que realiza el \ing{firmware} para gestionar el estado de la carga.
 
 \begin{figure}[hbt!]
     \centering
@@ -68,7 +67,7 @@ Este ciclo de ejecución continuo permite que el nodo adapte su comportamiento e
 
 Para complementar la gestión local realizada por el Agente de Carga y los Nodos de Consumo, se diseñó una arquitectura de supervisión remota basada en el paradigma de Internet de las Cosas (IoT). Esta capa superior del sistema tiene como objetivo desacoplar la adquisición de datos de su visualización, permitiendo el monitoreo histórico y en tiempo real desde cualquier ubicación con acceso a internet.
 
-La arquitectura propuesta, ilustrada en la Figura~\ref{img:plataforma-iot-prop}, se fundamenta en un esquema de microservicios contenerizados. A diferencia de las aplicaciones monolíticas tradicionales, este enfoque divide las funcionalidades del servidor (recepción de datos, almacenamiento, procesamiento e interfaz) en unidades independientes o "contenedores" que se comunican entre sí a través de una red virtual interna.
+La arquitectura propuesta, ilustrada en la Figura~\ref{img:plataforma-iot-prop}, se fundamenta en un esquema de microservicios contenerizados, apoyado en la contenerización con Docker descrita en la Sección~\ref{sec:docker}. A diferencia de las aplicaciones monolíticas tradicionales, este enfoque divide las funcionalidades del servidor (recepción de datos, almacenamiento, procesamiento e interfaz) en unidades independientes o \enquote{contenedores} que se comunican entre sí a través de una red virtual interna.
 
 \begin{figure}[hbt!]
     \centering
@@ -79,12 +78,12 @@ La arquitectura propuesta, ilustrada en la Figura~\ref{img:plataforma-iot-prop},
 
 \subsection{Infraestructura de Hardware}
 
-El diseño del sistema es agnóstico al hardware, lo que significa que puede desplegarse tanto en servidores en la nube (VPS) como en computadoras de placa reducida (SBC) ubicadas en el mismo sitio de la microrred.
+El diseño del sistema es agnóstico al \ing{hardware}, lo que significa que puede desplegarse tanto en servidores en la nube (VPS) como en computadoras de placa reducida (SBC) ubicadas en el mismo sitio de la microrred.
 
-Para garantizar el funcionamiento fluido de todos los servicios simultáneos descritos a continuación, se establecen los siguientes requisitos de hardware mínimos para el servidor host:
+Para garantizar el funcionamiento fluido de todos los servicios simultáneos descritos a continuación, se establecen los siguientes requisitos de \ing{hardware} mínimos para el servidor \ing{host}:
 \begin{itemize}
     \item \textbf{Procesador:} Arquitectura compatible con contenedores (x86-64 o ARM64), con al menos 2 núcleos para manejar la concurrencia de peticiones web y el procesamiento de mensajes MQTT.
-    \item \textbf{Memoria RAM:} Mínimo 1 GB (recomendado 2 GB) para soportar la ejecución simultánea del motor de base de datos, el servidor web y el broker de mensajería sin recurrir excesivamente a la memoria de intercambio (swap).
+    \item \textbf{Memoria RAM:} Mínimo 1 GB (recomendado 2 GB) para soportar la ejecución simultánea del motor de base de datos, el servidor web y el \ing{broker} de mensajería sin recurrir excesivamente a la memoria de intercambio (\ing{swap}).
     \item \textbf{Almacenamiento:} Espacio suficiente para el sistema operativo anfitrión y la persistencia de la base de datos histórica.
     \item \textbf{Conectividad:} Interfaz de red permanente con acceso a internet y capacidad para gestionar puertos de entrada (HTTP/HTTPS y MQTT).
 \end{itemize}
@@ -93,18 +92,18 @@ En la implementación de referencia para este trabajo, se optó por un Servidor 
 
 \subsection{Arquitectura de Software y Flujo de Datos}
 
-La lógica de interconexión se basa en el flujo de datos ascendente desde el hardware de campo hacia la interfaz de usuario. Cada contenedor Docker desempeña un rol específico en esta cadena de procesamiento:
+La lógica de interconexión se basa en el flujo de datos ascendente desde el \ing{hardware} de campo hacia la interfaz de usuario. Cada contenedor Docker desempeña un rol específico en esta cadena de procesamiento:
 
 \begin{enumerate}
-    \item \textbf{Ingreso de Datos (Broker MQTT):} Es el punto de entrada de la información. Este contenedor actúa como un concentrador de mensajes que recibe las tramas de telemetría enviadas por el módulo de comunicación del Agente de Carga (ESP32-S3). Su función es puramente de transporte y enrutamiento; no procesa ni almacena los datos, simplemente los distribuye a los servicios que estén suscritos a los tópicos correspondientes (como consumo, tensión o disponibilidad).
+    \item \textbf{Ingreso de Datos (\ing{Broker} MQTT):} Es el punto de entrada de la información. Este contenedor actúa como un concentrador de mensajes que recibe las tramas de telemetría enviadas por el módulo de comunicación del Agente de Carga (ESP32-S3). Su función es puramente de transporte y enrutamiento; no procesa ni almacena los datos, simplemente los distribuye a los servicios que estén suscritos a los tópicos correspondientes (como consumo, tensión o disponibilidad).
 
-    \item \textbf{Procesamiento Lógico (Worker):} Este contenedor ejecuta un servicio en segundo plano (script Python) que actúa como el "pegamento" lógico del sistema. Se suscribe al Broker para interceptar todos los mensajes entrantes. Su responsabilidad es decodificar las cargas útiles (payloads) en formato JSON, validar que los datos se encuentren dentro de rangos coherentes y estructurarlos adecuadamente para su inserción en la base de datos.
+    \item \textbf{Procesamiento Lógico (\ing{Worker}):} Este contenedor ejecuta un servicio en segundo plano (\textit{script} Python) que actúa como el \enquote{pegamento} lógico del sistema. Se suscribe al \ing{Broker} para interceptar todos los mensajes entrantes. Su responsabilidad es decodificar las cargas útiles (\ing{payloads}) en formato JSON, validar que los datos se encuentren dentro de rangos coherentes y estructurarlos adecuadamente para su inserción en la base de datos.
 
-    \item \textbf{Almacenamiento Persistente (Base de Datos):} Recibe los datos ya procesados por el Worker y los organiza en tablas relacionales. Este contenedor es el único que mantiene estado persistente, almacenando el historial operativo de cada nodo y de la microrred en general para permitir la generación de gráficas de evolución temporal.
+    \item \textbf{Almacenamiento Persistente (Base de Datos):} Recibe los datos ya procesados por el \ing{Worker} y los organiza en tablas relacionales. Este contenedor es el único que mantiene estado persistente, almacenando el historial operativo de cada nodo y de la microrred en general para permitir la generación de gráficas de evolución temporal.
 
-    \item \textbf{Interfaz de Usuario (Servidor Web):} Contiene la lógica de la aplicación web (Backend y Frontend). Este servicio consulta la base de datos para recuperar el historial y se suscribe directamente al Broker (o utiliza una API interna) para reflejar los cambios en tiempo real en el navegador del usuario. Es el encargado de renderizar el panel de control (Dashboard).
+    \item \textbf{Interfaz de Usuario (Servidor Web):} Contiene la lógica de la aplicación web (\ing{Backend} y \ing{Frontend}). Este servicio consulta la base de datos para recuperar el historial y se suscribe directamente al \ing{Broker} (o utiliza una API interna) para reflejar los cambios en tiempo real en el navegador del usuario. Es el encargado de renderizar el panel de control (\ing{Dashboard}).
 
     \item \textbf{Seguridad y Acceso (Proxy Reverso):} Es la cara visible del servidor hacia internet. Este contenedor intercepta todas las peticiones externas (HTTP/HTTPS), gestiona los certificados de seguridad SSL para encriptar la conexión y enruta el tráfico hacia el contenedor del servidor web. Esto protege a la base de datos y a los servicios internos de una exposición directa a la red pública.
 \end{enumerate}
 
-Esta arquitectura modular facilita la escalabilidad del sistema: si se requiere procesar más datos o añadir nuevas funcionalidades (como alertas por Telegram), basta con añadir un nuevo contenedor suscrito al Broker sin necesidad de detener o modificar los servicios que ya están en funcionamiento.
+Esta arquitectura modular facilita la escalabilidad del sistema: si se requiere procesar más datos o añadir nuevas funcionalidades (como alertas por Telegram), basta con añadir un nuevo contenedor suscrito al \ing{Broker} sin necesidad de detener o modificar los servicios que ya están en funcionamiento.
