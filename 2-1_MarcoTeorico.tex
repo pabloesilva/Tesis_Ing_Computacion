@@ -51,7 +51,7 @@ La implementación de MAS en el control de microrredes proporciona beneficios si
 
 \subsection{Teoría del consenso medio}
 \label{sec:consenso_medio}
-en el firmware de cada nodo.
+
 El consenso medio es un algoritmo fundamental en los sistemas distribuidos que permite que un grupo de agentes alcance un acuerdo sobre el promedio de sus estados iniciales mediante intercambios de información únicamente con sus vecinos directos \cite{OlfatiSaber2004}. En el SGC propuesto, esta teoría permite que cada Nodo de Consumo (NC) estime la corriente total demandada por la red sin depender de un servidor central. A través de iteraciones sucesivas, los nodos convergen hacia un valor común de consumo total agregado, lo que permite la ejecución de la lógica de priorización distribuida. Para el tratamiento de la información procesada por muestras, la dinámica de actualización de estado para cada agente $i$ se expresa de forma discreta mediante la Ecuación \ref{eq:consenso_discreto}:
 \begin{equation}x_i[k+1] = \omega_{ii} x_i[k] + \sum_{j \in N_i} \omega_{ij} x_j[k]\label{eq:consenso_discreto}\end{equation}
 En esta ecuación, los componentes representan:

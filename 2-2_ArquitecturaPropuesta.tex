@@ -67,7 +67,7 @@ Este ciclo de ejecución continuo permite que el nodo adapte su comportamiento e
 
 Para complementar la gestión local realizada por el Agente de Carga y los Nodos de Consumo, se diseñó una arquitectura de supervisión remota basada en el paradigma de Internet de las Cosas (IoT). Esta capa superior del sistema tiene como objetivo desacoplar la adquisición de datos de su visualización, permitiendo el monitoreo histórico y en tiempo real desde cualquier ubicación con acceso a internet.
 
-La arquitectura propuesta, ilustrada en la Figura~\ref{img:plataforma-iot-prop}, se fundamenta en un esquema de microservicios contenerizados, apoyado en la contenerización con Docker descrita en la Sección~\ref{sec:docker}. A diferencia de las aplicaciones monolíticas tradicionales, este enfoque divide las funcionalidades del servidor (recepción de datos, almacenamiento, procesamiento e interfaz) en unidades independientes o \enquote{contenedores} que se comunican entre sí a través de una red virtual interna.
+La arquitectura propuesta, ilustrada en la Figura~\ref{img:plataforma-iot-prop}, se fundamenta en un esquema de microservicios, apoyado en la contenerización con Docker descrita en la Sección~\ref{sec:docker}. A diferencia de las aplicaciones monolíticas tradicionales, este enfoque divide las funcionalidades del servidor (recepción de datos, almacenamiento, procesamiento e interfaz) en unidades independientes o \enquote{contenedores} que se comunican entre sí a través de una red virtual interna.
 
 \begin{figure}[hbt!]
     \centering
@@ -92,7 +92,7 @@ En la implementación de referencia para este trabajo, se optó por un Servidor 
 
 \subsection{Arquitectura de Software y Flujo de Datos}
 
-La lógica de interconexión se basa en el flujo de datos ascendente desde el \ing{hardware} de campo hacia la interfaz de usuario. Cada contenedor Docker desempeña un rol específico en esta cadena de procesamiento:
+La lógica de interconexión se basa en el flujo de datos ascendente desde el \ing{hardware} hacia la interfaz de usuario. Cada contenedor Docker desempeña un rol específico en esta cadena de procesamiento:
 
 \begin{enumerate}
     \item \textbf{Ingreso de Datos (\ing{Broker} MQTT):} Es el punto de entrada de la información. Este contenedor actúa como un concentrador de mensajes que recibe las tramas de telemetría enviadas por el módulo de comunicación del Agente de Carga (ESP32-S3). Su función es puramente de transporte y enrutamiento; no procesa ni almacena los datos, simplemente los distribuye a los servicios que estén suscritos a los tópicos correspondientes (como consumo, tensión o disponibilidad).
