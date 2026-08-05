@@ -1,9 +1,7 @@
 \cleardoublepage                                  % 
-\chapter{Arquitectura del sistema}
+\chapter{Arquitectura del sistema propuesto}
 
-El Sistema de Gestión de Consumos (SGC) propuesto plantea un esquema distribuido para la gestión de las cargas en una microrred, enfocado en equilibrar la demanda de consumo con la potencia disponible en tiempo real. El SGC pretende garantizar un uso eficiente de la energía, priorizando el abastecimiento de las cargas críticas de la microrred. La Figura~\ref{img:arquitectura} muestra los elementos que componen al SGC propuesto. El Agente de Carga (AC) es un dispositivo construido en base a un microcontrolador, que es responsable de establecer el vínculo entre los recursos energéticos de la microrred y los Nodos de Consumo (NC).
-El AC establece comunicación con los demás agentes de la microrred mediante un bus de comunicación CAN, a fin de obtener el valor de potencia disponible, cuyo valor depende directamente de las condiciones de generación y/o almacenamiento que posee la microrred. El AC también realiza medición del voltaje eficaz en la línea de corriente alterna proveniente de la microrred; con este dato de tensión y el valor de potencia disponible, calcula la corriente eficaz total que puede utilizar el conjunto de cargas e informa este valor periódicamente a los NC. Estos últimos, constituyen dispositivos de control (basados en microcontroladores) que están asociados a diferentes cargas eléctricas (por ej. electrobombas, electrodomésticos, iluminación, entre otros).
-Cada NC dispone de una prioridad asignada, que es definida según la necesidad específica del usuario. La comunicación entre los nodos se realiza de manera multidireccional, permitiendo que cada uno, a partir de mensajes de todos los demás, evalúe su condición operativa en relación con el valor de la corriente total disponible en la microrred, su nivel de consumo y prioridad frente a otros nodos. Con esa información, cada nodo toma la decisión de conexión, desconexión o reconexión de la carga que tiene asociada.
+El Sistema de Gestión de Consumos (SGC) propuesto en el presente trabajo, plantea un esquema distribuido para la gestión de las cargas que posee una microrred, enfocado en equilibrar la demanda de consumo con la potencia disponible en tiempo real. El SGC pretende garantizar un uso eficiente de la energía, priorizando el abastecimiento de las cargas críticas de la microrred. La Figura~\ref{img:arquitectura} muestra los elementos que componen al SGC propuesto. El Agente de Carga (AC) es un dispositivo construido en base a un microcontrolador, que es responsable de establecer el vínculo entre los recursos energéticos de la microrred y los Nodos de Consumo (NC).
 
 \begin{figure}[hbt!]
     \centering
@@ -12,9 +10,15 @@ Cada NC dispone de una prioridad asignada, que es definida según la necesidad e
     \label{img:arquitectura}
 \end{figure}
 
+
+El AC establece comunicación con los demás agentes de la microrred mediante un bus de comunicación CAN, a fin de obtener la potencia disponible, cuyo valor depende directamente de las condiciones de generación y/o almacenamiento que posee la microrred. El AC también obtiene el voltaje eficaz en la línea de corriente alterna proveniente de la microrred; con este dato de tensión y el valor de potencia disponible, calcula la corriente eficaz total que puede utilizar el conjunto de cargas e informa este valor periódicamente a los NC. Estos últimos, constituyen dispositivos de control (basados en microcontroladores) que están asociados a diferentes cargas eléctricas (por ej. electrobombas, electrodomésticos, iluminación, entre otros).
+Cada NC dispone de una prioridad asignada, que es definida según la necesidad específica del usuario. La comunicación entre los nodos es realizada de manera multidireccional, permitiendo que cada uno, a partir de mensajes de todos los demás, evalúe su condición operativa en relación con el valor de la corriente total disponible en la microrred, su nivel de consumo y prioridad frente a otros nodos. Con esa información, cada nodo toma la decisión de conexión, desconexión o reconexión de la carga que tiene asociada.
+
+
+
 \section{Agente de Carga (AC)}
 
-El AC es el nexo entre la microrred y los NC, recibiendo la potencia disponible desde el sistema multiagente de supervisión de la microrred. A través de esta potencia y la medición local de la tensión eficaz de corriente alterna, el AC obtiene la corriente total disponible para el consumo en las cargas. Esta información de corriente disponible es reportada periódicamente a todos los NC quienes toman este valor como una restricción para su funcionamiento, de modo que éstos puedan ejecutar la lógica distribuida de conexión y desconexión de cargas, según las prioridades establecidas para cada una de ellas.
+El AC es el nexo entre la microrred y los NC, recibiendo la potencia disponible desde el sistema multiagente de supervisión de la microrred. A través de esta potencia y la medición local de la tensión eficaz de corriente alterna, el AC obtiene la corriente total disponible para el consumo en las cargas. Esta información de corriente disponible es reportada periódicamente a todos los NC quienes toman este valor como una restricción para su funcionamiento, de modo que éstos puedan ejecutar en forma autónoma la lógica distribuida de conexión y desconexión de cargas, según las prioridades establecidas para cada una de ellas.
 Para cumplir con esto, el AC realiza las siguientes tareas esenciales:
 \begin{itemize}
     \item Comunicación vía bus CAN con el sistema de supervisión de la microrred para obtener la potencia disponible y reportar el consumo.
@@ -32,10 +36,10 @@ Esta estrategia facilita el balanceo de la demanda frente a la oferta y prioriza
 \end{figure}
 
 \section{Nodo de Consumo (NC)}
-Los Nodos de Consumo son las unidades responsables de decidir, de manera autónoma, si una carga eléctrica debe permanecer conectada o desconectada. Para ello, cada NC participa en un esquema de control distribuido donde intercambia información con los demás nodos y con el Agente de Carga (AC). Esta comunicación le permite conocer dos valores esenciales: la disponibilidad total de corriente para la microrred, que es informada periódicamente por el AC, y el consumo agregado de las cargas, estimado mediante el intercambio de mensajes entre los propios nodos, aplicando el algoritmo de consenso descrito en la Sección~\ref{sec:consenso_medio} e implementado en el firmware de cada nodo.
+Los Nodos de Consumo son las unidades responsables de decidir, de manera autónoma, si una carga eléctrica debe permanecer conectada o desconectada. Para ello, cada NC participa en un esquema de control distribuido donde intercambia información con los demás nodos y con el Agente de Carga (AC). Esta comunicación le permite conocer dos valores esenciales: la disponibilidad total de corriente para la microrred, que es informada periódicamente por el AC, y el consumo agregado de las cargas, estimado mediante el intercambio de mensajes entre los propios nodos, aplicando el algoritmo de consenso descrito en la Sección~\ref{sec:consenso_medio} que es implementado en el firmware de cada nodo.
 A partir de estos datos, cada NC evalúa su situación considerando la prioridad que tiene asignada. Las cargas críticas se mantienen siempre conectadas, mientras que las cargas no críticas pueden ser desconectadas si la demanda total supera la disponibilidad. Esta decisión no depende de un controlador central, sino que surge del propio nodo aplicando la lógica distribuida de estimación del consumo total y priorización, que asegura que la demanda global se mantenga por debajo del límite informado por el AC. Cada NC cuenta con una estructura, mostrada en la Figura~\ref{img:esq_nc}, para llevar a cabo la lógica de control distribuido y realizar la actuación sobre la carga asociada.
 
-\begin{figure}[H]
+\begin{figure}[hbt!]
     \centering
     \includegraphics[width=0.7\textwidth]{imagenes/esq_nc.png}
     \caption{Diagrama esquemático del Nodo de Consumo (NC)}
@@ -44,7 +48,7 @@ A partir de estos datos, cada NC evalúa su situación considerando la prioridad
 
 \subsection{Lógica del Algoritmo de priorización de las Cargas}
 
-La autonomía del Nodo de Consumo se sustenta en una rutina de control cíclica que se ejecuta localmente en el microcontrolador. La Figura~\ref{img:Diagrama-Flujo} esquematiza el flujo de operaciones que realiza el \ing{firmware} para gestionar el estado de la carga.
+La operación autónoma del Nodo de Consumo se sustenta en una rutina de control cíclica que es ejecutada localmente en su microcontrolador. La Figura~\ref{img:Diagrama-Flujo} esquematiza el flujo de operaciones que realiza el \ing{firmware} para gestionar el estado de la carga.
 
 \begin{figure}[hbt!]
     \centering
@@ -53,7 +57,7 @@ La autonomía del Nodo de Consumo se sustenta en una rutina de control cíclica 
     \label{img:Diagrama-Flujo}
 \end{figure}
 
-A nivel arquitectónico, este diagrama representa un bucle de control cerrado que integra tres procesos fundamentales:
+El diagrama de dicha figura, representa un bucle de control cerrado que integra tres procesos fundamentales:
 \begin{enumerate}
     \item \textbf{Adquisición de Estado:} El nodo determina si la carga está físicamente conectada o desconectada y verifica la validez de los datos de corriente medidos.
     \item \textbf{Sincronización de Información:} Antes de tomar cualquier decisión, el sistema asegura la recepción de los parámetros globales (disponibilidad) y la difusión de sus propios datos (consumo y prioridad) al resto de la red.
@@ -78,7 +82,7 @@ La arquitectura propuesta, ilustrada en la Figura~\ref{img:plataforma-iot-prop},
 
 \subsection{Infraestructura de Hardware}
 
-El diseño del sistema es agnóstico al \ing{hardware}, lo que significa que puede desplegarse tanto en servidores en la nube (VPS) como en computadoras de placa reducida (SBC) ubicadas en el mismo sitio de la microrred.
+El diseño del sistema es agnóstico al \ing{hardware}, significando esto que puede desplegarse tanto en servidores en la nube (VPS) como en computadoras de placa reducida (SBC) ubicadas en el mismo sitio de la microrred.
 
 Para garantizar el funcionamiento fluido de todos los servicios simultáneos descritos a continuación, se establecen los siguientes requisitos de \ing{hardware} mínimos para el servidor \ing{host}:
 \begin{itemize}
@@ -92,7 +96,7 @@ En la implementación de referencia para este trabajo, se optó por un Servidor 
 
 \subsection{Arquitectura de Software y Flujo de Datos}
 
-La lógica de interconexión se basa en el flujo de datos ascendente desde el \ing{hardware} hacia la interfaz de usuario. Cada contenedor Docker desempeña un rol específico en esta cadena de procesamiento:
+La lógica de interconexión está basada en el flujo de datos ascendente desde el \ing{hardware} hacia la interfaz de usuario. Cada contenedor Docker desempeña un rol específico en esta cadena de procesamiento:
 
 \begin{enumerate}
     \item \textbf{Ingreso de Datos (\ing{Broker} MQTT):} Es el punto de entrada de la información. Este contenedor actúa como un concentrador de mensajes que recibe las tramas de telemetría enviadas por el módulo de comunicación del Agente de Carga (ESP32-S3). Su función es puramente de transporte y enrutamiento; no procesa ni almacena los datos, simplemente los distribuye a los servicios que estén suscritos a los tópicos correspondientes (como consumo, tensión o disponibilidad).
