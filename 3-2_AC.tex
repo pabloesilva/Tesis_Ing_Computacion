@@ -1,6 +1,8 @@
 \cleardoublepage                                   
 \chapter{Agente de Carga (AC)}
-
+\epigraph{``Cuando puedes medir aquello de lo que hablas y expresarlo en
+números, sabes algo acerca de ello; pero cuando no puedes medirlo, tu
+conocimiento es escaso e insatisfactorio."}{\textit{Lord Kelvin}}
 \section{Hardware}
 
 %---------------------------------------descripción general del \ing{hardware}---------------------------------------
@@ -8,11 +10,7 @@ El AC está implementado sobre una placa de desarrollo basada en un microcontrol
 
 El sistema cuenta en primer lugar con una etapa de alimentación encargada de acondicionar la tensión de corriente alterna proveniente de la microrred para energizar el circuito completo. La estabilidad de esta fuente es fundamental, ya que variaciones significativas en su salida introducen errores en las mediciones realizadas por el AC o pueden afectar el desempeño del microcontrolador.
 
-Para la medición de la tensión de CA suministrada por la microrred a sus cargas, se emplea un módulo sensor basado en el transformador de señal ZMPT101B, seleccionado tanto por sus características técnicas como por su disponibilidad comercial. Este módulo genera una señal sinusoidal con un nivel de continua (\ing{offset}) y una amplitud proporcional a la tensión real medida. Antes de ser leída por la entrada analógica del microcontrolador, la señal atraviesa una etapa de adecuación para garantizar que sus valores se mantengan dentro del rango permitido por el ESP32, evitando sobrepasar el límite máximo de 3,3 V.
-
-Con el fin de comunicarse con los demás agentes que intervienen en la microrred, el AC incorpora un módulo CAN basado en el controlador MCP2515.
-% TODO(revisión): agregar la cita al \ing{datasheet} del MCP2515 (Microchip), de forma análoga a los datasheets del ZMPT101B y el ACS712.
-Este dispositivo actúa como interfaz física entre el microcontrolador y el bus diferencial del protocolo CAN, permitiendo tanto el envío como la recepción de mensajes. El módulo es conectado al ESP32 mediante la interfaz SPI (\textit{Serial Peripheral Interface}), a través de la cual se gestionan las señales de control (CS, INT) asociadas a la transmisión y recepción de datos.
+Para la medición de la tensión de CA suministrada por la microrred a sus cargas, se emplea un módulo sensor basado en el transformador de señal ZMPT101B, seleccionado tanto por sus características técnicas como por su disponibilidad comercial.  Con el fin de comunicarse con los demás agentes que intervienen en la microrred, el AC incorpora un módulo CAN basado en el controlador MCP2515. Este dispositivo actúa como interfaz física entre el microcontrolador y el bus diferencial del protocolo CAN, permitiendo tanto el envío como la recepción de mensajes. El módulo es conectado al ESP32 mediante la interfaz SPI (\textit{Serial Peripheral Interface}), a través de la cual se gestionan las señales de control (CS, INT) asociadas a la transmisión y recepción de datos.
 
 El intercambio de información entre el AC y los NC es complementado mediante el protocolo inalámbrico ESP-NOW, soportado nativamente por el ESP32. Este protocolo opera en la banda Wi-Fi pero utiliza directamente la capa de enlace de datos. Al prescindir de redes Wi-Fi existentes, encabezados adicionales y procesos de reensamblado, ofrece baja latencia y alta confiabilidad en enlaces de corto a mediano alcance.
 
@@ -23,24 +21,21 @@ Finalmente, el AC incorpora una interfaz local destinada a la interacción con e
 %---------------------------------------descripción del diseño PCB---------------------------------------
 Pensando en la integración del AC dentro de instalaciones eléctricas ya existentes, fue considerado fundamental que su montaje no requiriera intervenciones complejas ni modificaciones significativas de la infraestructura del usuario. En entornos residenciales, comerciales e industriales es habitual la presencia de cajas de paso estandarizadas de 10×10 cm, ampliamente utilizadas en canalizaciones eléctricas convencionales. Con el fin de favorecer la compatibilidad con este tipo de cajas y facilitar su incorporación por parte de instaladores de sistemas de microrredes, el diseño de la placa de circuito impreso (PCB) del AC se desarrolló teniendo en cuenta esta restricción dimensional desde el inicio del proceso.
 
-La PCB fue definida para ajustarse al espacio interno de la caja mencionada, respetando las distancias necesarias para acomodar todos los componentes que forman parte del circuito, la separación entre zonas de baja tensión y las partes asociadas a la medición de la tensión del bus y la fuente de alimentación. En base a estas consideraciones se organizaron los componentes siguiendo una disposición que permitiera mantener recorridos cortos en la medida de lo posible para las señales sensibles como, por ejemplo, la adquisición de la tensión, asegurar una correcta disipación térmica y reservar ubicaciones accesibles para conectores, borneras y elementos de interfaz con el usuario.
-
-El diseño final del PCB, mostrado en los Anexos~\ref{anx:esquematico-pcb-nc}, refleja estas decisiones, integrando en un espacio compacto todos los elementos funcionales del AC y permitiendo su instalación en una caja de paso estándar sin requerir adaptadores adicionales. Esta compatibilidad busca facilitar significativamente su implementación, reduciendo tiempos y costos de instalación y contribuyendo a que el sistema pueda ser incorporado como un módulo más dentro de las soluciones habituales manejadas por empresas instaladoras de sistemas de paneles solares.
+El diseño final del PCB, mostrado en los Anexos~\ref{anx:esquematico-pcb-nc}, integra en un espacio compacto todos los elementos funcionales del AC y permitiendo su instalación en una caja de paso estándar sin requerir adaptadores adicionales. Esta compatibilidad busca facilitar significativamente su implementación, reduciendo tiempos y costos de instalación y contribuyendo a que el sistema pueda ser incorporado como un módulo más dentro de las soluciones habituales manejadas por empresas instaladoras de sistemas de paneles solares.
 
 %---------------------------------------descripción del armado---------------------------------------
 En cuanto al proceso de fabricación del prototipo, el mismo se realizó en base a técnicas accesibles que permitieran validar el funcionamiento del AC antes de avanzar hacia una producción más estandarizada. La PCB fue elaborada mediante el método de transferencia térmica, técnica ampliamente utilizada en etapas iniciales de desarrollo por su bajo costo y rapidez de implementación. Una vez transferido el diseño al cobre y completado el proceso de grabado mediante la reacción química de oxidación-reducción con cloruro férrico, fueron realizadas las perforaciones necesarias para la colocación de los componentes, conectores y módulos externos. Posteriormente, se llevó a cabo el montaje y la soldadura de todos los elementos, asegurando una correcta fijación mecánica y verificando la continuidad eléctrica en cada etapa.
 
 Con el objetivo de integrar la interfaz local en la caja de paso de 10×10 cm, se efectuó un mecanizado de la tapa para alojar tanto los pulsadores como el \ing{display}. La disposición de estos elementos fue seleccionada para garantizar accesibilidad al usuario, buena visibilidad y comodidad durante la utilización del sistema. Para asegurar un montaje firme y estético del \ing{display}, fue diseñado un soporte específico mediante \ing{software} de modelado tridimensional, imprimiendose el mismo en 3D utilizando material plástico de alta resistencia. Este soporte permite fijar el \ing{display} en la posición adecuada y facilita el ensamblaje final sin necesidad de herramientas adicionales.
 
-El conjunto resultante, mostrado en la Figura~\ref{img:ac}, combina una PCB que cumple con las restricciones de diseño y una interfaz accesible en un dispositivo práctico para la instalación en una infraestructura existente.
-
-
-\begin{figure}[hbt!]
+\begin{figure}[H]
     \centering
-    \includegraphics[width=0.6\textwidth]{imagenes/ac.jpg}
+    \includegraphics[width=0.5\textwidth]{imagenes/ac.jpg}
     \caption{Hardware desarrollado para el Agente de Carga (AC)}
     \label{img:ac}
 \end{figure}
+
+El conjunto resultante, mostrado en la Figura~\ref{img:ac}, combina entonces un diseño de PCB que cumple con las restricciones de diseño y una interfaz accesible en un dispositivo práctico para la instalación en una infraestructura existente.
 
 \section{Firmware}
 
@@ -68,14 +63,16 @@ El AC actúa como un puente de información, gestionando dos dominios de comunic
 \subsubsection{Bus CAN (Integración con la Microrred)}
 La comunicación con los demás agentes del sistema de supervisión de la microrred es realizado a través del bus CAN. La lógica de transmisión implementada es no bloqueante: el AC intenta enviar sus reportes de estado y, en caso de fallo, realiza un número limitado de reintentos. El sistema cuenta con un mecanismo de recuperación de fallos que monitorea los errores de transmisión; si estos superan un umbral predefinido, el \ing{firmware} reinicia automáticamente el controlador MCP2515 para restablecer el servicio sin intervención del usuario.
 
-Para verificar el correcto funcionamiento de la capa física y la lógica de transmisión, se realizaron pruebas conectando el AC a un módulo analizador de bus CAN vinculado a una computadora. Como puede observarse en la Figura~\ref{img:prueba-can}, esto permitió visualizar en tiempo real los paquetes inyectados en el bus por el AC, confirmando la correcta estructura de los identificadores y los datos enviados antes de la integración final con los demás agentes.
+Para verificar el correcto funcionamiento de la capa física y la lógica de transmisión, se realizaron pruebas conectando el AC a un módulo analizador de bus CAN vinculado a una computadora(Figura~\ref{img:prueba-can}). 
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.7\textwidth]{imagenes/prueba-busCAN.png}
+    \includegraphics[width=0.5\textwidth]{imagenes/prueba-busCAN.png}
     \caption{Prueba de comunicación vía bus CAN entre el AC y el sistema de supervisión de la microrred}
     \label{img:prueba-can}
 \end{figure}
+
+Esto permitió visualizar en tiempo real los paquetes inyectados y recibidos en el bus por el AC, confirmando la correcta estructura de los identificadores y los datos enviados antes de la integración con los demás agentes.
 
 \subsubsection{Red ESP-NOW (Gestión de Cargas)}
 Para la coordinación con los NC, el \ing{firmware} desarrollado gestiona el intercambio de mensajes de control sin conexión (\ing{connectionless}). El AC difunde periódicamente un mensaje de \textit{Disponibilidad}, que contiene el límite de corriente calculado para todas las cargas de la microrred. A su vez, se mantiene a la escucha de los mensajes de \textit{Consenso} provenientes de los nodos, los cuales reportan su consumo actual y prioridad.
@@ -87,9 +84,7 @@ Adicionalmente, el AC consolida toda la información anterior y la transmite ví
 
 \subsection{Interfaz de Usuario}
 
-La interacción local con el usuario del sistema, puede gestionarse mediante la actualización condicional del \ing{display} OLED (\textit{Organic Light-Emitting Diode}) que dipone el AC. Para minimizar la carga de procesamiento, el contenido de la pantalla solo es reescrita al detectarse cambios significativos en los valores mostrados o cuando el usuario interactúa con los pulsadores.
-
-La Figura~\ref{img:ac-pantalla} muestra la pantalla principal de operación, donde el usuario puede visualizar en tiempo real las variables críticas del sistema: potencia disponible ($P_{disp}$), tensión eficaz proporcionada por la microrred ($V_{rms}$), corriente máxima calculada ($I_{max}$) y el consumo actual del sistema ($I_{cons}$). El \ing{firmware} también incluye pantallas de diagnóstico para verificar el estado del bus CAN y listar los NC conectados.
+La interacción local con el usuario del sistema, puede gestionarse mediante la actualización condicional del \ing{display} OLED (\textit{Organic Light-Emitting Diode}) que dipone el AC. Para minimizar la carga de procesamiento, el contenido de la pantalla solo es reescrita al detectarse cambios significativos en los valores mostrados o cuando el usuario interactúa con los pulsadores. La Figura~\ref{img:ac-pantalla} muestra la pantalla principal de operación.
 
 \begin{figure}[H]
     \centering
@@ -97,3 +92,5 @@ La Figura~\ref{img:ac-pantalla} muestra la pantalla principal de operación, don
     \caption{Pantalla implementada para el AC. Muestra los valores de tensión, potencia y corriente disponibles en la microrred.}
     \label{img:ac-pantalla}
 \end{figure}
+
+En esta pantalla, el usuario puede visualizar en tiempo real las variables críticas del sistema: potencia disponible ($P_{disp}$), tensión eficaz proporcionada por la microrred ($V_{rms}$), corriente máxima calculada ($I_{max}$) y el consumo actual del sistema ($I_{cons}$). El \ing{firmware} también incluye pantallas de diagnóstico para verificar el estado del bus CAN y listar los NC conectados.

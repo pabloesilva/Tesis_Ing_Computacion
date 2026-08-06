@@ -1,7 +1,7 @@
 \cleardoublepage                                  % 
 \chapter{Discusión y Trabajo a Futuro}
 \label{cap:Discusion}
-
+\epigraph{``Todos los modelos son erróneos, pero algunos son útiles."}{\textit{George E. P. Box}}
 \section{Mediciones de corriente con cargas no lineales}
 
 En los últimos años, la cantidad de dispositivos con cargas no lineales en entornos residenciales ha aumentado de manera significativa, impulsada principalmente por la masificación de dispositivos electrónicos basados en fuentes conmutadas, tales como computadoras, televisores, cargadores, iluminación LED y electrodomésticos modernos. En este contexto, resulta crucial que los sistemas de monitoreo energético sean capaces de medir correctamente este tipo de consumos, ya que constituyen una porción cada vez más representativa de la demanda total.
@@ -13,7 +13,7 @@ Con el objetivo de analizar el comportamiento del sistema frente a cargas no lin
 
 Durante el ensayo, se compararon los valores de corriente obtenidos por el sistema desarrollado con mediciones de referencia realizadas mediante una punta de corriente conectada a un osciloscopio. La punta fue ajustada a una sensibilidad de 100 $mV$/$A$, obteniéndose un consumo de 0,490 $A$ de corriente eficaz, como se observa en la Figura~\ref{fig:medicion_referencia}.
 
-\begin{figure}[htbp]
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{imagenes/medicion_referencia.png}
     \caption{Medición de corriente en un cargador de computadora portátil utilizando la punta de corriente conectada a un osciloscopio.}
@@ -22,7 +22,7 @@ Durante el ensayo, se compararon los valores de corriente obtenidos por el siste
 
 El valor de corriente reportado por el sistema corresponde al nodo NC3, que al momento del ensayo tenía conectada la carga no lineal. La Figura~\ref{fig:medicion_nc3} presenta los resultados de una de las pruebas realizadas para la validación del sistema, donde puede observarse que el nodo informa un consumo de 0,492 $A$. Este valor presenta una diferencia de 2 $mA$ respecto de la medición obtenida mediante la punta de corriente.
 
-\begin{figure}[htbp]
+\begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{imagenes/ensayo_carga_no_lineal.png}
     \caption{Medición de corriente en el nodo NC3 con la carga no lineal del cargador de computadora portátil.}
@@ -35,9 +35,9 @@ Esta comparación permitió validar que, aun en presencia de cargas no lineales,
 
 En relación a la influencia del ruido introducido por la fuente de alimentación, se realizaron ensayos experimentales con el objetivo de evaluar cómo las perturbaciones eléctricas afectan la calidad de las mediciones de corriente del sistema. En particular, fue analizado el impacto del ruido superpuesto a la señal proveniente del sensor de corriente, comparando dos tipos de fuentes: una fuente de laboratorio, caracterizada por presentar un bajo nivel de ruido y una salida altamente regulada, y una fuente comercial conmutada, con un mayor nivel de rizado en su tensión de salida. Esto es mostrado en la Figura~\ref{fig:ensayo_fuentes}.
 
-\begin{figure}[htbp]
+\begin{figure}[H]
     \centering
-    \includegraphics[width=0.9\textwidth]{imagenes/ensayo_fuentes.jpg}
+    \includegraphics[width=0.8\textwidth]{imagenes/ensayo_fuentes.jpg}
     \caption{Ensayo comparativo de la señal de salida del sensor utilizando una fuente de laboratorio y una fuente comercial conmutada.}
     \label{fig:ensayo_fuentes}
 \end{figure}
@@ -48,9 +48,9 @@ Desde el punto de vista del análisis de señales, esta situación puede interpr
 
 La Figura~\ref{fig:fuente_ruido_osciloscopio} muestra la medición con el osciloscopio de la señal digitalizada a la salida del sensor en presencia de ruido, donde puede apreciarse cómo las fluctuaciones introducidas por la fuente afectan la forma de onda obteniendo un valor de 24 $mV$ eficaz cuando no hay ninguna carga conectada. Dependiendo de la sensibilidad del sensor, este nivel de ruido puede representar una limitación importante para la medición de corrientes bajas, ya que el valor medido podría estar dominado por el ruido en lugar de reflejar el consumo real.
 
-\begin{figure}[htbp]
+\begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{imagenes/fuente_ruido_osciloscopio.jpg}
+    \includegraphics[width=0.5\textwidth]{imagenes/fuente_ruido_osciloscopio.jpg}
     \caption{Medición de la señal a la salida del sensor en presencia de ruido utilizando un osciloscopio.}
     \label{fig:fuente_ruido_osciloscopio}  
 \end{figure}

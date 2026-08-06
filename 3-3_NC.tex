@@ -1,6 +1,7 @@
 \cleardoublepage
 \chapter{Nodo de Consumo (NC)}
-
+\epigraph{``Se puede construir una mente a partir de muchas partes pequeñas,
+cada una de ellas carente de mente por sí sola."}{\textit{Marvin Minsky}}
 \section{Hardware}
 
 Los Nodos de Consumo (NC) representan el elemento ejecutivo dentro de la arquitectura distribuida del sistema propuesto. A diferencia de los esquemas de control centralizados tradicionales, estos dispositivos brindan la capacidad de procesar información local y tomar decisiones de actuación de manera autónoma con información de sus pares. Para cumplir con este requisito de procesamiento distribuido, se seleccionó al igual que en el caso anterior una placa de desarrollo ESP32. Esta elección no es arbitraria; sino que responde a la necesidad de contar con un procesador de alta velocidad capaz de gestionar simultáneamente el muestreo de señales analógicas en tiempo real y la comunicación inalámbrica a través del protocolo ESP-NOW, todo ello manteniendo un bajo costo y un consumo energético acotado.
@@ -16,14 +17,16 @@ En la placa inferior, denominada etapa de potencia, están encuentran los siguie
     \item \textbf{Sensor:} La medición del consumo se realizó mediante un sensor de corriente por efecto Hall lineal ACS712. Este componente ofrece una ventaja fundamental ya que proporciona aislamiento galvánico entre el conductor de corriente (que está al potencial de red) y los pines de señal. El sensor entrega un voltaje analógico proporcional a la corriente instantánea que circula hacia la carga. Sin embargo, como este módulo opera a 5 V y el ESP32 tiene entradas tolerantes solo hasta 3,3 V, fue necesario interponer un divisor de tensión resistivo para adecuar los niveles de señal y proteger al microcontrolador contra sobretensiones.
 \end{itemize}
 
-Por otra parte, la placa superior concentra las funciones de control e interacción. El módulo ESP32 es montado en esta placa, facilitando el acceso a sus puertos de programación y depuración. Para configurar la prioridad del NC, se incorporó un interruptor tipo DIP (\textit{Dual In-line Package}) de dos vías. Este componente permite al instalador o usuario asignar una dirección de prioridad binaria (de 0 a 3) al nodo de manera física, eliminando la necesidad de conectar una computadora o dispositivo para reconfigurar el \ing{software} cada vez que se cambia la función del nodo. Finalmente, para brindar retroalimentación inmediata, se diseñó primero una interfaz visual compuesta por una barra de LEDs de tres colores (rojo, amarillo y verde) la cual puede observarse en los Anexos~\nameref{cap:prototipado} y~\nameref{cap:desarrollo}. Estos indicadores permitían visualizar únicamente el estado de disponibilidad energética de la microrred. Luego, como se puede ver en la Figura~\ref{fig:nc}, fue incorporado a cada NC un \ing{display} OLED similar al del AC. Este display cuenta con un soporte realizado mediante impresión 3D, para adaptar el mismo a una tapa estándar de cajas rectangulares de la marca Cambre (específicamente, línea Siglo XXI).
+Por otra parte, la placa superior concentra las funciones de control e interacción. El módulo ESP32 es montado en esta placa, facilitando el acceso a sus puertos de programación y depuración. Para configurar la prioridad del NC, se incorporó un interruptor tipo DIP (\textit{Dual In-line Package}) de dos vías. Este componente permite al instalador o usuario asignar una dirección de prioridad binaria (de 0 a 3) al nodo de manera física, eliminando la necesidad de conectar una computadora o dispositivo para reconfigurar el \ing{software} cada vez que se cambia la función del nodo. Finalmente, para brindar retroalimentación inmediata, se diseñó primero una interfaz visual compuesta por una barra de LEDs de tres colores (rojo, amarillo y verde) la cual puede observarse en los Anexos~\nameref{cap:prototipado} y~\nameref{cap:desarrollo}. Estos indicadores permitían visualizar únicamente el estado de disponibilidad energética de la microrred. El resultado final se puede ver en la Figura~\ref{fig:nc}.
 
-\begin{figure}[hbt!]
+\begin{figure}[H]
     \centering
-    \includegraphics[width=0.6\textwidth]{imagenes/nc.jpg}
+    \includegraphics[width=0.5\textwidth]{imagenes/nc.jpg}
     \caption{Hardware desarrollado para el Nodo de Consumo (NC)}
     \label{fig:nc}
 \end{figure}
+Al final fue incorporado a cada NC un \ing{display} OLED similar al del AC. Este display cuenta con un soporte realizado mediante impresión 3D, para adaptar el mismo a una tapa estándar de cajas rectangulares de la marca Cambre (específicamente, línea Siglo XXI).
+
 
 \section{Firmware}
 
@@ -32,14 +35,16 @@ El \ing{firmware} del NC implementa la lógica de control distribuido descrita e
 \subsection{Medición de Corriente}
 La adquisición de la señal del sensor ACS712 sigue el mismo principio de muestreo síncrono utilizado en el AC. El microcontrolador captura la forma de onda de la corriente consumida por la carga y calcula su valor eficaz (RMS) en tiempo real.
 
-Para validar la precisión de este método, se realizaron ensayos comparativos utilizando una punta de corriente comercial calibrada y un osciloscopio, como se muestra en la Figura~\ref{fig:prueba-corriente}. Los resultados demostraron que el sistema mantiene una linealidad adecuada y es capaz de medir correctamente, incluso la corriente absorbida por cargas no lineales (como fuentes conmutadas), reportando valores con un error en torno a 30--40 mA, prácticamente despreciable frente al valor máximo medible.
+Para validar la precisión de este método, se realizaron ensayos comparativos utilizando una punta de corriente comercial calibrada y un osciloscopio, como se muestra en la Figura~\ref{fig:prueba-corriente}. 
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.6\textwidth]{imagenes/prueba-corriente.jpg}
+    \includegraphics[width=0.5\textwidth]{imagenes/prueba-corriente.jpg}
     \caption{Prueba de medición de corriente en el NC contra punta de corriente}
     \label{fig:prueba-corriente}
 \end{figure}
+
+Los resultados demostraron que el sistema mantiene una linealidad adecuada y es capaz de medir correctamente, incluso la corriente absorbida por cargas no lineales (como fuentes conmutadas), reportando valores con un error en torno a 30--40 mA, prácticamente despreciable frente al valor máximo medible.
 
 \subsection{Lógica de Control y Actuación}
 El núcleo del \ing{firmware} es una máquina de estados que evalúa constantemente si la carga debe permanecer conectada o desconectada. Esta decisión está basada en la comparación entre el consumo total reportado por la red (suma de los consumos de todos los nodos) y el límite de corriente disponible informado por el AC, operando de la siguiente manera:
@@ -71,10 +76,8 @@ Para mantener al usuario informado sobre el estado operativo, el \ing{firmware}d
     \label{fig:pantallas}
 \end{figure}
 
-A partir de la Figura~\ref{fig:pantallas}, se tiene:
-
 \begin{itemize}
     \item \textbf{Consumo (a):} Muestra la corriente instantánea que está demandando la carga conectada al nodo.
     \item \textbf{Disponibilidad (b):} Visualiza gráficamente (mediante una barra de progreso) y numéricamente cual es la disponibilidad de la microrred.
-    \item \textbf{Prioridad (c):} Indica el nivel de prioridad asignado en el \ing{hardware} (Carga Crítica o No Crítica Alta, Media o Baja), permitiendo al usuario verificar la configuración del NC.
+    \item \textbf{Prioridad (c):} Indica el nivel de prioridad asignado en el \ing{hardware} (Carga Crítica o No Crítica Alta, Media o Baja), permitiendo al usuario verificar la configuración.
 \end{itemize}

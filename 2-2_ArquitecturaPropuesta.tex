@@ -1,15 +1,16 @@
 \cleardoublepage                                  % 
 \chapter{Arquitectura del sistema propuesto}
 
+\epigraph{``La simplicidad es un prerrequisito de la fiabilidad."}{\textit{Edsger W. Dijkstra}}
+
 El Sistema de Gestión de Consumos (SGC) propuesto en el presente trabajo, plantea un esquema distribuido para la gestión de las cargas que posee una microrred, enfocado en equilibrar la demanda de consumo con la potencia disponible en tiempo real. El SGC pretende garantizar un uso eficiente de la energía, priorizando el abastecimiento de las cargas críticas de la microrred. La Figura~\ref{img:arquitectura} muestra los elementos que componen al SGC propuesto. El Agente de Carga (AC) es un dispositivo construido en base a un microcontrolador, que es responsable de establecer el vínculo entre los recursos energéticos de la microrred y los Nodos de Consumo (NC).
 
-\begin{figure}[hbt!]
+\begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{imagenes/arquitectura.png}
     \caption{Arquitectura para el sistema propuesto}
     \label{img:arquitectura}
 \end{figure}
-
 
 El AC establece comunicación con los demás agentes de la microrred mediante un bus de comunicación CAN, a fin de obtener la potencia disponible, cuyo valor depende directamente de las condiciones de generación y/o almacenamiento que posee la microrred. El AC también obtiene el voltaje eficaz en la línea de corriente alterna proveniente de la microrred; con este dato de tensión y el valor de potencia disponible, calcula la corriente eficaz total que puede utilizar el conjunto de cargas e informa este valor periódicamente a los NC. Estos últimos, constituyen dispositivos de control (basados en microcontroladores) que están asociados a diferentes cargas eléctricas (por ej. electrobombas, electrodomésticos, iluminación, entre otros).
 Cada NC dispone de una prioridad asignada, que es definida según la necesidad específica del usuario. La comunicación entre los nodos es realizada de manera multidireccional, permitiendo que cada uno, a partir de mensajes de todos los demás, evalúe su condición operativa en relación con el valor de la corriente total disponible en la microrred, su nivel de consumo y prioridad frente a otros nodos. Con esa información, cada nodo toma la decisión de conexión, desconexión o reconexión de la carga que tiene asociada.
@@ -18,44 +19,38 @@ Cada NC dispone de una prioridad asignada, que es definida según la necesidad e
 
 \section{Agente de Carga (AC)}
 
-El AC es el nexo entre la microrred y los NC, recibiendo la potencia disponible desde el sistema multiagente de supervisión de la microrred. A través de esta potencia y la medición local de la tensión eficaz de corriente alterna, el AC obtiene la corriente total disponible para el consumo en las cargas. Esta información de corriente disponible es reportada periódicamente a todos los NC quienes toman este valor como una restricción para su funcionamiento, de modo que éstos puedan ejecutar en forma autónoma la lógica distribuida de conexión y desconexión de cargas, según las prioridades establecidas para cada una de ellas.
-Para cumplir con esto, el AC realiza las siguientes tareas esenciales:
+El AC es el nexo entre la microrred y los NC, recibiendo la potencia disponible desde el sistema multiagente de supervisión de la microrred. A través de esta potencia y la medición local de la tensión eficaz de corriente alterna, el AC obtiene la corriente total disponible para el consumo en las cargas. Esta información de corriente disponible es reportada periódicamente a todos los NC quienes toman este valor como una restricción para su funcionamiento, de modo que éstos puedan ejecutar en forma autónoma la lógica distribuida de conexión y desconexión de cargas, según las prioridades establecidas para cada una de ellas. Esta estrategia facilita el balanceo de la demanda frente a la oferta y prioriza el abastecimiento de las cargas críticas cuando la energía es limitada. En la Figura~\ref{img:esq_ac} se presenta el diagrama esquemático del AC diseñado para este sistema. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{imagenes/esq_ac.png}
+    \caption{Diagrama esquemático del Agente de Carga (AC)}
+    \label{img:esq_ac}
+\end{figure}
+
+El AC realiza entonces las siguientes tareas:
 \begin{itemize}
     \item Comunicación vía bus CAN con el sistema de supervisión de la microrred para obtener la potencia disponible y reportar el consumo.
     \item Medición de la tensión eficaz de la línea para el cálculo de la corriente disponible.
     \item Envío de datos de la microrred (potencia, tensión, corriente) y de cada NC mediante UART para su posterior almacenamiento y visualización en una interfaz web.
 \end{itemize}
 
-Esta estrategia facilita el balanceo de la demanda frente a la oferta y prioriza el abastecimiento de las cargas críticas cuando la energía es limitada. En la Figura~\ref{img:esq_ac} se presenta el diagrama esquemático del AC diseñado para este sistema, donde se observan los bloques funcionales que permiten cumplir con las tareas mencionadas.
-
-\begin{figure}[hbt!]
-    \centering
-    \includegraphics[width=0.7\textwidth]{imagenes/esq_ac.png}
-    \caption{Diagrama esquemático del Agente de Carga (AC)}
-    \label{img:esq_ac}
-\end{figure}
-
 \section{Nodo de Consumo (NC)}
 Los Nodos de Consumo son las unidades responsables de decidir, de manera autónoma, si una carga eléctrica debe permanecer conectada o desconectada. Para ello, cada NC participa en un esquema de control distribuido donde intercambia información con los demás nodos y con el Agente de Carga (AC). Esta comunicación le permite conocer dos valores esenciales: la disponibilidad total de corriente para la microrred, que es informada periódicamente por el AC, y el consumo agregado de las cargas, estimado mediante el intercambio de mensajes entre los propios nodos, aplicando el algoritmo de consenso descrito en la Sección~\ref{sec:consenso_medio} que es implementado en el firmware de cada nodo.
-A partir de estos datos, cada NC evalúa su situación considerando la prioridad que tiene asignada. Las cargas críticas se mantienen siempre conectadas, mientras que las cargas no críticas pueden ser desconectadas si la demanda total supera la disponibilidad. Esta decisión no depende de un controlador central, sino que surge del propio nodo aplicando la lógica distribuida de estimación del consumo total y priorización, que asegura que la demanda global se mantenga por debajo del límite informado por el AC. Cada NC cuenta con una estructura, mostrada en la Figura~\ref{img:esq_nc}, para llevar a cabo la lógica de control distribuido y realizar la actuación sobre la carga asociada.
+A partir de estos datos, cada NC evalúa su situación considerando la prioridad que tiene asignada. Las cargas críticas se mantienen siempre conectadas, mientras que las cargas no críticas pueden ser desconectadas si la demanda total supera la disponibilidad. Cada NC cuenta con una estructura, mostrada en la Figura~\ref{img:esq_nc}, para llevar a cabo la lógica de control distribuido y realizar la actuación sobre la carga asociada.
 
-\begin{figure}[hbt!]
+\begin{figure}[H]
     \centering
-    \includegraphics[width=0.7\textwidth]{imagenes/esq_nc.png}
+    \includegraphics[width=0.6\textwidth]{imagenes/esq_nc.png}
     \caption{Diagrama esquemático del Nodo de Consumo (NC)}
     \label{img:esq_nc}
 \end{figure}
 
+La decisión entonces no depende de un controlador central, sino que surge del propio nodo aplicando la lógica distribuida de estimación del consumo total y priorización, que asegura que la demanda global se mantenga por debajo del límite informado por el AC.
+
 \subsection{Lógica del Algoritmo de priorización de las Cargas}
 
 La operación autónoma del Nodo de Consumo se sustenta en una rutina de control cíclica que es ejecutada localmente en su microcontrolador. La Figura~\ref{img:Diagrama-Flujo} esquematiza el flujo de operaciones que realiza el \ing{firmware} para gestionar el estado de la carga.
-
-\begin{figure}[hbt!]
-    \centering
-    \includegraphics[width=1\textwidth]{imagenes/Diagrama-Flujo.png}
-    \caption{Diagrama de Flujo del algoritmo de priorización de las cargas en el NC}
-    \label{img:Diagrama-Flujo}
-\end{figure}
 
 El diagrama de dicha figura, representa un bucle de control cerrado que integra tres procesos fundamentales:
 \begin{enumerate}
@@ -64,6 +59,13 @@ El diagrama de dicha figura, representa un bucle de control cerrado que integra 
     \item \textbf{Evaluación y Actuación:} Basándose en la comparación entre la oferta energética y la demanda agregada, el algoritmo resuelve el estado final del relé, priorizando la estabilidad del sistema sobre la continuidad de suministro de las cargas no críticas.
 \end{enumerate}
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{imagenes/Diagrama-Flujo.png}
+    \caption{Diagrama de Flujo del algoritmo de priorización de las cargas en el NC}
+    \label{img:Diagrama-Flujo}
+\end{figure}
+
 Este ciclo de ejecución continuo permite que el nodo adapte su comportamiento en tiempo real ante las perturbaciones de la microrred, operando como una entidad independiente pero coordinada dentro del esquema distribuido.
 
 
@@ -71,14 +73,16 @@ Este ciclo de ejecución continuo permite que el nodo adapte su comportamiento e
 
 Para complementar la gestión local realizada por el Agente de Carga y los Nodos de Consumo, se diseñó una arquitectura de supervisión remota basada en el paradigma de Internet de las Cosas (IoT). Esta capa superior del sistema tiene como objetivo desacoplar la adquisición de datos de su visualización, permitiendo el monitoreo histórico y en tiempo real desde cualquier ubicación con acceso a internet.
 
-La arquitectura propuesta, ilustrada en la Figura~\ref{img:plataforma-iot-prop}, se fundamenta en un esquema de microservicios, apoyado en la contenerización con Docker descrita en la Sección~\ref{sec:docker}. A diferencia de las aplicaciones monolíticas tradicionales, este enfoque divide las funcionalidades del servidor (recepción de datos, almacenamiento, procesamiento e interfaz) en unidades independientes o \enquote{contenedores} que se comunican entre sí a través de una red virtual interna.
+La arquitectura propuesta, ilustrada en la Figura~\ref{img:plataforma-iot-prop}, es fundamentada en un esquema de microservicios, apoyado en la contenerización con Docker descrita en la Sección~\ref{sec:docker}. 
 
-\begin{figure}[hbt!]
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{imagenes/Plataforma-IoT.png}
     \caption{Plataforma-IoT Propuesta}
     \label{img:plataforma-iot-prop}
 \end{figure}
+
+A diferencia de las aplicaciones monolíticas tradicionales, este enfoque divide las funcionalidades del servidor (recepción de datos, almacenamiento, procesamiento e interfaz) en unidades independientes o \enquote{contenedores} que se comunican entre sí a través de una red virtual interna.
 
 \subsection{Infraestructura de Hardware}
 

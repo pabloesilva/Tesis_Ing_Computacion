@@ -7,7 +7,7 @@ Si bien el sistema desarrollado cumple con los objetivos planteados, existen lí
 
 Se identifican dos mejoras al algoritmo de gestión implementado. La primera mejora consiste en la \textbf{desconexión anticipada de cargas}. En la versión actual, ante un déficit energético ($I_{total} > I_{disponible}$) es desconedctada una única carga por iteración: la de menor prioridad y, en caso de empate, la de menor consumo. Si esa desconexión no alcanza para restablecer el equilibrio, el sistema debe esperar iteraciones sucesivas, lo que prolonga el estado de sobrecarga. Dado que cada nodo dispone de la información del estado global, se propone que el nodo evalúe dentro de la misma iteración si la desconexión de las cargas de menor jerarquía resulta suficiente y, de no serlo, proceda también a desconectarse sin aguardar una nueva evaluación. De esta forma, la decisión deja de ser estrictamente incremental y pasa a considerar el aporte conjunto de múltiples cargas, reduciendo el tiempo de respuesta y la permanencia en estados transitorios de sobrecarga. La Figura~\ref{img:desconexion_anticipada} compara el comportamiento del algoritmo actual con el de la mejora propuesta. Cabe aclarar que esta mejora no está limitada a cargas de igual prioridad, sino que también puede aplicarse entre niveles distintos, siempre manteniendo el criterio jerárquico establecido.
 
-\begin{figure}[hbt!]
+\begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{imagenes/desconexion-anticipada.png}
     \caption{Comparativa entre algoritmo actual y la mejora propuesta para la desconexión de cargas.}
@@ -16,7 +16,7 @@ Se identifican dos mejoras al algoritmo de gestión implementado. La primera mej
 
 La segunda mejora considera la \textbf{incorporación de mensajes de solicitud de desconexión}. Con el algoritmo actual pueden producirse configuraciones subóptimas en las que una carga de menor prioridad, por haberse reconectado antes, ocupa la capacidad disponible e impide la reconexión de una carga de mayor prioridad y mayor consumo. Para abordar esta limitación, se propone que un nodo de mayor prioridad, al detectar que podría reconectarse si se liberara capacidad, emita una solicitud de desconexión dirigida a uno o más nodos de menor prioridad. Este mecanismo introduce una forma de negociación entre nodos, en la que las cargas de menor prioridad ceden su lugar en favor de las más relevantes, garantizando la preferencia efectiva de estas últimas en el uso de la energía. La Figura~\ref{img:desconexion_coordinada} ilustra esta situación. Esta función podría implementarse de manera opcional, permitiendo al usuario configurar su activación según las características de las cargas involucradas.
 
-\begin{figure}[hbt!]
+\begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{imagenes/desconexion-coordinada.png}
     \caption{Comparativa entre algoritmo actual y la implementación de mensajes para la desconexión de cargas.}

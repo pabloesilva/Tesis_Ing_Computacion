@@ -1,6 +1,9 @@
 \cleardoublepage                                 
 \chapter{Marco Teórico}
 \label{sec:marco-teorico}
+\epigraph{``La ciencia se construye con hechos, como una casa con piedras; pero
+una acumulación de hechos no es una ciencia, del mismo modo que un montón de
+piedras no es una casa."}{\textit{Henri Poincaré}}
 
 \section{Microrredes eléctricas}
 \label{sec:microrredes_elec}
@@ -67,9 +70,9 @@ Bajo este enfoque, el sistema propuesto en este trabajo logra que, tras procesar
 \section{Tecnologías de comunicación}
 \subsection{Bus CAN}
 
-El protocolo CAN (\textit{Controller Area Network}) es un sistema de comunicación serial robusto y altamente confiable, desarrollado originalmente por Bosch para permitir el intercambio eficiente de información entre múltiples dispositivos en entornos embebidos. De acuerdo con la descripción técnica recopilada por National Instruments, todos los nodos conectados al bus comparten el mismo medio físico y reciben cada mensaje transmitido, decidiendo de manera autónoma si la información es relevante para ellos. Esta característica elimina la necesidad de una unidad central de control y favorece arquitecturas distribuidas.
-Una de las propiedades más destacadas de CAN es su método de arbitraje no destructivo. Cuando dos nodos intentan transmitir simultáneamente, el bus no sufre colisiones que invaliden los datos, sino que el protocolo determina de inmediato qué mensaje posee mayor prioridad. Esto se logra mediante la comparación bit a bit del identificador del mensaje, donde el ID con mayor precedencia conserva el acceso mientras el resto de los nodos interrumpe su transmisión.
-En lo referido a integridad, CAN incorpora mecanismos avanzados de detección de errores, incluidos códigos CRC, supervisión continua de bit y campos especiales que anuncian la presencia de fallos. Cuando se detecta un error, la trama afectada se descarta y el transmisor envía una señal que obliga a repetir la transmisión. Además, el protocolo incluye un sistema de confinamiento que evita que nodos con fallas reiteradas degraden el funcionamiento del bus, pudiendo incluso desconectarlos temporalmente si alcanzan ciertos umbrales de error.
+El protocolo CAN (\textit{Controller Area Network}) es un sistema de comunicación serial robusto y altamente confiable, desarrollado originalmente por Bosch para permitir el intercambio eficiente de información entre múltiples dispositivos en entornos embebidos.
+Una de las propiedades más destacadas de CAN es su método de arbitraje no destructivo. Cuando dos nodos intentan transmitir simultáneamente, el bus no sufre colisiones que invaliden los datos, sino que el protocolo determina de inmediato qué mensaje posee mayor prioridad. Esto se logra mediante la comparación bit a bit del identificador del mensaje, donde el ID con mayor precedencia (el más bajo) conserva el acceso mientras el resto de los nodos interrumpe su transmisión.
+En lo referido a integridad, CAN incorpora mecanismos avanzados de detección de errores, incluidos códigos CRC, supervisión continua de bit y campos especiales que anuncian la presencia de fallos. Cuando se detecta un error, la trama afectada se descarta y el transmisor envía una señal que obliga a repetir la transmisión.
 Finalmente, la topología del bus CAN permite reducir significativamente el cableado respecto de los sistemas punto a punto tradicionales, ya que todos los dispositivos comparten un único par de líneas diferenciales. Este enfoque simplifica el diseño físico, reduce costos y mantiene la inmunidad al ruido, lo que explica su amplia adopción en la industria automotriz y en sistemas embebidos de alta exigencia \cite{niCANoverview}.
 
 
@@ -129,14 +132,16 @@ Este último método es el utilizado por el microcontrolador ESP32 para realizar
 
 El módulo ZMPT101B está diseñado para medir tensiones alternas, como las presentes en instalaciones domésticas, comerciales e industriales, que no pueden ser leídas directamente por el ADC de un microcontrolador debido a que exceden su rango de entrada. Para resolver esto, el dispositivo reduce el voltaje de entrada a un nivel adecuado para su lectura por microcontroladores. Puede trabajar con señales de hasta 250 V de CA y proporciona en su salida una onda senoidal cuya amplitud puede ajustarse mediante un potenciómetro incorporado.
 
-Este módulo combina un transformador con una etapa de acondicionamiento de señal. El transformador proporciona aislamiento galvánico y permite la medición de señales alternas. Su bobina primaria se conecta a la fuente de voltaje a medir, mientras que la secundaria alimenta el circuito de acondicionamiento \cite{zmpt101b_datasheet}. Dicho circuito incluye un divisor de tensión y un amplificador operacional LM358, encargado de añadir un desplazamiento de nivel (\textit{offset}) a la señal de salida. Este desplazamiento es necesario para evitar valores negativos y adaptar la señal al rango del ADC incluido en los microcontroladores. Su valor depende de la tensión de alimentación, por ejemplo, con 5 $V$ se obtiene un \textit{offset} de 2,5 $V$, y con 3,3 $V$, uno de 1,65 $V$. La salida del módulo puede conectarse directamente a una entrada analógica del microcontrolador, permitiendo medir el voltaje instantáneo. Esto se puede observar en la Figura~\ref{fig:senial-azmpt101b}.
+Este módulo combina un transformador con una etapa de acondicionamiento de señal. El transformador proporciona aislamiento galvánico y permite la medición de señales alternas. Su bobina primaria se conecta a la fuente de voltaje a medir, mientras que la secundaria alimenta el circuito de acondicionamiento \cite{zmpt101b_datasheet}. Dicho circuito incluye un divisor de tensión y un amplificador operacional LM358, encargado de añadir un desplazamiento de nivel (\textit{offset}) a la señal de salida, la cual puede observarse en la Figura~\ref{fig:senial-azmpt101b}. Este desplazamiento es necesario para evitar valores negativos y adaptar la señal al rango del ADC incluido en los microcontroladores. 
 
-\begin{figure}[htbp]
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.9\textwidth]{imagenes/senial-zmpt101b.png}
     \caption{Señal de salida del módulo ZMPT101B al medir una tensión alterna de 220 V de CA con alimentaciones de 5 V y 3,3 V.}
     \label{fig:senial-azmpt101b}
 \end{figure}
+
+Su valor depende de la tensión de alimentación, por ejemplo, con 5 $V$ se obtiene un \textit{offset} de 2,5 $V$, y con 3,3 $V$, uno de 1,65 $V$. La salida del módulo puede conectarse directamente a una entrada analógica del microcontrolador, permitiendo medir el voltaje instantáneo.
 
 \subsection{Módulo sensor de corriente ACS712}
 El módulo sensor de corriente ACS712, en específico la versión de 20~A, permite medir tanto corriente continua como alterna en un rango de hasta $\pm$20~A mediante el uso del efecto Hall, fenómeno por el cual un conductor que transporta corriente en presencia de un campo magnético perpendicular genera una tensión proporcional a dicha corriente~\cite{hall_effect}. Es una solución económica, precisa y fácil de implementar, típicamente usado en control de motores, detección y gestión de cargas, protección de sobrecorriente, entre otros \cite{acs712_datasheet}.
@@ -162,16 +167,8 @@ La contenerización de una aplicación permite que cada componente de la misma s
 \subsection{Broker MQTT}
 
 Un \ing{broker} MQTT es un elemento central encargado de facilitar la comunicación mediante mensajes entre clientes y dispositivos IoT a través de este protocolo. Funciona bajo el modelo de publicación-suscripción (\ing{pub/sub}), siendo responsable de gestionar las conexiones y el flujo de información. Su tarea consiste en recibir los mensajes enviados por los publicadores, validar sus permisos, organizarlos según los niveles de calidad de servicio (QoS) y, posteriormente, distribuirlos a los suscriptores que estén autorizados a recibirlos.
-Hay diferentes tipos de \ing{brokers} MQTT:
-\begin{itemize}
-    \item \textbf{Broker MQTT de código abierto}: Son aquellos que se pueden descargar, modificar y utilizar de forma gratuita, como Mosquitto.
-    \item \textbf{Broker MQTT en la nube}: Un \ing{broker} MQTT \ing{online} hospedado y ejecutado en la nube, como AWS IoT Core.
-    \item \textbf{Broker MQTT local}: Instalado y hospedado por completo en un servidor local, lo que permite un control total sobre la infraestructura y los datos.
-    \item \textbf{Broker MQTT empresarial}: Ofrecidos por proveedores de servicios con características avanzadas, soporte técnico y opciones de personalización.
-\end{itemize}
 
-Un \ing{broker} MQTT es aplicable en diversos casos de uso y áreas como la salud, el sector automotriz, los sistemas de hogares inteligentes y muchas más. 
-Utilizar un \ing{broker} MQTT como solución de transmisión de datos permite, por ejemplo, a los fabricantes obtener información en tiempo real sobre el rendimiento de las máquinas de sus fábricas o en sistemas de gestión energética para agregar datos de consumo eléctrico de medidores inteligentes en ubicaciones distribuidas \cite{mosquitto_homepage}.
+Un \ing{broker} MQTT es aplicable en diversos casos de uso y áreas como la salud, el sector automotriz, los sistemas de hogares inteligentes y muchas más. Utilizar un \ing{broker} MQTT como solución de transmisión de datos permite, por ejemplo, a los fabricantes obtener información en tiempo real sobre el rendimiento de las máquinas de sus fábricas o en sistemas de gestión energética para agregar datos de consumo eléctrico de medidores inteligentes en ubicaciones distribuidas. Uno de los brokers más utilizados de código abierto es Mosquitto \cite{mosquitto_homepage}.
 
 \subsection{Base de Datos}
 Una base de datos puede entenderse como un conjunto organizado de información estructurada, que generalmente se almacena de manera digital dentro de un sistema informático. Por lo general, su administración está a cargo de un sistema de gestión de bases de datos (DBMS). En conjunto, los datos, el DBMS y las aplicaciones que interactúan con ellos conforman lo que se conoce como un sistema de bases de datos, término que habitualmente se simplifica simplemente como base de datos.

@@ -1,13 +1,15 @@
 \cleardoublepage
 \chapter{Integración del Sistema de Gestión de Consumos}
-
+\epigraph{``Un sistema distribuido es aquel en el que el fallo de una
+computadora cuya existencia ni siquiera conocías puede dejar inutilizable la
+tuya."}{\textit{Leslie Lamport}}
 La validación final del Sistema de Gestión de Consumos requirió la integración de todos los componentes, incluyendo el AC, los NC y la Plataforma IoT, en un entorno que emulara las condiciones operativas de una microrred real. Para ello, se diseñó un banco de pruebas híbrido que combina \ing{hardware} real de potencia con emuladores digitales para los demás agentes involucrados en el control de la microrred.
 
 \section{Emulación de Interconexión con Agentes de la Microrred}
 
 Tal como se observa en la Figura~\ref{img:integracion}, la arquitectura física integra el AC en el bus de comunicaciones de la microrred. Dado que no se disponía de la infraestructura completa de generación, como paneles solares físicos y un banco de baterías de gran capacidad en el laboratorio de pruebas, se optó por emular el comportamiento de los agentes restantes utilizando \ing{hardware} de alto rendimiento.
 
-\begin{figure}[hbt!]
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{imagenes/PFI.png}
     \caption{Integración completa del Sistema de Gestión de Consumos}
@@ -16,7 +18,7 @@ Tal como se observa en la Figura~\ref{img:integracion}, la arquitectura física 
 
 Para poder realizar las pruebas de integración, fueron utilizadas dos placas de desarrollo Texas Instruments LAUNCHXL-F28377S (ver Figura~\ref{img:ti-can}). La elección de esta plataforma se justifica por su arquitectura que incluye un Control Law Accelerator (CLA). Si bien en esta etapa actúan como emuladores, estas placas poseen la capacidad de procesamiento necesaria para ejecutar en el futuro los lazos de control de los convertidores de potencia reales de la microrred.
 
-\begin{figure}[hbt!]
+\begin{figure}[H]
     \centering
     \includegraphics[width=0.4\textwidth]{imagenes/TI-prueba-CAN.png}
     \caption{Placa Texas Instruments utilizada para emular pruebas de comunicación CAN}

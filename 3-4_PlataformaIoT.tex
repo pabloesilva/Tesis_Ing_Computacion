@@ -1,6 +1,8 @@
 \cleardoublepage
 \chapter{Plataforma IoT}
-
+\epigraph{``Las tecnologías más profundas son aquellas que desaparecen. Se
+entretejen en el tejido de la vida cotidiana hasta volverse indistinguibles de
+ella."}{\textit{Mark Weiser}}
 La implementación final de la plataforma de supervisión se llevó a cabo materializando la arquitectura de microservicios descrita anteriormente. El sistema es desplegado sobre un entorno contenerizado con Docker, lo que permitió aislar las dependencias de cada servicio y garantizar la portabilidad del \ing{software} entre el entorno de desarrollo y el servidor de producción (VPS).
 
 A continuación se detallan los aspectos técnicos del desarrollo del \ing{backend} y el diseño de la interfaz de usuario.
@@ -84,11 +86,13 @@ Como puede observarse en la Figura~\ref{fig:grafana-dashboard}, la interfaz de G
     \label{fig:grafana-dashboard}
 \end{figure}
 
-Además, fueron incluidos los gráficos individuales de cada nodo, permitiendo un análisis detallado del comportamiento de cada NC, similar a la vista de detalle implementada en la plataforma original. Esto puede observarse en la Figura~\ref{fig:plataforma-grafana-nodos}, donde se muestran los gráficos de corriente, con la posibilidad de comparar su desempeño a lo largo del tiempo.
+Además, fueron incluidos los gráficos individuales de cada nodo, permitiendo un análisis detallado del comportamiento de cada NC, similar a la vista de detalle implementada en la plataforma original. Esto puede observarse en la Figura~\ref{fig:plataforma-grafana-nodos}.
 
-\begin{figure}[hbt!]
+\begin{figure}[H]
     \centering
     \includegraphics[width=1\textwidth]{imagenes/plataforma-grafana-nodos.png}
     \caption{Vista de los gráficos individuales de cada nodo en Grafana}
     \label{fig:plataforma-grafana-nodos}
 \end{figure}
+
+Estos graficos permiten un análisis en detalle de cada nodo, mostrando la evolución de la corriente consumida y permitiendo identificar patrones de uso, picos de demanda y posibles anomalías en el comportamiento de las cargas conectadas al sistema.

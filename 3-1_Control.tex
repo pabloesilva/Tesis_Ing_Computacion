@@ -1,16 +1,16 @@
 \cleardoublepage
 \chapter{Control prioritario de la demanda de energía de las cargas}
 \label{cap:control}
+\epigraph{``La información es información, no materia ni energía."}{\textit{Norbert Wiener}}
+La estrategia de gestión de demanda implementada en el SGC se fundamenta en un esquema de priorización estática definido por el usuario. Cada NC dispone de la información suficiente para resolver localmente si debe permanecer conectado o ceder su lugar a una carga de mayor jerarquía, lo que reduce la dependencia de un enlace de comunicación permanente y evita que una eventual falla del AC deje a la microrred sin protección ante sobrecargas.
 
-La estrategia de gestión de demanda implementada en el SGC está fundamentada en un esquema de priorización estática definido por el usuario. Este enfoque permite que el sistema tome decisiones autónomas de desconexión y reconexión de cargas sin depender de un controlador central que dicte las acciones individuales de cada nodo.
+El objetivo principal del algoritmo es asegurar que la demanda total de corriente de la microrred ($I_{total}$) se mantenga siempre por debajo de la corriente máxima disponible ($I_{disponible}$) informada por el AC, garantizando el suministro a los dispositivos esenciales. El AC actualiza ese valor periódicamente en función de la capacidad instantánea de generación y almacenamiento, de modo que el conjunto de NC ajusta su comportamiento de forma dinámica ante variaciones en las condiciones de operación, como una caída de la generación fotovoltaica o el ingreso de nuevas cargas.
 
-El objetivo principal del algoritmo es asegurar que la demanda total de corriente de la microrred ($I_{total}$) se mantenga siempre por debajo de la corriente máxima disponible ($I_{disponible}$) informada por el AC, garantizando en todo momento el suministro a los dispositivos esenciales.
+Si bien el estándar IEEE 2030.7 define seis categorías de cargas, como se presentó en la Sección~\ref{sec:microrredes_elec}, en este trabajo dicha taxonomía se simplificó a un esquema de cuatro niveles orientado a la implementación. Dado que el sistema actúa exclusivamente sobre la conexión o desconexión de cargas finales según su criticidad, se conservó la distinción esencial entre cargas críticas y no críticas, subdividiendo estas últimas en tres niveles de prioridad que determinan el orden de desconexión. Ello no implica pérdida de generalidad, ya que las categorías intermedias de la norma están orientadas a servicios auxiliares de la red y a la coordinación entre microrredes, aspectos que exceden el alcance de este trabajo.
 
-Si bien el estándar IEEE 2030.7 define seis categorías de cargas, como se presentó en la Sección~\ref{sec:microrredes_elec}, en este trabajo dicha taxonomía se simplificó a un esquema de cuatro niveles orientado a la implementación. Esta reducción responde a que el sistema actúa exclusivamente sobre la conexión o desconexión de cargas finales según su criticidad, por lo que se conservó la distinción esencial entre cargas críticas y no críticas, subdividiendo estas últimas en tres niveles de prioridad que determinan el orden de desconexión.
+La prioridad de cada NC es asignada entonces por el usuario final durante la configuración inicial, según la criticidad relativa de cada dispositivo. Así, cargas como sistemas de refrigeración médica o iluminación de emergencia pueden declararse críticas, mientras que dispositivos de confort, como climatización o electrodomésticos de uso no esencial, se distribuyen entre los tres niveles restantes.
 
-Para lograr esto, a cada NC se le asigna un nivel de prioridad que determina su jerarquía en el orden de desconexión ante un déficit energético. La Tabla \ref{tab:niveles_prioridad} detalla los cuatro niveles definidos para la operación del sistema.
-
-\begin{table*}[ht!]
+\begin{table}[H]
 \centering
 \caption{Niveles de prioridad de carga}
 \label{tab:niveles_prioridad}
@@ -22,11 +22,14 @@ Para lograr esto, a cada NC se le asigna un nivel de prioridad que determina su 
 2 & Carga No crítica (Prioridad Media) & Se desconecta cuando se produce una reducción moderada de la potencia disponible, actuando como un amortiguador intermedio. \\ \hline
 3 & Carga No crítica (Prioridad Baja) & Es la primera en desconectarse ante cualquier déficit de potencia, permitiendo liberar recursos rápidamente para las cargas más importantes. \\ \hline
 \end{tabular}
-\end{table*}
+\end{table}
+
+Para lograr lo mencionado anteriormente, a cada NC se le asigna un nivel de prioridad que determina su jerarquía en el orden de desconexión ante un déficit energético. La Tabla \ref{tab:niveles_prioridad} detalla los cuatro niveles definidos para la operación del sistema.
 
 \section{Lógica de Desconexión y Reconexión}
 
 El algoritmo de control es ejecutado localmente en cada NC y evalúa periódicamente el estado de la microrred. La toma de decisiones está basada en la comparación entre el consumo total agregado y la disponibilidad informada por el AC. A continuación se describe la lógica implementada para los dos estados posibles de la carga: conectada y desconectada.
+
 
 \subsection{Criterio de Desconexión}
 Cuando la carga está activa, el nodo monitorea si la corriente total consumida ($I_{total}$) supera a la corriente disponible ($I_{disponible}$). Si se detecta esta condición de sobrecarga ($I_{total} > I_{disponible}$), es activado el procedimiento de desconexión selectiva, siguiendo los pasos lógicos indicados a continuación para determinar qué nodo debe actuar:
@@ -44,7 +47,10 @@ Si la carga está desconectada debido a una acción previa de control, el nodo e
 
 La condición para reconectar una carga es:
 \begin{equation}
+    \label{eq:reconexion}
     I_{total} + I_{carga\_propia} + I_{margen} < I_{disponible}
 \end{equation}
 
 En esta expresión, $I_{carga\_propia}$ es el último valor de corriente registrado por el nodo antes de desconectarse e $I_{margen}$ es un valor de seguridad adicional, adoptado en la implementación como un margen del 5 \% respecto de dicho consumo. Solo si la capacidad disponible en la red es suficiente para soportar la carga del nodo más este margen de seguridad, el NC decide su reconexión automática.
+
+Este margen de seguridad cumple un rol equivalente al de una banda de histéresis en un lazo de control clásico, al exigir que la disponibilidad supere no solo el consumo esperado del nodo sino también un excedente adicional, se evita que pequeñas fluctuaciones en la generación o en el consumo de otras cargas provoquen ciclos sucesivos de conexión y desconexión sobre un mismo dispositivo. Adicionalmente, dado que la reconexión es evaluada de forma independiente por cada NC desconectado, la condición de la Ecuación~\ref{eq:reconexion} es verificada siguiendo el mismo orden de prioridad utilizado en la desconexión, de manera que, ante un excedente de energía disponible, las cargas de mayor jerarquía entre las desconectadas son las primeras candidatas a recuperar el suministro.
